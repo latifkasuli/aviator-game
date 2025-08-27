@@ -20,10 +20,11 @@ describe('Auth Service', () => {
 
     it('should store session in activeSessions', () => {
       authService.activeSessions.clear();
-      authService.generateToken(mockUser);
+      const { token } = authService.generateToken(mockUser);
       
-      expect(authService.activeSessions.has(mockUser.id)).toBe(true);
-      const session = authService.activeSessions.get(mockUser.id);
+      // With Fred's token-based session management, token is now the key
+      expect(authService.activeSessions.has(token)).toBe(true);
+      const session = authService.activeSessions.get(token);
       expect(session.userId).toBe(mockUser.id);
       expect(session.expiresAt).toBeDefined();
     });
