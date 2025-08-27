@@ -47,16 +47,30 @@ export function detectLowSpec() {
     
     // Decision logic: conservative approach (better to optimize unnecessarily than lag)
     const shouldUseLowSpec = (
-      isTelegram ||           // Telegram WebView is often constrained
-      smallRam ||             // Low memory devices
-      fewCores ||             // Limited CPU cores
-      isOldAndroidWebView ||  // Old Chrome WebView
+      smallRam ||             // Low memory devices (≤2GB)
+      fewCores ||             // Limited CPU cores (≤4 cores)
+      isOldAndroidWebView ||  // Old Chrome WebView (50-66)
       isLowEndDevice ||       // Known budget device models
       busyProbe ||            // Failed responsiveness test
-      smallScreen             // Small screen heuristic
+      smallScreen ||          // Small screen heuristic (<400px)
+      (isTelegram && (smallRam || fewCores || isLowEndDevice || busyProbe)) // Telegram users with hardware limitations
     );
     
-    console.log(`🎯 Low-spec mode decision: ${shouldUseLowSpec ? 'ENABLED' : 'DISABLED'}`);
+    // Log the decision with reasoning
+    if (shouldUseLowSpec) {
+      const reasons = [];
+      if (smallRam) reasons.push('≤2GB RAM');
+      if (fewCores) reasons.push('≤4 CPU cores');
+      if (isOldAndroidWebView) reasons.push('Old Android WebView');
+      if (isLowEndDevice) reasons.push('Budget device model');
+      if (busyProbe) reasons.push('Failed performance test');
+      if (smallScreen) reasons.push('Small screen');
+      if (isTelegram && (smallRam || fewCores || isLowEndDevice || busyProbe)) reasons.push('Telegram + hardware limits');
+      
+      console.log(`🥔 POTATO MODE ENABLED - Reasons: ${reasons.join(', ')}`);
+    } else {
+      console.log(`🚀 HIGH-SPEC MODE ENABLED - Device can handle full experience`);
+    }
     
     return shouldUseLowSpec;
   } catch (error) {
