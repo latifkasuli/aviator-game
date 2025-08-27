@@ -120,6 +120,15 @@ export function useGameBackend() {
       console.log('✅ [Hook] Winnings:', msg.data.winnings, 'pts at', msg.data.multiplier, 'x');
       console.log('✅ [Hook] New balance:', msg.data.balance, 'pts');
       
+      // 🚀 FRED'S FIX: Emit event for BetPanelOptimized to show success message
+      window.dispatchEvent(new CustomEvent('game:cashedOut', { 
+        detail: { 
+          multiplier: msg.data.multiplier,
+          isAutomatic: msg.data.isAutomatic || false,
+          winnings: msg.data.winnings
+        } 
+      }));
+      
       // Record cashout in history
       if (currentBetId) {
         betHistoryService.recordBetOutcome(currentBetId, msg.data.multiplier, msg.data.winnings);

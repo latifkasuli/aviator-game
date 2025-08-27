@@ -39,53 +39,28 @@ const BetPanelOptimized = ({
   const [successMessage, setSuccessMessage] = useState('');
   const [lastAction, setLastAction] = useState(null);
   
-  // Auto-cashout logic - Optimized to use requestAnimationFrame instead of useEffect
-  const autoCashoutCheckRef = useRef();
-  const lastMultiplierCheckRef = useRef(0);
-  
-  const checkAutoCashout = useCallback(() => {
-    if (!autoCashoutEnabled || gameState !== 'running' || activeBet <= 0 || cashedOutMultiplier > 0) {
-      return;
-    }
-    
-    const currentMultiplier = getCurrentMultiplier();
-    
-    // Only check when multiplier increases (avoid redundant checks)
-    if (currentMultiplier > lastMultiplierCheckRef.current && currentMultiplier >= autoCashoutMultiplier) {
-      console.log(`🤖 Auto-cashout triggered at ${currentMultiplier.toFixed(2)}x (target: ${autoCashoutMultiplier}x)`);
-      onCashOut();
-      soundEffects.playAutoCashoutSound();
-      showFeedback(`Auto-cashed out at ${currentMultiplier.toFixed(2)}x!`, 'auto-cashout');
-      lastMultiplierCheckRef.current = 0;
-      return;
-    }
-    
-    lastMultiplierCheckRef.current = currentMultiplier;
-    
-    // Continue checking only during running state
-    if (gameState === 'running') {
-      autoCashoutCheckRef.current = requestAnimationFrame(checkAutoCashout);
-    }
-  }, [autoCashoutEnabled, autoCashoutMultiplier, gameState, activeBet, cashedOutMultiplier, onCashOut, getCurrentMultiplier]);
-  
-  // Start/stop auto-cashout checking
+  // 🚀 FRED'S FIX: Removed client-side auto-cashout - server handles it now!
+  // Auto-cashout is now server-authoritative for lag-free precision
+  // Settings UI remains for user configuration, but execution is server-side
+
+  // 🚀 FRED'S FIX: Only show success after server confirmation
   useEffect(() => {
-    if (autoCashoutEnabled && gameState === 'running' && activeBet > 0 && cashedOutMultiplier === 0) {
-      lastMultiplierCheckRef.current = 0;
-      autoCashoutCheckRef.current = requestAnimationFrame(checkAutoCashout);
-    } else {
-      if (autoCashoutCheckRef.current) {
-        cancelAnimationFrame(autoCashoutCheckRef.current);
-        autoCashoutCheckRef.current = null;
+    function handleServerCashedOut(evt) {
+      const { multiplier, isAutomatic } = evt.detail || {};
+      const action = isAutomatic ? 'auto-cashout' : 'cashout';
+      const message = isAutomatic 
+        ? `Auto-cashed out at ${Number(multiplier).toFixed(2)}x!`
+        : `Cashed out at ${Number(multiplier).toFixed(2)}x!`;
+      
+      if (isAutomatic) {
+        soundEffects.playAutoCashoutSound();
       }
+      showFeedback(message, action);
     }
     
-    return () => {
-      if (autoCashoutCheckRef.current) {
-        cancelAnimationFrame(autoCashoutCheckRef.current);
-      }
-    };
-  }, [autoCashoutEnabled, gameState, activeBet, cashedOutMultiplier, checkAutoCashout]);
+    window.addEventListener('game:cashedOut', handleServerCashedOut);
+    return () => window.removeEventListener('game:cashedOut', handleServerCashedOut);
+  }, []);
 
   const handleDecrease = () => {
     setBetAmount(prev => Math.max(100, prev - 100));
@@ -118,7 +93,8 @@ const BetPanelOptimized = ({
   const handleMainAction = () => {
     if (gameState === 'running' && hasBet) {
       onCashOut();
-      showFeedback(`Cashed out at ${getCurrentMultiplier().toFixed(2)}x!`, 'cashout');
+      // 🚀 FRED'S FIX: Removed optimistic success - only show after server confirmation
+      // showFeedback(`Cashed out at ${getCurrentMultiplier().toFixed(2)}x!`, 'cashout');
     } else if (gameState === 'betting' || gameState === 'crashed') {
       onBet();
       showFeedback(`Bet placed: ${betAmount} points`, 'bet');

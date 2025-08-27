@@ -1270,6 +1270,14 @@ app.put('/api/player/settings',
       console.log('📤 Saving settings payload:', payload);
       const updated = await databaseService.upsertPlayerSettings(req.user.id, payload);
       console.log('✅ Settings saved to DB:', updated);
+      
+      // 🚀 FRED'S FIX: Update cached settings for connected player
+      const connectedPlayer = gameState.players.get(req.user.id);
+      if (connectedPlayer) {
+        connectedPlayer.settings = updated || connectedPlayer.settings;
+        console.log('🔄 Updated cached settings for connected player:', req.user.username);
+      }
+      
       res.json({ success: true, settings: updated });
     } catch (error) {
       console.error('❌ Player settings update error:', error);
@@ -1340,7 +1348,7 @@ function startGameLoop() {
     
     const TICK_MS = 50; // logic cadence (kept small for crash accuracy)
     
-    const tick = () => {
+    const tick = async () => {
       const now = Date.now();
       // Stable formula: no incremental FP drift
       gameState.multiplier = 1 + (now - gameState.startTime) / 3000;
@@ -1349,6 +1357,15 @@ function startGameLoop() {
       if (now - lastBroadcastAt >= BROADCAST_MS) {
         lastBroadcastAt = now;
         broadcastAll();
+      }
+      
+      // 🚀 FRED'S FIX: Server-side authoritative auto-cashout
+      for (const [uid, bet] of gameState.activeBets.entries()) {
+        if (bet.cashedOut) continue;
+        if (bet.autoTarget && gameState.multiplier >= bet.autoTarget) {
+          console.log(`🤖 Server auto-cashout triggered for ${uid} at ${gameState.multiplier.toFixed(2)}x (target: ${bet.autoTarget}x)`);
+          await handleCashOut(uid, true); // Authoritative server auto-cashout
+        }
       }
       
       if (gameState.multiplier >= gameState.crashPoint) {
@@ -1361,6 +1378,18 @@ function startGameLoop() {
     setTimeout(tick, TICK_MS);
   }
   async function crash() {
+    const crashAt = Date.now();
+    const GRACE_MS = 100; // Fred's fairness window: 80-120ms recommended
+    
+    // 🚀 FRED'S FIX: Accept manual cashouts received just before crash (fairness)
+    console.log('🔍 Checking grace window cashouts...');
+    for (const [uid, bet] of gameState.activeBets.entries()) {
+      if (!bet?.cashedOut && bet?.lastCashoutReqAt && (crashAt - bet.lastCashoutReqAt) <= GRACE_MS) {
+        console.log(`⚡ Grace window cashout for ${uid}: received ${crashAt - bet.lastCashoutReqAt}ms before crash`);
+        await handleCashOut(uid, false); // Manual cashout within grace window
+      }
+    }
+    
     gameState.state = 'crashed';
     gameState.multiplier = gameState.crashPoint;
     
@@ -1533,12 +1562,25 @@ wss.on('connection', async (ws, req) => {
     console.log(`👤 Guest player connected: ${userId}`);
   }
 
-  // Store player connection
+  // Fetch and cache player settings on connection
+  let playerSettings = null;
+  if (!isGuest && user?.id) {
+    try {
+      playerSettings = await databaseService.getPlayerSettings(user.id) || {};
+      console.log('📋 Cached settings for user', user.username, ':', playerSettings);
+    } catch (error) {
+      console.error('❌ Failed to load player settings:', error);
+      playerSettings = {};
+    }
+  }
+
+  // Store player connection with cached settings
   gameState.players.set(userId, { 
     ws, 
     user: user,
     isGuest: isGuest,
-    guestBalance: isGuest ? 10000 : 0 // Guests get demo balance
+    guestBalance: isGuest ? 10000 : 0, // Guests get demo balance
+    settings: playerSettings || {} // Cache settings for server-side auto-cashout
   });
   
   ws.userId = userId;
@@ -1594,7 +1636,14 @@ wss.on('connection', async (ws, req) => {
       const id = ws.userId;
       if (!id) return;
       if (data.type === 'bet') handleBet(id, data.amount);
-      if (data.type === 'cashOut') handleCashOut(id);
+      if (data.type === 'cashOut') {
+        // 🚀 FRED'S FIX: Record manual cashout request timing for grace window
+        const bet = gameState.activeBets.get(id);
+        if (bet && !bet.cashedOut) {
+          bet.lastCashoutReqAt = Date.now(); // Server receive time
+        }
+        handleCashOut(id);
+      }
     } catch (err) {
       console.error("Could not parse:", msg);
     }
@@ -1703,11 +1752,18 @@ async function handleBet(userId, amount) {
     }
   }
 
+  // 🚀 FRED'S FIX: Tag bet with auto-cashout target from cached settings
+  const autoTarget = (player?.settings?.autoCashoutEnabled && Number(player?.settings?.autoCashoutMultiplier) > 1)
+    ? Number(player.settings.autoCashoutMultiplier)
+    : null;
+
   gameState.activeBets.set(userId, {
     amount,
     cashedOut: false,
     cashedOutMultiplier: 0,
-    betId
+    betId,
+    autoTarget,               // 🎯 Server-side auto-cashout target
+    lastCashoutReqAt: null    // 🕒 Manual cashout timing for grace window
   });
 
   const newBalance = player.isGuest ? player.guestBalance : player.user.balance;
@@ -1717,7 +1773,7 @@ async function handleBet(userId, amount) {
   }));
 }
 
-async function handleCashOut(userId) {
+async function handleCashOut(userId, isAutomatic = false) {
   const player = gameState.players.get(userId);
   const bet = gameState.activeBets.get(userId);
   if (!player || !bet || bet.cashedOut || gameState.state !== 'running') return;
@@ -1756,7 +1812,8 @@ async function handleCashOut(userId) {
     data: { 
       winnings, 
       multiplier: bet.cashedOutMultiplier, 
-      balance: newBalance 
+      balance: newBalance,
+      isAutomatic // 🚀 FRED'S FIX: Flag for client to distinguish auto vs manual
     } 
   }));
 }
