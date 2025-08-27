@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import MultiplierDisplay from './components/MultiplierDisplay.jsx';
+import MultiplierDisplayOptimized from './components/MultiplierDisplayOptimized.jsx';
 import Plane from './components/Plane.jsx';
-import BetPanel from './components/BetPanel.jsx';
+import BetPanelOptimized from './components/BetPanelOptimized.jsx';
 import HistoryItem from './components/HistoryItem.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import BackendTest from './components/BackendTest.jsx';
@@ -291,6 +291,18 @@ function App() {
     }
   }, [gameState, hasActiveBet, cashedOut, cashOut]);
 
+  // Optimized multiplier callback for performance-critical auto-cashout
+  const getCurrentMultiplier = useCallback(() => {
+    return multiplier;
+  }, [multiplier]);
+
+  // Last server tick for optimized animation
+  const lastServerTick = useMemo(() => ({
+    serverTime: Date.now(),
+    multiplier: multiplier,
+    state: gameState
+  }), [multiplier, gameState]);
+
   // Sound effects for game state changes
   useEffect(() => {
     // Countdown sounds
@@ -517,7 +529,7 @@ function App() {
 
         {/* Multiplier Display - Mobile optimized */}
         <div className="relative z-10 flex-shrink-0 pt-4 pb-2 sm:pt-8 sm:pb-4 md:pt-12 md:pb-8">
-          <MultiplierDisplay multiplier={multiplier} gameState={gameState} countdown={countdown} />
+          <MultiplierDisplayOptimized lastServerTick={lastServerTick} gameState={gameState} countdown={countdown} />
         </div>
 
         {/* Plane - Mobile optimized with more space */}
@@ -543,14 +555,14 @@ function App() {
 
       {/* Bet Panel - Mobile optimized with better touch targets */}
       <div className="p-4 sm:p-4 md:p-6 bg-gray-800 border-t border-gray-700 flex-shrink-0 mobile-spacing">
-        <BetPanel
+        <BetPanelOptimized
           gameState={gameState}
           betAmount={betAmount}
           setBetAmount={setBetAmount}
           onBet={handleBet}
           onCashOut={handleCashOut}
           userBalance={playerBalance}
-          multiplier={multiplier}
+          getCurrentMultiplier={getCurrentMultiplier}
           hasBet={hasActiveBet}
           countdown={countdown}
           activeBet={activeBetAmount}
