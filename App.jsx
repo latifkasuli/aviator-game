@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import MultiplierDisplayOptimized from './components/MultiplierDisplayOptimized.jsx';
 import Plane from './components/Plane.jsx';
 import BetPanelOptimized from './components/BetPanelOptimized.jsx';
+import CanvasRenderer from './components/CanvasRenderer.jsx';
 import HistoryItem from './components/HistoryItem.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import BackendTest from './components/BackendTest.jsx';
@@ -21,6 +22,7 @@ import authService from './components/services/authService.js';
 import gameService from './components/services/gameService.js';
 import TelegramWebApp, { useTelegramWebApp, TelegramThemeStyles } from './components/TelegramWebApp.jsx';
 import UpdateChecker from './components/UpdateChecker.jsx';
+import { initPerformanceGovernor, perf, shouldUseCanvas } from './state/performanceGovernor.js';
 
 function App() {
   // Telegram WebApp integration
@@ -70,6 +72,20 @@ function App() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [performanceInitialized, setPerformanceInitialized] = useState(false);
+
+  // 🚀 Initialize Performance Governor (Fred's optimization system)
+  useEffect(() => {
+    console.log('🚀 Initializing Performance Governor...');
+    try {
+      initPerformanceGovernor();
+      setPerformanceInitialized(true);
+      console.log('✅ Performance Governor initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize Performance Governor:', error);
+      setPerformanceInitialized(true); // Continue anyway
+    }
+  }, []);
   
   // Authentication state
   const [user, setUser] = useState(null);
@@ -527,15 +543,36 @@ function App() {
           ))}
         </div>
 
-        {/* Multiplier Display - Mobile optimized */}
-        <div className="relative z-10 flex-shrink-0 pt-4 pb-2 sm:pt-8 sm:pb-4 md:pt-12 md:pb-8">
-          <MultiplierDisplayOptimized lastServerTick={lastServerTick} gameState={gameState} countdown={countdown} />
-        </div>
+        {/* 🚀 Fred's Performance-Optimized Rendering */}
+        {performanceInitialized && shouldUseCanvas() ? (
+          // Canvas Renderer for low-spec devices (more performant)
+          <div className="relative z-10 flex-1 flex items-center justify-center px-2 py-4 sm:px-8 sm:py-8 md:px-12 md:py-12">
+            <CanvasRenderer 
+              getCurrentMultiplier={getCurrentMultiplier}
+              gameState={gameState}
+              countdown={countdown}
+              crashPoint={crashHistory[0]}
+            />
+          </div>
+        ) : performanceInitialized ? (
+          // DOM-based rendering for high-spec devices (richer visuals)
+          <>
+            {/* Multiplier Display - Mobile optimized */}
+            <div className="relative z-10 flex-shrink-0 pt-4 pb-2 sm:pt-8 sm:pb-4 md:pt-12 md:pb-8">
+              <MultiplierDisplayOptimized lastServerTick={lastServerTick} gameState={gameState} countdown={countdown} />
+            </div>
 
-        {/* Plane - Mobile optimized with more space */}
-        <div className="relative z-10 flex-1 flex items-center justify-center px-2 py-4 sm:px-8 sm:py-8 md:px-12 md:py-12 plane-container min-h-0">
-          <Plane gameState={gameState} multiplier={multiplier} countdown={countdown} />
-        </div>
+            {/* Plane - Mobile optimized with more space */}
+            <div className="relative z-10 flex-1 flex items-center justify-center px-2 py-4 sm:px-8 sm:py-8 md:px-12 md:py-12 plane-container min-h-0">
+              <Plane gameState={gameState} multiplier={multiplier} countdown={countdown} />
+            </div>
+          </>
+        ) : (
+          // Loading fallback while performance governor initializes
+          <div className="relative z-10 flex-1 flex items-center justify-center">
+            <div className="text-gray-400 text-lg">Initializing...</div>
+          </div>
+        )}
 
       </div>
 
