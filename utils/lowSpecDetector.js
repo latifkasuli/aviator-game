@@ -27,7 +27,10 @@ export function detectLowSpec() {
     // Performance probe: micro busy-loop to test CPU responsiveness
     const t0 = performance.now();
     while (performance.now() - t0 < 12) {} // 12ms busy-loop probe
-    const busyProbe = (performance.now() - t0) > 10; // Should complete in <10ms on good devices
+    const elapsed = performance.now() - t0;
+    const busyProbe = elapsed > 25; // Should complete in <25ms on good devices (was too strict at 10ms)
+    
+    console.log(`⏱️ Performance probe: ${elapsed.toFixed(2)}ms (threshold: 25ms, failed: ${busyProbe})`);
     
     // Screen size heuristic (small screens often = budget devices)
     const smallScreen = (window.screen.width || 999) < 400 || (window.screen.height || 999) < 600;
@@ -45,15 +48,15 @@ export function detectLowSpec() {
       userAgent: ua.substring(0, 100) + '...'
     });
     
-    // Decision logic: conservative approach (better to optimize unnecessarily than lag)
+    // Decision logic: Only optimize when actually needed
     const shouldUseLowSpec = (
       smallRam ||             // Low memory devices (≤2GB)
       fewCores ||             // Limited CPU cores (≤4 cores)
       isOldAndroidWebView ||  // Old Chrome WebView (50-66)
       isLowEndDevice ||       // Known budget device models
-      busyProbe ||            // Failed responsiveness test
-      smallScreen ||          // Small screen heuristic (<400px)
-      (isTelegram && (smallRam || fewCores || isLowEndDevice || busyProbe)) // Telegram users with hardware limitations
+      busyProbe ||            // Failed responsiveness test (now 25ms threshold)
+      smallScreen             // Small screen heuristic (<400px)
+      // Removed: Telegram blanket optimization - high-spec devices in Telegram get full experience
     );
     
     // Log the decision with reasoning
@@ -65,11 +68,10 @@ export function detectLowSpec() {
       if (isLowEndDevice) reasons.push('Budget device model');
       if (busyProbe) reasons.push('Failed performance test');
       if (smallScreen) reasons.push('Small screen');
-      if (isTelegram && (smallRam || fewCores || isLowEndDevice || busyProbe)) reasons.push('Telegram + hardware limits');
       
       console.log(`🥔 POTATO MODE ENABLED - Reasons: ${reasons.join(', ')}`);
     } else {
-      console.log(`🚀 HIGH-SPEC MODE ENABLED - Device can handle full experience`);
+      console.log(`🚀 HIGH-SPEC MODE ENABLED - Device specs: ${mem}GB RAM, ${cores} cores${isTelegram ? ' (in Telegram)' : ''}`);
     }
     
     return shouldUseLowSpec;
