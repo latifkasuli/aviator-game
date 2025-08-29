@@ -9,6 +9,7 @@
     "build": "npx prisma generate",
     "db:setup": "node scripts/setup-database.js",
     "db:seed": "node scripts/seed-database.js",
+    "db:seed-quests": "node scripts/seed-quests.js",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",

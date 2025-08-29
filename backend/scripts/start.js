@@ -33,6 +33,14 @@ async function migrateWithRetry(maxAttempts = 3) {
 (async () => {
   try {
     await migrateWithRetry(4);
+    
+    // Seed quests if they don't exist
+    try {
+      console.log('Checking and seeding quests...');
+      await run('node', ['scripts/seed-quests.js']);
+    } catch (e) {
+      console.log('Quest seeding completed or already seeded.');
+    }
   } catch (e) {
     console.error('Prisma migrate failed after retries. Continuing to start server anyway...');
   }
