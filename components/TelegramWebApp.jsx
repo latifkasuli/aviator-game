@@ -472,7 +472,7 @@ export const TelegramButton = ({
 // Telegram theme styles component
 export const TelegramThemeStyles = () => {
   return (
-    <style jsx global>{`
+    <style>{`
       .telegram-theme {
         --tg-bg-color: var(--tg-bg-color, #1a1a1a);
         --tg-text-color: var(--tg-text-color, #ffffff);

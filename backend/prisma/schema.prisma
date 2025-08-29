@@ -63,6 +63,11 @@ model User {
   referredUsers     User[]    @relation("ReferralRelation")
   referralsAsReferrer Referral[] @relation("ReferrerRelation")
   referralAsInvitee   Referral? @relation("InviteeRelation")
+  
+  // Quest system relations
+  userQuests        UserQuest[]
+  questCompletions  QuestCompletion[]
+  
   adminAuditLogs    AdminAuditLog[]
   requestedChanges  AdminChangeRequest[] @relation("RequestedChanges")
   approvedChanges   AdminChangeRequest[] @relation("ApprovedChanges")
@@ -254,6 +259,8 @@ enum TransactionType {
   BONUS
   ADJUSTMENT
   FARMING_CLAIM
+  QUEST_REWARD
+  REFERRAL_BONUS
 }
 
 // Referral tracking
@@ -342,4 +349,92 @@ enum AdminRequestStatus {
   APPROVED
   REJECTED
   EXPIRED
+}
+
+// Quest System Enums
+enum QuestType {
+  DAILY_LOGIN       // 100 pts for opening game daily
+  PLACE_BETS        // 500 pts for placing 5 bets daily  
+  SUCCESSFUL_REFERRAL // 500 pts for referring 1 player daily
+  LUCKY_STREAK      // 300 pts for cashing out 3 times in a row
+  HIGH_ROLLER       // 200 pts for placing bet ≥1000 pts
+  EARLY_BIRD        // 150 pts for playing within first hour of day
+  NIGHT_OWL         // 150 pts for playing after 10 PM
+  RISK_TAKER        // 400 pts for cashing out at ≥5x multiplier
+}
+
+enum QuestStatus {
+  AVAILABLE         // Quest is available to start
+  IN_PROGRESS       // Quest started but not completed
+  COMPLETED         // Quest completed but not claimed
+  CLAIMED           // Quest reward claimed
+  EXPIRED           // Quest expired (for daily quests)
+}
+
+// Quest definitions (static quest data)
+model Quest {
+  id              String    @id @default(cuid())
+  type            QuestType @unique
+  name            String    // "Daily Login Bonus"
+  description     String    // "Open the game to claim your daily reward"
+  icon            String?   // Icon identifier for UI
+  rewardPoints    Int       // Points reward for completing quest
+  targetValue     Int       // Target value (e.g., 5 bets, 3 cashouts)
+  resetPeriod     String    @default("daily") // "daily", "weekly", "monthly"
+  isActive        Boolean   @default(true)
+  sortOrder       Int       @default(0) // For UI ordering
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  userQuests      UserQuest[]
+  
+  @@map("quests")
+}
+
+// User's progress on quests
+model UserQuest {
+  id              String      @id @default(cuid())
+  userId          String
+  questId         String
+  status          QuestStatus @default(AVAILABLE)
+  currentValue    Int         @default(0) // Current progress (e.g., 3/5 bets)
+  completedAt     DateTime?   // When quest was completed
+  claimedAt       DateTime?   // When reward was claimed
+  expiresAt       DateTime?   // When quest expires (for daily quests)
+  resetDate       String      // Date key for quest reset (YYYY-MM-DD)
+  
+  // Metadata for complex quests
+  metadata        Json?       // Store additional data (e.g., streak info)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relations
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest           Quest       @relation(fields: [questId], references: [id])
+  
+  // Constraints
+  @@unique([userId, questId, resetDate]) // One quest per user per reset period
+  @@index([userId, status])
+  @@index([resetDate])
+  @@map("user_quests")
+}
+
+// Quest completion history for analytics
+model QuestCompletion {
+  id              String    @id @default(cuid())
+  userId          String
+  questType       QuestType
+  rewardPoints    Int
+  completedAt     DateTime  @default(now())
+  claimedAt       DateTime?
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([questType])
+  @@index([completedAt])
+  @@map("quest_completions")
 }

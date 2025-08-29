@@ -16,7 +16,7 @@ const EarnTab = ({ isOpen, onClose }) => {
       const promises = [
         authService.apiRequest('/farming/status').catch(() => ({ success: false })),
         authService.apiRequest('/referrals/stats').catch(() => ({ success: false })),
-        authService.apiRequest('/earn/quests').catch(() => ({ success: false, quests: [] }))
+        authService.apiRequest('/quests').catch(() => ({ success: false, quests: [] }))
       ];
       
       const [farmRes, refRes, questRes] = await Promise.all(promises);
@@ -107,25 +107,34 @@ const EarnTab = ({ isOpen, onClose }) => {
     setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'CLAIMING' } : x));
     
     try {
-      const res = await authService.apiRequest('/earn/quests/claim', { 
+      // Find the quest to get its type
+      const quest = quests.find(q => q.id === questId);
+      if (!quest) {
+        throw new Error('Quest not found');
+      }
+      
+      const res = await authService.apiRequest('/quests/claim', { 
         method: 'POST', 
-        body: { questId } 
+        body: { questType: quest.type } 
       });
       
-      if (res.success && res.reward) {
+      if (res.success && res.rewardPoints) {
         hapticFeedback('notification', 'success');
         setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'CLAIMED' } : x));
         
-        const message = `+${res.reward} pts for "${q.title}" ✅`;
+        const message = `+${res.rewardPoints} pts for "${quest.name}" ✅`;
         if (tg?.showAlert) {
           tg.showAlert(message);
         } else {
           alert(message);
         }
+        
+        // Refresh data to get updated balances
+        loadData();
       } else {
         // Revert optimistic update
         setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'COMPLETED' } : x));
-        const errorMsg = res.error || res.message || 'Quest endpoints not implemented yet';
+        const errorMsg = res.error || 'Failed to claim quest reward';
         if (tg?.showAlert) {
           tg.showAlert(errorMsg);
         } else {
@@ -242,15 +251,21 @@ const EarnTab = ({ isOpen, onClose }) => {
             quests.map(q => (
               <div key={q.id} className="flex items-center justify-between bg-gray-900 p-3 rounded-lg border border-gray-700">
                 <div className="flex-1">
-                  <div className="font-medium text-white">{q.title}</div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    Progress: {q.progress}/{q.goal} • Reward: {q.reward} pts
+                  <div className="font-medium text-white flex items-center gap-2">
+                    <span>{q.icon}</span>
+                    <span>{q.name}</span>
                   </div>
-                  {q.progress < q.goal && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    {q.description}
+                  </div>
+                  <div className="text-xs text-gray-300 mt-1">
+                    Progress: {q.currentValue}/{q.targetValue} • Reward: {q.rewardPoints} pts
+                  </div>
+                  {q.currentValue < q.targetValue && (
                     <div className="mt-2 w-full bg-gray-700 rounded-full h-2">
                       <div 
                         className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min((q.progress / q.goal) * 100, 100)}%` }}
+                        style={{ width: `${Math.min((q.currentValue / q.targetValue) * 100, 100)}%` }}
                       />
                     </div>
                   )}
@@ -268,7 +283,7 @@ const EarnTab = ({ isOpen, onClose }) => {
                     </button>
                   ) : (
                     <span className="text-gray-400 text-sm">
-                      {Math.floor((q.progress / q.goal) * 100)}%
+                      {Math.floor((q.currentValue / q.targetValue) * 100)}%
                     </span>
                   )}
                 </div>

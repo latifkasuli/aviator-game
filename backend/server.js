@@ -12,6 +12,7 @@ require('dotenv').config();
 // Import our database services
 const databaseService = require('./services/databaseService');
 const provablyFairService = require('./services/provablyFairService');
+const QuestService = require('./services/questService');
 const authService = require('./authService');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -336,6 +337,13 @@ app.post('/api/auth/telegram', [
             // Update user object to reflect new balance
             user = await databaseService.findUserById(user.id);
             referralMessage = `Welcome! You've been referred by ${referralResult.referrerUsername} and received 1,000 points!`;
+            
+            // 🎮 QUEST TRACKING: Track successful referral for referrer
+            if (referralResult.referrerUserId) {
+              QuestService.trackReferral(referralResult.referrerUserId).catch(error => {
+                console.error('❌ Quest tracking error (referral):', error);
+              });
+            }
           }
         } catch (e) {
           // Log but don't fail auth if attribution fails
@@ -1221,6 +1229,79 @@ app.post('/api/farming/claim',
 );
 
 // =============================================================================
+// QUEST SYSTEM ROUTES (auth required)
+// =============================================================================
+
+// Get user's current quest status
+app.get('/api/quests',
+  authService.authenticateToken.bind(authService),
+  async (req, res) => {
+    try {
+      const quests = await QuestService.getUserQuests(req.user.id);
+      res.json({ success: true, quests });
+    } catch (error) {
+      console.error('❌ Error fetching quests:', error);
+      res.status(500).json({ error: 'Failed to fetch quests' });
+    }
+  }
+);
+
+// Claim a completed quest reward
+app.post('/api/quests/claim',
+  authService.authenticateToken.bind(authService),
+  [
+    body('questType').isString().notEmpty().withMessage('Quest type is required')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const { questType } = req.body;
+      const result = await QuestService.claimQuest(req.user.id, questType);
+      
+      // Update cached balance if player is connected
+      const player = gameState.players.get(req.user.id);
+      if (player && player.user) {
+        player.user.balance = result.newBalance;
+        // Force a player overlay update to sync the UI
+        if (player.ws && player.ws.readyState === WebSocket.OPEN) {
+          const personalBet = gameState.activeBets.get(req.user.id);
+          player.ws.send(JSON.stringify({
+            type: 'playerOverlay',
+            data: {
+              hasActiveBet: !!personalBet,
+              activeBetAmount: personalBet?.amount || 0,
+              cashedOut: personalBet?.cashedOut || false,
+              cashedOutMultiplier: personalBet?.cashedOutMultiplier || 0,
+              balance: result.newBalance
+            }
+          }));
+        }
+      }
+
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error claiming quest:', error);
+      res.status(400).json({ error: error.message });
+    }
+  }
+);
+
+// Get quest statistics (admin only)
+app.get('/api/admin/quests/stats', requireAdmin, async (req, res) => {
+  try {
+    const stats = await QuestService.getQuestStats();
+    res.json({ success: true, stats });
+  } catch (error) {
+    console.error('❌ Error fetching quest stats:', error);
+    res.status(500).json({ error: 'Failed to fetch quest statistics' });
+  }
+});
+
+// =============================================================================
 // PLAYER SETTINGS ROUTES (auth required)
 // =============================================================================
 
@@ -1398,6 +1479,18 @@ function startGameLoop() {
       try {
         // Handle all uncashed bets as crashed
         await databaseService.crashBets(currentGameRound.id, gameState.crashPoint);
+        
+        // 🎮 QUEST TRACKING: Track bet losses for lucky streak reset
+        for (const [uid, bet] of gameState.activeBets.entries()) {
+          if (!bet.cashedOut) {
+            const player = gameState.players.get(uid);
+            if (player && !player.isGuest && player.user?.id) {
+              QuestService.trackBetLoss(player.user.id).catch(error => {
+                console.error('❌ Quest tracking error (bet loss):', error);
+              });
+            }
+          }
+        }
         
         // Complete the game round in database
         await databaseService.updateGameRoundStatus(currentGameRound.id, 'CRASHED', new Date());
@@ -1585,6 +1678,13 @@ wss.on('connection', async (ws, req) => {
   
   ws.userId = userId;
   ws.isGuest = isGuest;
+  
+  // 🎮 QUEST TRACKING: Track login for registered users
+  if (!isGuest && user?.id) {
+    QuestService.trackLogin(user.id).catch(error => {
+      console.error('❌ Quest tracking error (login):', error);
+    });
+  }
 
   console.log(`📊 Sending initial crash history:`, gameState.crashHistory);
   
@@ -1771,6 +1871,13 @@ async function handleBet(userId, amount) {
     type: 'betPlaced', 
     data: { amount, balance: newBalance } 
   }));
+  
+  // 🎮 QUEST TRACKING: Track bet placement for registered users
+  if (!player.isGuest && player.user?.id) {
+    QuestService.trackBetPlaced(player.user.id, amount).catch(error => {
+      console.error('❌ Quest tracking error (bet placed):', error);
+    });
+  }
 }
 
 async function handleCashOut(userId, isAutomatic = false) {
@@ -1816,6 +1923,13 @@ async function handleCashOut(userId, isAutomatic = false) {
       isAutomatic // 🚀 FRED'S FIX: Flag for client to distinguish auto vs manual
     } 
   }));
+  
+  // 🎮 QUEST TRACKING: Track successful cashout for registered users
+  if (!player.isGuest && player.user?.id) {
+    QuestService.trackCashout(player.user.id, bet.cashedOutMultiplier).catch(error => {
+      console.error('❌ Quest tracking error (cashout):', error);
+    });
+  }
 }
 
 // =============================================================================
