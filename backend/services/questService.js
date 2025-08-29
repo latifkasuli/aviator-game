@@ -279,7 +279,43 @@ class QuestService {
    * Track user login (for daily login quest)
    */
   static async trackLogin(userId) {
-    await this.updateQuestProgress(userId, 'DAILY_LOGIN', 1);
+    // For daily login, we set the value to 1 (not increment)
+    // This ensures it shows 1/1 instead of incrementing with each login
+    const today = this.getTodayString();
+    
+    try {
+      const quest = await prisma.quest.findUnique({
+        where: { type: 'DAILY_LOGIN' }
+      });
+      
+      if (!quest || !quest.isActive) return;
+      
+      const userQuest = await prisma.userQuest.findUnique({
+        where: {
+          userId_questId_resetDate: {
+            userId,
+            questId: quest.id,
+            resetDate: today
+          }
+        }
+      });
+      
+      if (!userQuest || userQuest.status === 'CLAIMED') return;
+      
+      // Set to 1 (logged in today) instead of incrementing
+      await prisma.userQuest.update({
+        where: { id: userQuest.id },
+        data: {
+          currentValue: 1,
+          status: 'COMPLETED',
+          completedAt: new Date()
+        }
+      });
+      
+      console.log(`🎯 Daily login quest completed for user ${userId}`);
+    } catch (error) {
+      console.error('❌ Error tracking daily login:', error);
+    }
   }
   
   /**
