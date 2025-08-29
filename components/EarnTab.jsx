@@ -115,7 +115,7 @@ const EarnTab = ({ isOpen, onClose }) => {
       
       const res = await authService.apiRequest('/quests/claim', { 
         method: 'POST', 
-        body: { questType: quest.type } 
+        body: JSON.stringify({ questType: quest.type }) 
       });
       
       if (res.success && res.rewardPoints) {
