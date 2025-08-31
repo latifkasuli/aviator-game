@@ -66,6 +66,14 @@ window.addEventListener('appinstalled', (evt) => {
 // Initialize mobile optimizations
 initializeMobileOptimizations();
 
+// Set dynamic viewport height variable for mobile browsers
+function setVH() {
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+}
+setVH();
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />

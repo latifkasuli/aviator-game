@@ -57,7 +57,7 @@ const BottomNav = ({ activeTab = 'Play', onTabChange }) => {
   ];
 
   return (
-    <nav className="bg-gray-800 border-t border-gray-700 px-2 py-1">
+    <nav data-bottom-nav className="fixed bottom-0 left-0 right-0 z-30 pb-safe bg-gray-900/90 backdrop-blur border-t border-gray-800 px-2 py-1">
       <div className="flex justify-around items-center">
         {navItems.map((item) => (
           <button

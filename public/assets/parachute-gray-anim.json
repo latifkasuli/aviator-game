@@ -1,0 +1,1235 @@
+{
+	"frames": {
+		"parachute-gray-anim-1.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-10.webp": {
+			"frame": {
+				"x": 253,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-11.webp": {
+			"frame": {
+				"x": 505,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-12.webp": {
+			"frame": {
+				"x": 757,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-13.webp": {
+			"frame": {
+				"x": 1009,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-14.webp": {
+			"frame": {
+				"x": 1261,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-15.webp": {
+			"frame": {
+				"x": 1513,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-16.webp": {
+			"frame": {
+				"x": 1765,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-17.webp": {
+			"frame": {
+				"x": 2017,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-18.webp": {
+			"frame": {
+				"x": 1,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-19.webp": {
+			"frame": {
+				"x": 253,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-2.webp": {
+			"frame": {
+				"x": 505,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-20.webp": {
+			"frame": {
+				"x": 757,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-21.webp": {
+			"frame": {
+				"x": 1009,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-22.webp": {
+			"frame": {
+				"x": 1261,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-23.webp": {
+			"frame": {
+				"x": 1513,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-24.webp": {
+			"frame": {
+				"x": 1765,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-25.webp": {
+			"frame": {
+				"x": 2017,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-26.webp": {
+			"frame": {
+				"x": 1,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-27.webp": {
+			"frame": {
+				"x": 253,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-28.webp": {
+			"frame": {
+				"x": 505,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-29.webp": {
+			"frame": {
+				"x": 757,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-3.webp": {
+			"frame": {
+				"x": 1009,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-30.webp": {
+			"frame": {
+				"x": 1261,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-31.webp": {
+			"frame": {
+				"x": 1513,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-32.webp": {
+			"frame": {
+				"x": 1765,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-33.webp": {
+			"frame": {
+				"x": 2017,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-34.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-35.webp": {
+			"frame": {
+				"x": 253,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-36.webp": {
+			"frame": {
+				"x": 505,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-37.webp": {
+			"frame": {
+				"x": 757,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-38.webp": {
+			"frame": {
+				"x": 1009,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-39.webp": {
+			"frame": {
+				"x": 1261,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-4.webp": {
+			"frame": {
+				"x": 1513,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-40.webp": {
+			"frame": {
+				"x": 1765,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-41.webp": {
+			"frame": {
+				"x": 2017,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-42.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-43.webp": {
+			"frame": {
+				"x": 253,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-44.webp": {
+			"frame": {
+				"x": 505,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-45.webp": {
+			"frame": {
+				"x": 757,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-46.webp": {
+			"frame": {
+				"x": 1009,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-47.webp": {
+			"frame": {
+				"x": 1261,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-48.webp": {
+			"frame": {
+				"x": 1513,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-49.webp": {
+			"frame": {
+				"x": 1765,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-5.webp": {
+			"frame": {
+				"x": 2017,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-50.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-51.webp": {
+			"frame": {
+				"x": 253,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-52.webp": {
+			"frame": {
+				"x": 505,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-53.webp": {
+			"frame": {
+				"x": 757,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-54.webp": {
+			"frame": {
+				"x": 1009,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-55.webp": {
+			"frame": {
+				"x": 1261,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-56.webp": {
+			"frame": {
+				"x": 1513,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-57.webp": {
+			"frame": {
+				"x": 1765,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-58.webp": {
+			"frame": {
+				"x": 2017,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-59.webp": {
+			"frame": {
+				"x": 2269,
+				"y": 1,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-6.webp": {
+			"frame": {
+				"x": 2269,
+				"y": 353,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-60.webp": {
+			"frame": {
+				"x": 2269,
+				"y": 705,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-61.webp": {
+			"frame": {
+				"x": 2269,
+				"y": 1057,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-7.webp": {
+			"frame": {
+				"x": 2269,
+				"y": 1409,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-8.webp": {
+			"frame": {
+				"x": 2269,
+				"y": 1761,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		},
+		"parachute-gray-anim-9.webp": {
+			"frame": {
+				"x": 1,
+				"y": 2113,
+				"w": 250,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 250,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 250,
+				"h": 350
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "parachute-gray-anim.webp",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2520,
+			"h": 2464
+		},
+		"scale": "1"
+	}
+}

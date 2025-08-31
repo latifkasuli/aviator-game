@@ -14,6 +14,16 @@ html, body {
   height: 100%;
 }
 
+/* Dynamic viewport height utility */
+.h-dvh { 
+  height: calc(var(--vh, 1vh) * 100); 
+}
+
+/* Safe area padding for devices with notches/home indicators */
+.pb-safe { 
+  padding-bottom: env(safe-area-inset-bottom); 
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -326,4 +336,26 @@ html, body {
   .haptic-feedback:active {
     transform: scale(0.98);
   }
+
+  /* Flex layout helpers */
+  .app-bet-panel {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  /* Bet panel internal layout */
+  .bet-panel-content {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease-out;
+  }
+
+  /* Unified bet panel layout */
+  .bet-panel-content {
+    gap: 1rem;
+  }
+
+
 }

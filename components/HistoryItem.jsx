@@ -31,11 +31,11 @@ const HistoryItem = ({ multiplier }) => {
   return (
     <div 
       className={`
-        px-3 py-2 rounded-full text-sm whitespace-nowrap
+        px-2 py-1 rounded-full text-xs whitespace-nowrap
         ${getColorClasses()}
         ${getGlowIntensity()}
         transition-all duration-300 hover:scale-105
-        min-w-[60px] max-w-[80px] text-center flex-shrink-0
+        min-w-[45px] max-w-[65px] text-center flex-shrink-0
         border border-white/20
       `}
     >

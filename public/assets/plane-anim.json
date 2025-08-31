@@ -1,0 +1,315 @@
+{
+	"frames": {
+		"plane-anim-1.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-10.webp": {
+			"frame": {
+				"x": 803,
+				"y": 1,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-11.webp": {
+			"frame": {
+				"x": 1,
+				"y": 353,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-12.webp": {
+			"frame": {
+				"x": 803,
+				"y": 353,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-13.webp": {
+			"frame": {
+				"x": 1,
+				"y": 705,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-14.webp": {
+			"frame": {
+				"x": 803,
+				"y": 705,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-15.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1057,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-2.webp": {
+			"frame": {
+				"x": 803,
+				"y": 1057,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-3.webp": {
+			"frame": {
+				"x": 1,
+				"y": 1409,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-4.webp": {
+			"frame": {
+				"x": 803,
+				"y": 1409,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-5.webp": {
+			"frame": {
+				"x": 1605,
+				"y": 1,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-6.webp": {
+			"frame": {
+				"x": 1605,
+				"y": 353,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-7.webp": {
+			"frame": {
+				"x": 1605,
+				"y": 705,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-8.webp": {
+			"frame": {
+				"x": 1605,
+				"y": 1057,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		},
+		"plane-anim-9.webp": {
+			"frame": {
+				"x": 1605,
+				"y": 1409,
+				"w": 800,
+				"h": 350
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 800,
+				"h": 350
+			},
+			"sourceSize": {
+				"w": 800,
+				"h": 350
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "plane-anim.webp",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2406,
+			"h": 1760
+		},
+		"scale": "1"
+	}
+}

@@ -13,7 +13,11 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "@mui/material": "^5.14.20",
+    "@pixi/react": "^7.1.1",
+    "@pixi/sound": "^5.2.2",
+    "pixi.js": "^7.3.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
@@ -33,6 +37,6 @@
     "casino",
     "mobile-first"
   ],
-  "author": "AI Assistant",
+  "author": "Latif Kasuli",
   "license": "MIT"
 }

@@ -3,6 +3,7 @@ import MultiplierDisplay from './components/MultiplierDisplay.jsx';
 import Plane from './components/Plane.jsx';
 import BetPanel from './components/BetPanel.jsx';
 import CanvasRenderer from './components/CanvasRenderer.jsx';
+import AviatorGameStandalone from './components/AviatorGameStandalone.jsx';
 import HistoryItem from './components/HistoryItem.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import BackendTest from './components/BackendTest.jsx';
@@ -73,6 +74,7 @@ function App() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [performanceInitialized, setPerformanceInitialized] = useState(false);
+  const [cashoutTrigger, setCashoutTrigger] = useState({ timestamp: 0, isMe: true });
 
   // 🚀 Initialize Performance Governor (Fred's optimization system)
   useEffect(() => {
@@ -85,6 +87,59 @@ function App() {
       console.error('❌ Failed to initialize Performance Governor:', error);
       setPerformanceInitialized(true); // Continue anyway
     }
+  }, []);
+
+  // Calculate fixed game height based on available space
+  const setGameHeight = useCallback(() => {
+    const vh = window.innerHeight; // handles mobile better than 100vh
+    const header = document.querySelector('.app-header')?.offsetHeight || 0;
+    const history = document.querySelector('.app-history-strip')?.offsetHeight || 0;
+    const bet = document.querySelector('.app-bet-panel')?.offsetHeight || 0;
+    const nav = document.querySelector('[data-bottom-nav]')?.offsetHeight || 0;
+
+    // leave some minimum so it never collapses
+    const gameH = Math.max(240, vh - header - history - bet - nav);
+    document.documentElement.style.setProperty('--game-h', `${gameH}px`);
+  }, []);
+
+  // Set game height on mount and resize
+  useEffect(() => {
+    // Initial calculation with a small delay to ensure DOM is ready
+    setTimeout(setGameHeight, 100);
+    
+    // Update on resize and orientation change
+    window.addEventListener('resize', setGameHeight);
+    window.addEventListener('orientationchange', setGameHeight);
+    
+    return () => {
+      window.removeEventListener('resize', setGameHeight);
+      window.removeEventListener('orientationchange', setGameHeight);
+    };
+  }, [setGameHeight]);
+
+  // Recalculate when game state changes (bet panel size might change)
+  useEffect(() => {
+    // Small delay to allow DOM updates to complete
+    setTimeout(setGameHeight, 50);
+  }, [gameState, setGameHeight]);
+
+  // Initialize sound system on first user interaction
+  useEffect(() => {
+    const initSounds = async () => {
+      await soundEffects.init();
+      // Remove the event listener after initialization
+      document.removeEventListener('click', initSounds);
+      document.removeEventListener('touchstart', initSounds);
+    };
+
+    // Add event listeners for first user interaction
+    document.addEventListener('click', initSounds);
+    document.addEventListener('touchstart', initSounds);
+
+    return () => {
+      document.removeEventListener('click', initSounds);
+      document.removeEventListener('touchstart', initSounds);
+    };
   }, []);
   
   // Authentication state
@@ -144,6 +199,8 @@ function App() {
 
   // Authentication state management
   useEffect(() => {
+    let hasShownWelcome = false;
+    
     // Initialize auth state from localStorage
     const initializeAuth = () => {
       const isAuth = authService.isAuthenticated();
@@ -152,7 +209,9 @@ function App() {
       setIsAuthenticated(isAuth);
       setUser(currentUser);
       
-      if (isAuth && currentUser) {
+      // Show welcome notification only once on initial load if authenticated
+      if (isAuth && currentUser && !hasShownWelcome) {
+        hasShownWelcome = true;
         addNotification({
           type: 'success',
           title: 'Welcome back!',
@@ -175,13 +234,16 @@ function App() {
         setUser(currentUser);
         
         if (isAuth && currentUser) {
-          // User just logged in
-          addNotification({
-            type: 'success',
-            title: 'Logged in!',
-            message: `Welcome, ${currentUser.username}`,
-            duration: 3000
-          });
+          // User just logged in - only show notification if not already shown
+          if (!hasShownWelcome) {
+            hasShownWelcome = true;
+            addNotification({
+              type: 'success',
+              title: 'Welcome back!',
+              message: `Logged in as ${currentUser.username}`,
+              duration: 3000
+            });
+          }
           
           // Reconnect WebSocket with new auth token
           gameService.disconnect();
@@ -192,6 +254,7 @@ function App() {
         } else {
           // User logged out
           setSettingsLoaded(false);
+          hasShownWelcome = false; // Reset for next login
         }
       } else if (isAuth && currentUser?.id !== user?.id) {
         // User changed
@@ -235,6 +298,25 @@ function App() {
       window.removeEventListener('openUserProfile', handleOpenUserProfile);
     };
   }, [addNotification, isAuthenticated, user]);
+  
+  // Listen for cashout events
+  useEffect(() => {
+    const handleCashout = (event) => {
+      // Trigger parachute animation when cashout occurs
+      // The game:cashedOut event is only dispatched for the current user's cashouts
+      // from useGameBackend when receiving a 'cashedOut' message
+      setCashoutTrigger({ 
+        timestamp: Date.now(), 
+        isMe: true // Always true since this event is only for current user
+      });
+    };
+    
+    window.addEventListener('game:cashedOut', handleCashout);
+    
+    return () => {
+      window.removeEventListener('game:cashedOut', handleCashout);
+    };
+  }, []);
   
   // Load player settings when authenticated
   const loadPlayerSettings = useCallback(async () => {
@@ -332,9 +414,16 @@ function App() {
       }
     }
 
+    // Game state transitions for sound
+    if (gameState === 'running' && prevGameState !== 'running') {
+      // Start background music when game starts
+      soundEffects.startBackgroundMusic();
+    }
+
     // Crash sound and notification
     if (gameState === 'crashed' && prevGameState === 'running') {
       soundEffects.playCrashSound();
+      soundEffects.stopBackgroundMusic();
       
       // Show crash notification if player had an active bet
       if (hasActiveBet && !cashedOut) {
@@ -391,25 +480,25 @@ function App() {
     <TelegramWebApp>
       <TelegramThemeStyles />
       <UpdateChecker />
-      <div className="telegram-viewport bg-gray-900 text-white flex flex-col overflow-hidden" style={{ height: '-webkit-fill-available' }}>
+      <div className="h-dvh flex flex-col bg-gray-900 text-white">
       {/* Header - Mobile optimized */}
-      <header className="bg-gray-800 shadow-lg flex-shrink-0">
+      <header className="app-header bg-gray-800 shadow-lg">
         {/* Main header row */}
         <div className="flex items-center justify-between p-3 sm:p-4">
-                  <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 12L8 10l2-2 2 2-2 2z"/>
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd"/>
-            </svg>
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12L8 10l2-2 2 2-2 2z"/>
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Aviator</h1>
+              {isAuthenticated && (
+                <p className="text-xs text-gray-400">Welcome, {user.username}</p>
+              )}
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold">Aviator</h1>
-            {isAuthenticated && (
-              <p className="text-xs text-gray-400">Welcome, {user.username}</p>
-            )}
-          </div>
-        </div>
           
           {/* Balance and controls */}
           <div className="flex items-center space-x-2 sm:space-x-3">
@@ -516,60 +605,24 @@ function App() {
         </div>
       </header>
 
-      {/* Main Game Area - Optimized for both desktop and mobile */}
-      <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-purple-900 via-gray-900 to-black flex flex-col min-h-0">
-        {/* Professional gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-800/30 via-gray-900/50 to-black/80"></div>
-        
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: '20px 20px'
-        }}></div>
-        
-        {/* Stars background */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full opacity-30"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`
-              }}
-            />
-          ))}
-        </div>
-
-        {/* 🚀 Fred's Performance-Optimized Rendering */}
-        {performanceInitialized && shouldUseCanvas() ? (
-          // Canvas Renderer for low-spec devices (more performant)
-          <div className="relative z-10 flex-1 flex items-center justify-center px-2 py-4 sm:px-8 sm:py-8 md:px-12 md:py-12">
-            <CanvasRenderer 
-              getCurrentMultiplier={getCurrentMultiplier}
+      {/* Main Game Area - Fixed height with stable layout */}
+      <div className="app-game-area relative overflow-hidden bg-gradient-to-br from-purple-900 via-gray-900 to-black"
+           style={{ height: 'var(--game-h)' }}>
+        {/* 🚀 New PIXI.js Aviator Game Component */}
+        {performanceInitialized ? (
+          <div className="relative z-10 w-full h-full flex items-center justify-center">
+            <AviatorGameStandalone
               gameState={gameState}
+              multiplier={multiplier}
               countdown={countdown}
-              crashPoint={crashHistory[0]}
+              crashHistory={crashHistory}
+              className="w-full h-[50vh]"
+              triggerCashout={cashoutTrigger}
             />
           </div>
-        ) : performanceInitialized ? (
-          // DOM-based rendering for high-spec devices (richer visuals)
-          <>
-            {/* Multiplier Display - Mobile optimized */}
-            <div className="relative z-10 flex-shrink-0 pt-4 pb-2 sm:pt-8 sm:pb-4 md:pt-12 md:pb-8">
-              <MultiplierDisplay gameState={gameState} multiplier={multiplier} countdown={countdown} />
-            </div>
-
-            {/* Plane - Mobile optimized with more space */}
-            <div className="relative z-10 flex-1 flex items-center justify-center px-2 py-4 sm:px-8 sm:py-8 md:px-12 md:py-12 plane-container min-h-0">
-              <Plane gameState={gameState} multiplier={multiplier} countdown={countdown} />
-            </div>
-          </>
         ) : (
           // Loading fallback while performance governor initializes
-          <div className="relative z-10 flex-1 flex items-center justify-center">
+          <div className="relative z-10 w-full h-full flex items-center justify-center">
             <div className="text-gray-400 text-lg">Initializing...</div>
           </div>
         )}
@@ -577,7 +630,7 @@ function App() {
       </div>
 
       {/* History Strip - Fixed horizontal overflow */}
-      <div className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm flex-shrink-0 overflow-hidden">
+      <div className="app-history-strip px-2 sm:px-4 py-2 sm:py-3 bg-gray-800/50 backdrop-blur-sm overflow-hidden">
         <div className="flex space-x-2 sm:space-x-3 overflow-x-auto scrollbar-hide pb-1">
           {crashHistory.length > 0 ? (
             crashHistory.map((crashMultiplier, index) => (
@@ -590,8 +643,8 @@ function App() {
         </div>
       </div>
 
-      {/* Bet Panel - Mobile optimized with better touch targets */}
-      <div className="p-4 sm:p-4 md:p-6 bg-gray-800 border-t border-gray-700 flex-shrink-0 mobile-spacing">
+      {/* Bet Panel - Fixed height container with internal state management */}
+      <div className="app-bet-panel p-4 sm:p-4 md:p-6 bg-gray-800 border-t border-gray-700 mobile-spacing">
         <BetPanel
           gameState={gameState}
           betAmount={betAmount}
@@ -607,6 +660,9 @@ function App() {
         />
       </div>
 
+      {/* Spacer so fixed BottomNav doesn't overlap content */}
+      <div className="h-[64px] md:h-[72px]" />
+      
       {/* Bottom Navigation */}
       <BottomNav 
         activeTab={activeNavTab}
