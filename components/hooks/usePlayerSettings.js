@@ -6,7 +6,6 @@ export function usePlayerSettings() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // Refs for batching and debouncing
   const pendingPatchRef = useRef({});
   const debounceTimerRef = useRef(null);
   const retryTimerRef = useRef(null);
@@ -34,7 +33,7 @@ export function usePlayerSettings() {
         }
       }
     } catch (error) {
-      console.error('❌ Failed to fetch settings:', error);
+      console.error('Failed to fetch settings:', error);
     } finally {
       if (mountedRef.current) {
         setLoading(false);
@@ -42,16 +41,15 @@ export function usePlayerSettings() {
     }
   }, []);
 
-  // Flush pending changes to server
   const flush = useCallback(async () => {
     const token = authService.getToken();
     if (!token || !mountedRef.current) return;
     
     const patch = pendingPatchRef.current;
     if (!patch || Object.keys(patch).length === 0) return;
-    if (inFlightRef.current) return; // Prevent overlapping requests
+    if (inFlightRef.current) return;
     
-    console.log('🚀 Flushing settings to server:', patch);
+    console.log('Flushing settings to server:', patch);
     
     inFlightRef.current = true;
     setSaving(true);
@@ -68,35 +66,30 @@ export function usePlayerSettings() {
       });
       
       if (response.status === 429) {
-        // Handle rate limiting with exponential backoff
         const retryAfter = Number(response.headers.get('Retry-After')) || backoffMsRef.current / 1000;
-        backoffMsRef.current = Math.min(backoffMsRef.current * 2, 60000); // Max 60s
+        backoffMsRef.current = Math.min(backoffMsRef.current * 2, 60000);
         clearTimeout(retryTimerRef.current);
         retryTimerRef.current = setTimeout(flush, retryAfter * 1000);
-        console.log(`⏰ Rate limited, retrying in ${retryAfter}s`);
+        console.log(`Rate limited, retrying in ${retryAfter}s`);
         return;
       }
       
-      // Reset backoff on successful request
       backoffMsRef.current = 2000;
       
       if (!response.ok) {
-        console.error('❌ Failed to save settings:', response.status);
-        // Optionally surface error to UI
+        console.error('Failed to save settings:', response.status);
         return;
       }
       
       const json = await response.json();
-      console.log('📥 Server response:', json);
+      console.log('Server response:', json);
       if (json?.settings && mountedRef.current) {
-        // Update local state with server response
         setSettings(prev => ({ ...prev, ...json.settings }));
-        // Clear pending changes
         pendingPatchRef.current = {};
-        console.log('✅ Settings saved successfully');
+        console.log('Settings saved successfully');
       }
     } catch (error) {
-      console.error('❌ Failed to save settings:', error);
+      console.error('Failed to save settings:', error);
     } finally {
       inFlightRef.current = false;
       if (mountedRef.current) {
@@ -105,59 +98,48 @@ export function usePlayerSettings() {
     }
   }, []);
 
-  // Schedule save with debouncing
   const scheduleSave = useCallback(() => {
     clearTimeout(debounceTimerRef.current);
     debounceTimerRef.current = setTimeout(() => {
       flush();
-    }, 2000); // 2000ms debounce to reduce 429 errors
+    }, 2000);
   }, [flush]);
 
-  // Update a single setting
   const updateSetting = useCallback((key, value) => {
-    console.log(`📝 updateSetting called: ${key} = ${value}`);
+    console.log(`updateSetting called: ${key} = ${value}`);
     
-    // Update local state immediately
     setSettings(prev => {
       if (!prev) return { [key]: value };
       return { ...prev, [key]: value };
     });
     
-    // Add to pending changes
     pendingPatchRef.current = { ...pendingPatchRef.current, [key]: value };
-    console.log('📋 Pending changes:', pendingPatchRef.current);
+    console.log('Pending changes:', pendingPatchRef.current);
     
-    // Schedule save
     scheduleSave();
   }, [scheduleSave]);
 
-  // Force immediate save
   const flushNow = useCallback(() => {
     clearTimeout(debounceTimerRef.current);
     clearTimeout(retryTimerRef.current);
     return flush();
   }, [flush]);
 
-  // Initial fetch and cleanup
   useEffect(() => {
     mountedRef.current = true;
     
-    // Initial fetch
     fetchSettings();
     
-    // Fetch on visibility change (tab becomes active)
     const handleVisibilityChange = () => {
       if (!document.hidden && mountedRef.current) {
         fetchSettings();
       }
     };
     
-    // Listen for auth state changes
     const handleAuthChange = (event) => {
       if (event.detail?.isAuthenticated && mountedRef.current) {
         fetchSettings();
       } else if (!event.detail?.isAuthenticated && mountedRef.current) {
-        // Clear settings when logged out
         setSettings(null);
         pendingPatchRef.current = {};
       }
@@ -182,7 +164,6 @@ export function usePlayerSettings() {
     fetchSettings,
     updateSetting,
     flushNow,
-    // Convenience getters with defaults
     autoCashoutEnabled: settings?.autoCashoutEnabled ?? false,
     autoCashoutMultiplier: settings?.autoCashoutMultiplier ?? 2.0,
     soundEnabled: settings?.soundEnabled ?? true,

@@ -84,11 +84,13 @@ const AdminAuditLog = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {
+}
       <div>
         <h2 className="text-2xl font-bold text-white mb-4">Audit Log</h2>
         
-        {/* Filters */}
+        {
+}
         <div className="bg-gray-800 rounded-lg p-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
             <select
@@ -148,21 +150,24 @@ const AdminAuditLog = () => {
         </div>
       </div>
 
-      {/* Loading */}
+      {
+}
       {isLoading && (
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       )}
 
-      {/* Error */}
+      {
+}
       {error && (
         <div className="bg-red-900 bg-opacity-50 border border-red-600 rounded-lg p-4">
           <p className="text-red-300">{error}</p>
         </div>
       )}
 
-      {/* Logs */}
+      {
+}
       {!isLoading && !error && (
         <>
           <div className="space-y-2">
@@ -191,7 +196,8 @@ const AdminAuditLog = () => {
                       </p>
                     )}
 
-                    {/* Show changes for balance adjustments */}
+                    {
+}
                     {log.action === 'USER_BALANCE_ADJUST' && log.before && log.after && (
                       <div className="mt-2 text-sm">
                         <span className="text-gray-400">Balance: </span>
@@ -213,7 +219,8 @@ const AdminAuditLog = () => {
             </div>
           )}
 
-          {/* Pagination */}
+          {
+}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2">
               <button

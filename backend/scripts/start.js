@@ -1,6 +1,3 @@
-/*
-  Start script with Prisma migrate retry to survive transient DB availability on Railway
-*/
 const { spawn } = require('child_process');
 
 function run(cmd, args, opts = {}) {
@@ -34,7 +31,6 @@ async function migrateWithRetry(maxAttempts = 3) {
   try {
     await migrateWithRetry(4);
     
-    // Seed quests if they don't exist
     try {
       console.log('Checking and seeding quests...');
       await run('node', ['scripts/seed-quests.js']);
@@ -46,5 +42,3 @@ async function migrateWithRetry(maxAttempts = 3) {
   }
   require('../server');
 })();
-
-

@@ -89,7 +89,8 @@ const BottomNav = ({ activeTab = 'Play', onTabChange }) => {
               {item.name}
             </span>
             
-            {/* Active indicator */}
+            {
+}
             {activeTab === item.name && (
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-red-400 rounded-full"></div>
             )}

@@ -11,7 +11,6 @@ const AdminDashboard = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Check if user is admin
   const user = authService.getUser();
   const isAdmin = user?.role === 'ADMIN';
 
@@ -24,17 +23,18 @@ const AdminDashboard = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'users', label: 'Users', icon: '👥' },
-    { id: 'rounds', label: 'Game Rounds', icon: '🎮' },
-    { id: 'referrals', label: 'Referrals', icon: '🔗' },
-    { id: 'audit', label: 'Audit Log', icon: '📝' },
+    { id: 'dashboard', label: 'Dashboard', icon: null },
+    { id: 'users', label: 'Users', icon: null },
+    { id: 'rounds', label: 'Game Rounds', icon: null },
+    { id: 'referrals', label: 'Referrals', icon: null },
+    { id: 'audit', label: 'Audit Log', icon: null },
   ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-gray-900 w-full h-full max-w-7xl max-h-[90vh] rounded-lg overflow-hidden flex flex-col">
-        {/* Header */}
+        {
+}
         <div className="bg-gray-800 px-6 py-4 flex items-center justify-between border-b border-gray-700">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
@@ -50,7 +50,8 @@ const AdminDashboard = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Navigation */}
+        {
+}
         <div className="bg-gray-800 px-6 py-2 border-b border-gray-700">
           <nav className="flex space-x-6">
             {navItems.map(item => (
@@ -63,14 +64,15 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <span className="mr-2">{item.icon}</span>
+                {item.icon && <span className="mr-2">{item.icon}</span>}
                 {item.label}
               </button>
             ))}
           </nav>
         </div>
 
-        {/* Content */}
+        {
+}
         <div className="flex-1 overflow-y-auto p-6">
           {error && !isAdmin ? (
             <div className="bg-red-900 bg-opacity-50 border border-red-600 rounded-lg p-4">
@@ -87,7 +89,8 @@ const AdminDashboard = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
+        {
+}
         <div className="bg-gray-800 px-6 py-3 border-t border-gray-700 text-sm text-gray-400">
           <div className="flex justify-between items-center">
             <span>Logged in as: {user?.username} ({user?.email})</span>

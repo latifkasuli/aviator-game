@@ -36,6 +36,3 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
-
-# Problem documentation (local reference only)
-PROBLEM_SUMMARY_FOR_FRED.md

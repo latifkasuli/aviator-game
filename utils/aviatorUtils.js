@@ -19,7 +19,6 @@ export const Game_Global_Vars = {
     },
 }
 
-// Define the function for the curve
 export const curveFunction = (x, dimension) => {
     return 0.0007 * Math.pow(x, 1.9) * dimension.height / 1500
 };
@@ -30,7 +29,6 @@ export const renderCurve = (g, _dimension) => {
     const points = xAxis.map(item => ({ x: item, y: dimension.height - curveFunction(item, dimension) }));
     g.clear()
     g.beginFill(0xE59407, 0.3);
-    // g.lineStyle(4, 0xffd900, 1);
     g.moveTo(points[0].x, points[0].y);
 
     for (let i = 1; i < points.length; i++) {
@@ -72,7 +70,6 @@ export const createGradTexture = (dimension) => {
 
     if (ctx) {
         const grd = ctx.createRadialGradient(dimension.width / 4, dimension.height / 2, r / 8, dimension.width / 4, dimension.height / 2, r / 2);
-        // radial - gradient(circle, rgba(86, 0, 152, 1) 0 %, rgba(41, 0, 73, 1) 100 %)
         grd.addColorStop(0, '#E5940744');
         grd.addColorStop(1, '#00000044');
 
@@ -120,7 +117,6 @@ export const stopSound = (type) => {
 
 export const loadSound = () => {
     try {
-        // Use correct path for localhost development
         const soundBasePath = import.meta.env.VITE_ASSETS_IMAGE_URL || "/assets/";
         
         sound.add('bg-sound', `${soundBasePath}general/sound/bg-sound.mp3`);
@@ -148,7 +144,6 @@ export const openFullscreen = async () => {
     }
 }
 
-/* Close fullscreen */
 export const closeFullscreen = async () => {
     if (document.exitFullscreen) {
         try {
@@ -224,5 +219,4 @@ export const getUTCTimefromUTCTime = (timeString) => {
 export const doDelay = (sec) => new Promise((resolve) => setTimeout(resolve, sec))
 export const initBet6 = JSON.parse(localStorage.getItem(`bet6`) || '["100","200","300","400","500","600"]')
 
-// Simple WebP/PNG format selector - modern browsers support WebP
 export const webpORpng = utils.isWebGLSupported() ? "webp" : "png"

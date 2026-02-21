@@ -15,14 +15,13 @@ describe('Auth Service', () => {
       expect(result.success).toBe(true);
       expect(result.token).toBeDefined();
       expect(typeof result.token).toBe('string');
-      expect(result.token.split('.')).toHaveLength(3); // JWT format
+      expect(result.token.split('.')).toHaveLength(3);
     });
 
     it('should store session in activeSessions', () => {
       authService.activeSessions.clear();
       const { token } = authService.generateToken(mockUser);
       
-      // With Fred's token-based session management, token is now the key
       expect(authService.activeSessions.has(token)).toBe(true);
       const session = authService.activeSessions.get(token);
       expect(session.userId).toBe(mockUser.id);
@@ -49,7 +48,7 @@ describe('Auth Service', () => {
 
     it('should accept valid JWT even without active session', () => {
       const { token } = authService.generateToken(mockUser);
-      authService.activeSessions.clear(); // Simulate server restart
+      authService.activeSessions.clear();
       
       const result = authService.verifyToken(token);
       
@@ -62,7 +61,6 @@ describe('Auth Service', () => {
     it('should remove expired sessions', () => {
       authService.activeSessions.clear();
       
-      // Add expired session
       authService.activeSessions.set('expired-user', {
         token: 'some-token',
         userId: 'expired-user',
@@ -70,7 +68,6 @@ describe('Auth Service', () => {
         expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       });
       
-      // Add valid session
       authService.activeSessions.set('valid-user', {
         token: 'some-token',
         userId: 'valid-user',
@@ -87,7 +84,6 @@ describe('Auth Service', () => {
     it('should limit session map size', () => {
       authService.activeSessions.clear();
       
-      // Add many sessions
       for (let i = 0; i < 10005; i++) {
         authService.activeSessions.set(`user-${i}`, {
           token: 'token',
@@ -105,7 +101,6 @@ describe('Auth Service', () => {
 
   describe('refreshAccessToken', () => {
     it('should generate new token from refresh token', async () => {
-      // Mock databaseService
       const databaseService = require('../services/databaseService');
       databaseService.findUserById = jest.fn().mockResolvedValue({
         ...mockUser,

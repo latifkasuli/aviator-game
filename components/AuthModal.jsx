@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import authService from './services/authService.js';
 
 const AuthModal = ({ isOpen, onClose, onSuccess }) => {
-  const [mode, setMode] = useState('login'); // 'login' or 'register'
+  const [mode, setMode] = useState('login');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -19,7 +19,6 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
       [name]: value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -114,10 +113,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-md">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <h2 className="text-xl font-bold text-white">
-            {mode === 'login' ? '🔐 Login' : '👤 Create Account'}
+            {mode === 'login' ? 'Login' : 'Create Account'}
           </h2>
           <button
             onClick={onClose}
@@ -129,16 +129,19 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
           </button>
         </div>
 
-        {/* Form */}
+        {
+}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* General Error */}
+          {
+}
           {errors.general && (
             <div className="bg-red-600 text-white p-3 rounded-lg text-sm">
               {errors.general}
             </div>
           )}
 
-          {/* Username/Email Field */}
+          {
+}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               {mode === 'register' ? 'Username' : 'Username or Email'}
@@ -157,7 +160,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             )}
           </div>
 
-          {/* Email Field (Register only) */}
+          {
+}
           {mode === 'register' && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -178,7 +182,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
-          {/* Password Field */}
+          {
+}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Password
@@ -197,7 +202,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             )}
           </div>
 
-          {/* Confirm Password Field (Register only) */}
+          {
+}
           {mode === 'register' && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -218,7 +224,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
-          {/* Submit Button */}
+          {
+}
           <button
             type="submit"
             disabled={isLoading}
@@ -234,7 +241,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             )}
           </button>
 
-          {/* Switch Mode */}
+          {
+}
           <div className="text-center pt-4 border-t border-gray-700">
             <p className="text-gray-400 text-sm">
               {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
@@ -249,10 +257,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             </p>
           </div>
 
-          {/* Guest Mode Info */}
+          {
+}
           <div className="bg-gray-800 rounded-lg p-3 mt-4">
             <p className="text-gray-400 text-xs">
-              💡 <strong>Playing as guest?</strong> Your progress won't be saved. 
+              <strong>Playing as guest?</strong> Your progress won't be saved. 
               Create an account to keep your stats and balance!
             </p>
           </div>

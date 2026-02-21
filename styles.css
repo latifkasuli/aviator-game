@@ -1,53 +1,38 @@
-/* Custom animations and utility classes for the Aviator game */
-
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
-
-/* Prevent body scrolling and ensure proper viewport */
 html, body {
   height: 100%;
   overflow: hidden;
 }
-
 #root {
   height: 100%;
 }
-
-/* Dynamic viewport height utility */
-.h-dvh { 
-  height: calc(var(--vh, 1vh) * 100); 
+.h-dvh {
+  height: calc(var(--vh, 1vh) * 100);
 }
-
-/* Safe area padding for devices with notches/home indicators */
-.pb-safe { 
-  padding-bottom: env(safe-area-inset-bottom); 
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
-
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-
   .bg-gradient-radial {
     background: radial-gradient(circle, var(--tw-gradient-stops));
   }
 }
-
 @layer components {
   .animate-shimmer {
     animation: shimmer 2s infinite;
   }
-
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
-
   @keyframes shimmer {
     0% {
       transform: translateX(-100%);
@@ -56,7 +41,6 @@ html, body {
       transform: translateX(100%);
     }
   }
-
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
@@ -65,12 +49,9 @@ html, body {
       transform: translateY(-10px);
     }
   }
-
-  /* Pulsing glow effect for buttons */
   .glow-pulse {
     animation: glow-pulse 2s ease-in-out infinite alternate;
   }
-
   @keyframes glow-pulse {
     from {
       box-shadow: 0 0 20px -10px currentColor;
@@ -79,23 +60,16 @@ html, body {
       box-shadow: 0 0 30px -5px currentColor;
     }
   }
-
-  /* Smooth number transitions */
   .number-transition {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-  /* Smooth scale animation for interactive elements */
   .scale-bounce:hover {
     transform: scale(1.05);
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
   .scale-bounce:active {
     transform: scale(0.95);
   }
-
-  /* Plane container spacing and positioning - Desktop and Mobile optimized */
   .plane-container {
     min-height: 200px;
     overflow: visible;
@@ -104,8 +78,6 @@ html, body {
     align-items: center;
     justify-content: center;
   }
-
-  /* Ensure plane has breathing room from UI elements */
   .plane-element {
     margin: 0.5rem;
     transform-origin: center;
@@ -113,93 +85,70 @@ html, body {
     height: 100%;
     min-height: 200px;
   }
-
-  /* Mobile-first responsive adjustments */
   @media (min-width: 640px) {
     .plane-container {
       min-height: 300px;
     }
-    
     .plane-element {
       margin: 1rem;
       min-height: 250px;
     }
   }
-
   @media (min-width: 768px) {
     .plane-container {
       min-height: 350px;
     }
-    
     .plane-element {
       margin: 1.5rem;
       min-height: 300px;
     }
   }
-
   @media (min-width: 1024px) {
     .plane-container {
       min-height: 400px;
     }
-    
     .plane-element {
       margin: 2rem;
       min-height: 350px;
     }
   }
-
-  /* Mobile touch optimization */
   @media (max-width: 640px) {
     .mobile-touch-target {
       min-height: 44px;
       min-width: 44px;
     }
-    
     .mobile-spacing {
       padding: 0.75rem;
     }
-    
-    /* Prevent mobile viewport issues */
     html {
       height: 100vh;
       height: -webkit-fill-available;
     }
-    
     body {
       height: 100vh;
       height: -webkit-fill-available;
     }
-    
     #root {
       height: 100vh;
       height: -webkit-fill-available;
     }
   }
-
-  /* PWA and Mobile Enhancements */
   .standalone-app {
-    /* Additional padding for standalone PWA mode */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
-
-  /* Touch feedback animations */
   .touch-feedback {
     transition: all 0.1s ease-out;
     transform-origin: center;
   }
-
   .touch-feedback:active {
     transform: scale(0.95);
     opacity: 0.8;
   }
-
-  /* Swipe indicators */
   .swipe-indicator {
     position: relative;
     overflow: hidden;
   }
-
   .swipe-indicator::before {
     content: '';
     position: absolute;
@@ -210,26 +159,20 @@ html, body {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
     animation: swipe-hint 3s infinite;
   }
-
   @keyframes swipe-hint {
     0% { left: -100%; }
     50% { left: 100%; }
     100% { left: 100%; }
   }
-
-  /* Mobile-optimized animations */
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
-
   .animate-slide-down {
     animation: slideDown 0.3s ease-out;
   }
-
   .animate-fade-in {
     animation: fadeIn 0.2s ease-out;
   }
-
   @keyframes slideUp {
     from {
       transform: translateY(100%);
@@ -240,7 +183,6 @@ html, body {
       opacity: 1;
     }
   }
-
   @keyframes slideDown {
     from {
       transform: translateY(-100%);
@@ -251,7 +193,6 @@ html, body {
       opacity: 1;
     }
   }
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -260,8 +201,6 @@ html, body {
       opacity: 1;
     }
   }
-
-  /* Improved button styles for mobile */
   .mobile-button {
     min-height: 48px;
     min-width: 48px;
@@ -269,21 +208,16 @@ html, body {
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-
-  /* Better input styles for mobile */
   .mobile-input {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
     touch-action: manipulation;
   }
-
-  /* Loading states optimized for mobile */
   .mobile-loading {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 200px;
   }
-
   .loading-spinner {
     width: 40px;
     height: 40px;
@@ -292,13 +226,10 @@ html, body {
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
-
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-
-  /* Offline indicator */
   .offline-indicator {
     position: fixed;
     top: 0;
@@ -312,8 +243,6 @@ html, body {
     z-index: 1000;
     animation: slideDown 0.3s ease-out;
   }
-
-  /* Install prompt styles */
   .install-prompt {
     position: fixed;
     bottom: 16px;
@@ -327,35 +256,24 @@ html, body {
     z-index: 1000;
     animation: slideUp 0.3s ease-out;
   }
-
-  /* Haptic feedback class */
   .haptic-feedback {
     transition: all 0.1s ease-out;
   }
-
   .haptic-feedback:active {
     transform: scale(0.98);
   }
-
-  /* Flex layout helpers */
   .app-bet-panel {
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
-
-  /* Bet panel internal layout */
   .bet-panel-content {
     min-height: 100%;
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease-out;
   }
-
-  /* Unified bet panel layout */
   .bet-panel-content {
     gap: 1rem;
   }
-
-
 }

@@ -4,10 +4,8 @@ import { TelegramButton, useTelegramWebApp } from './TelegramWebApp.jsx';
 import { usePlayerSettings } from './hooks/usePlayerSettings.js';
 
 const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBalance, multiplier, hasBet, countdown, activeBet, cashedOutMultiplier }) => {
-  // Telegram WebApp integration
   const { hapticFeedback, showAlert } = useTelegramWebApp();
   
-  // Player settings hook - handles all the loading/saving/caching for us
   const { 
     settings,
     saving,
@@ -18,24 +16,20 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
   
   const [showAutoCashoutSettings, setShowAutoCashoutSettings] = useState(false);
   
-  // Visual feedback state
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [lastAction, setLastAction] = useState(null);
 
-  // Auto-cashout logic
   useEffect(() => {
     if (autoCashoutEnabled && gameState === 'running' && activeBet > 0 && cashedOutMultiplier === 0) {
       if (multiplier >= autoCashoutMultiplier) {
-        console.log(`🤖 Auto-cashout triggered at ${multiplier.toFixed(2)}x (target: ${autoCashoutMultiplier}x)`);
+        console.log(`Auto-cashout triggered at ${multiplier.toFixed(2)}x (target: ${autoCashoutMultiplier}x)`);
         onCashOut();
         soundEffects.playAutoCashoutSound();
         showFeedback(`Auto-cashed out at ${multiplier.toFixed(2)}x!`, 'auto-cashout');
-        // Keep autocashout enabled for next bet - better UX
       }
     }
   }, [multiplier, autoCashoutEnabled, autoCashoutMultiplier, gameState, activeBet, cashedOutMultiplier, onCashOut]);
-
 
   const handleDecrease = () => {
     setBetAmount(prev => Math.max(100, prev - 100));
@@ -78,7 +72,6 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
         if (activeBet > 0) {
           return 'bg-gradient-to-r from-green-600 to-green-500 shadow-green-500/30';
         }
-        // Suggestion: make the bet button green during betting to encourage action
         return 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 shadow-green-500/50';
       case 'running':
         if (activeBet === 0) {
@@ -113,12 +106,9 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
       showFeedback('Bet placed!', 'bet');
     } else if (gameState === 'running' && activeBet > 0 && cashedOutMultiplier === 0) {
       onCashOut();
-      // Don't show feedback here - wait for server confirmation
-      // soundEffects and success message will be handled by the server event
     }
   };
 
-  // Visual feedback function
   const showFeedback = (message, action) => {
     setSuccessMessage(message);
     setLastAction(action);
@@ -128,7 +118,6 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
     }, 2000);
   };
 
-  // Track successful cashouts for feedback
   useEffect(() => {
     if (cashedOutMultiplier > 0 && lastAction !== 'cashout-shown') {
       const winnings = Math.floor(activeBet * cashedOutMultiplier);
@@ -137,7 +126,6 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
     }
   }, [cashedOutMultiplier, activeBet, lastAction]);
 
-  // Listen for server-confirmed cashouts (including auto-cashouts)
   useEffect(() => {
     const handleServerCashout = (event) => {
       const { multiplier, isAutomatic, winnings } = event.detail;
@@ -170,7 +158,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
 
   return (
     <div className="bet-panel-content space-y-3">
-      {/* Bet Amount Controls - Always visible */}
+      {
+}
       {gameState === 'running' && (
         <div className="text-center mb-1">
           {activeBet > 0 ? (
@@ -185,11 +174,14 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
         </div>
       )}
 
-      {/* Horizontal layout for amount control and quick bets */}
+      {
+}
       <div className="flex items-center justify-between gap-3">
-        {/* Bet Amount Control - Left side */}
+        {
+}
         <div className="flex items-center justify-center space-x-1 bg-gray-800 rounded-full px-2 py-1 border border-gray-600">
-        {/* Decrease Button */}
+        {
+}
         <TelegramButton
           onClick={handleDecrease}
           disabled={gameState !== 'betting' || betAmount <= 1 || activeBet > 0}
@@ -205,14 +197,16 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
           <span className="text-gray-400 text-sm leading-none">−</span>
         </TelegramButton>
 
-        {/* Bet Amount Display */}
+        {
+}
         <div className="flex-1 text-center px-2">
           <div className="text-sm font-medium text-white">
             {(activeBet > 0 ? activeBet : betAmount).toFixed(2)}
           </div>
         </div>
 
-        {/* Increase Button */}
+        {
+}
         <TelegramButton
           onClick={handleIncrease}
           disabled={gameState !== 'betting' || betAmount >= userBalance || activeBet > 0}
@@ -229,7 +223,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
         </TelegramButton>
         </div>
         
-        {/* Quick Bet Buttons - Right side */}
+        {
+}
         {activeBet === 0 && (
           <div className="flex items-center gap-2 flex-1">
             <div className="grid grid-cols-3 gap-1">
@@ -256,11 +251,13 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
         )}
       </div>
 
-      {/* Auto-Cashout Settings - Always visible but disabled during running */}
+      {
+}
       <div className="space-y-3">
         {activeBet === 0 && (
           <div className="space-y-3">
-          {/* Auto-Cashout Toggle */}
+          {
+}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <button
@@ -298,7 +295,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
               )}
           </div>
 
-          {/* Auto-Cashout Multiplier Settings */}
+          {
+}
           {autoCashoutEnabled && showAutoCashoutSettings && (
             <div className="bg-gray-800 rounded-lg p-3 border border-gray-600">
               <div className="text-sm text-gray-400 mb-2">Auto-cashout at:</div>
@@ -348,7 +346,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
             </div>
           )}
 
-          {/* Quick Auto-Cashout Presets */}
+          {
+}
           {autoCashoutEnabled && !showAutoCashoutSettings && (
             <div className="flex space-x-1">
               {[1.5, 2.0, 3.0, 5.0, 10.0].map((preset) => (
@@ -378,7 +377,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
 
       </div>
 
-      {/* Main Action Button */}
+      {
+}
       <TelegramButton
         onClick={handleButtonClick}
         disabled={isButtonDisabled()}
@@ -394,7 +394,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
           relative overflow-hidden
         `}
       >
-        {/* Button glow effect */}
+        {
+}
         {!isButtonDisabled() && (
           <div className="absolute inset-0 bg-white opacity-20 rounded-2xl animate-pulse"></div>
         )}
@@ -406,7 +407,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
         )}
       </TelegramButton>
 
-      {/* Status Messages */}
+      {
+}
       {gameState === 'betting' && betAmount > userBalance && (
         <div className="text-center text-red-400 text-sm font-medium">
           Insufficient balance
@@ -419,7 +421,8 @@ const BetPanel = ({ gameState, betAmount, setBetAmount, onBet, onCashOut, userBa
         </div>
       )}
 
-      {/* Success Animation */}
+      {
+}
       {showSuccessAnimation && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
           <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">

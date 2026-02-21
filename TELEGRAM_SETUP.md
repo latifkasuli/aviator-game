@@ -1,9 +1,9 @@
-# 🤖 Telegram Mini App Setup Guide
+# Telegram Mini App Setup Guide
 
-## 📋 Overview
+## Overview
 This Aviator game is now optimized as a **Telegram Mini App** (WebApp) that runs inside Telegram with native integration.
 
-## 🚀 Quick Setup
+## Quick Setup
 
 ### 1. Create a Telegram Bot
 1. Open Telegram and message [@BotFather](https://t.me/BotFather)
@@ -26,7 +26,7 @@ https://your-domain.com
 ```
 /setdescription
 @your_bot_username
-🎮 Aviator - The ultimate crash game! Bet on the plane's flight and cash out before it crashes. Test your timing and win big!
+Aviator - The ultimate crash game! Bet on the plane's flight and cash out before it crashes. Test your timing and win big!
 ```
 
 ### 4. Set Bot Commands
@@ -38,7 +38,7 @@ help - Get help and instructions
 stats - View your game statistics
 ```
 
-## 🌐 Deployment Options
+## Deployment Options
 
 ### Option 1: Vercel (Recommended)
 1. Push your code to GitHub
@@ -57,28 +57,28 @@ stats - View your game statistics
 2. Serve the `dist` folder
 3. Ensure HTTPS is enabled (required for Telegram)
 
-## 🔧 Telegram WebApp Features Implemented
+## Telegram WebApp Features Implemented
 
-### ✅ Core Integration
+### Core Integration
 - **Telegram WebApp SDK** loaded and initialized
 - **User Authentication** via Telegram (no separate login needed)
 - **Theme Integration** adapts to user's Telegram theme
 - **Viewport Handling** optimized for Telegram's interface
 
-### ✅ Native Features
+### Native Features
 - **Haptic Feedback** on button interactions
 - **MainButton** integration for primary actions
 - **BackButton** support for navigation
 - **Theme Colors** automatically match Telegram's theme
 - **User Data** access (name, username, photo)
 
-### ✅ UI Adaptations
+### UI Adaptations
 - **Telegram-native buttons** with proper styling
 - **Safe area handling** for different devices
 - **Theme-aware colors** that adapt to light/dark mode
 - **Optimized layout** for Telegram's viewport
 
-## 🎮 Game Features for Telegram
+## Game Features for Telegram
 
 ### User Experience
 - **No Registration Required** - uses Telegram identity
@@ -92,7 +92,7 @@ stats - View your game statistics
 - **Invite Friends** via Telegram links
 - **Group Competitions** within Telegram groups
 
-## 🛠️ Development & Testing
+## Development & Testing
 
 ### Local Testing
 1. Start the development server: `npm run dev`
@@ -106,7 +106,7 @@ stats - View your game statistics
 3. Update bot WebApp URL to production domain
 4. Test thoroughly in Telegram
 
-## 📱 Telegram WebApp API Usage
+## Telegram WebApp API Usage
 
 ### Available in Components
 ```javascript
@@ -133,7 +133,7 @@ hapticFeedback('notification', 'error');   // Error notification
 hapticFeedback('selection');          // Selection change
 ```
 
-## 🎨 Theme Integration
+## Theme Integration
 
 The app automatically adapts to Telegram's theme:
 - **Background colors** match Telegram's background
@@ -141,7 +141,7 @@ The app automatically adapts to Telegram's theme:
 - **Button colors** use Telegram's accent color
 - **Secondary colors** match Telegram's secondary background
 
-## 🔒 Security Considerations
+## Security Considerations
 
 ### Data Validation
 - Always validate `initData` on your backend
@@ -153,7 +153,7 @@ The app automatically adapts to Telegram's theme:
 - Use valid SSL certificates
 - Test with real HTTPS URLs
 
-## 📊 Analytics & Monitoring
+## Analytics & Monitoring
 
 ### Telegram-specific Metrics
 - Track WebApp launches
@@ -166,7 +166,7 @@ The app automatically adapts to Telegram's theme:
 - **Google Analytics** for web metrics
 - **Custom backend analytics** for game-specific data
 
-## 🚀 Launch Checklist
+## Launch Checklist
 
 - [ ] Bot created and configured
 - [ ] WebApp URL set in BotFather
@@ -179,7 +179,7 @@ The app automatically adapts to Telegram's theme:
 - [ ] Performance optimized for mobile
 - [ ] Analytics tracking implemented
 
-## 🎯 Best Practices
+## Best Practices
 
 ### Performance
 - Keep initial load under 3 seconds
@@ -199,14 +199,14 @@ The app automatically adapts to Telegram's theme:
 - Create social leaderboards
 - Encourage return visits
 
-## 🔗 Useful Links
+## Useful Links
 
 - [Telegram WebApp Documentation](https://core.telegram.org/bots/webapps)
 - [BotFather Commands](https://core.telegram.org/bots#6-botfather)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
 - [WebApp Examples](https://github.com/telegram-bot-sdk/examples)
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 1. **WebApp not loading**: Check HTTPS and valid SSL

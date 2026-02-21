@@ -1,7 +1,3 @@
-// 🚀 Optimized BetPanel - Reduced Re-renders!
-// Uses getCurrentMultiplier callback instead of multiplier prop dependency
-// Prevents React re-renders on every multiplier update
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import soundEffects from './utils/soundEffects.js';
 import { TelegramButton, useTelegramWebApp } from './TelegramWebApp.jsx';
@@ -14,16 +10,14 @@ const BetPanelOptimized = ({
   onBet, 
   onCashOut, 
   userBalance, 
-  getCurrentMultiplier, // Function instead of direct multiplier prop
+  getCurrentMultiplier,
   hasBet, 
   countdown, 
   activeBet, 
   cashedOutMultiplier 
 }) => {
-  // Telegram WebApp integration
   const { hapticFeedback, showAlert } = useTelegramWebApp();
   
-  // Player settings hook
   const { 
     settings,
     saving,
@@ -34,16 +28,10 @@ const BetPanelOptimized = ({
   
   const [showAutoCashoutSettings, setShowAutoCashoutSettings] = useState(false);
   
-  // Visual feedback state
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [lastAction, setLastAction] = useState(null);
-  
-  // 🚀 FRED'S FIX: Removed client-side auto-cashout - server handles it now!
-  // Auto-cashout is now server-authoritative for lag-free precision
-  // Settings UI remains for user configuration, but execution is server-side
 
-  // 🚀 FRED'S FIX: Only show success after server confirmation
   useEffect(() => {
     function handleServerCashedOut(evt) {
       const { multiplier, isAutomatic } = evt.detail || {};
@@ -93,8 +81,6 @@ const BetPanelOptimized = ({
   const handleMainAction = () => {
     if (gameState === 'running' && hasBet) {
       onCashOut();
-      // 🚀 FRED'S FIX: Removed optimistic success - only show after server confirmation
-      // showFeedback(`Cashed out at ${getCurrentMultiplier().toFixed(2)}x!`, 'cashout');
     } else if (gameState === 'betting' || gameState === 'crashed') {
       onBet();
       showFeedback(`Bet placed: ${betAmount} points`, 'bet');
@@ -106,14 +92,11 @@ const BetPanelOptimized = ({
     setLastAction(action);
     setShowSuccessAnimation(true);
     setTimeout(() => setShowSuccessAnimation(false), 3000);
-    
-    // Haptic feedback
     hapticFeedback('notification', 'success');
   };
 
   return (
     <div className="bg-gray-800 rounded-xl p-4 space-y-4">
-      {/* Bet Amount Controls */}
       {(gameState === 'betting' || gameState === 'crashed') && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -154,7 +137,6 @@ const BetPanelOptimized = ({
             </TelegramButton>
           </div>
 
-          {/* Quick bet buttons */}
           <div className="grid grid-cols-4 gap-2">
             {[100, 500, 1000, 'Max'].map((amount) => (
               <TelegramButton
@@ -171,7 +153,6 @@ const BetPanelOptimized = ({
         </div>
       )}
 
-      {/* Auto-Cashout Settings */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="flex items-center space-x-2 cursor-pointer">
@@ -219,7 +200,6 @@ const BetPanelOptimized = ({
         )}
       </div>
 
-      {/* Main Action Button */}
       <TelegramButton
         onClick={handleMainAction}
         disabled={isButtonDisabled()}
@@ -234,18 +214,16 @@ const BetPanelOptimized = ({
         {getButtonText()}
       </TelegramButton>
 
-      {/* Success Animation */}
       {showSuccessAnimation && (
         <div className={`text-center py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
           lastAction === 'auto-cashout' ? 'bg-purple-500/20 text-purple-400' :
           lastAction === 'cashout' ? 'bg-green-500/20 text-green-400' :
           'bg-blue-500/20 text-blue-400'
         }`}>
-          ✓ {successMessage}
+          {successMessage}
         </div>
       )}
 
-      {/* Current Bet Display */}
       {hasBet && (
         <div className="bg-gray-700 rounded-lg p-3 text-center">
           <div className="text-sm text-gray-400">Your Bet</div>

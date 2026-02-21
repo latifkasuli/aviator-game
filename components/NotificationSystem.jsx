@@ -18,10 +18,8 @@ const Notification = ({ notification, onDismiss }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Animate in
     setTimeout(() => setIsVisible(true), 100);
     
-    // Auto dismiss after duration
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(() => onDismiss(notification.id), 300);
@@ -32,11 +30,11 @@ const Notification = ({ notification, onDismiss }) => {
 
   const getIcon = () => {
     switch (notification.type) {
-      case 'error': return '❌';
-      case 'warning': return '⚠️';
-      case 'success': return '✅';
-      case 'info': return 'ℹ️';
-      default: return '📢';
+      case 'error': return '[!]';
+      case 'warning': return '[!]';
+      case 'success': return '[OK]';
+      case 'info': return '[i]';
+      default: return '';
     }
   };
 

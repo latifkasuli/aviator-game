@@ -1,12 +1,11 @@
-// 🔌 Connection Status Component
-// Shows if we're connected to the backend
 
 import React from 'react';
 
 const ConnectionStatus = ({ isConnected, playersOnline }) => {
   return (
     <div className="flex items-center space-x-4 text-sm">
-      {/* Connection Status */}
+      {
+}
       <div className="flex items-center space-x-2">
         <div 
           className={`w-2 h-2 rounded-full ${
@@ -18,7 +17,8 @@ const ConnectionStatus = ({ isConnected, playersOnline }) => {
         </span>
       </div>
       
-      {/* Players Online */}
+      {
+}
       {isConnected && (
         <div className="flex items-center space-x-2 text-gray-400">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

@@ -6,13 +6,11 @@ const API_BASE = 'http://localhost:3002/api';
 let adminToken = null;
 let testUserId = null;
 
-// Test data
 const adminCredentials = {
   usernameOrEmail: 'admin',
   password: 'admin123'
 };
 
-// Color helpers
 const green = (text) => `\x1b[32m${text}\x1b[0m`;
 const red = (text) => `\x1b[31m${text}\x1b[0m`;
 const yellow = (text) => `\x1b[33m${text}\x1b[0m`;
@@ -21,9 +19,9 @@ const blue = (text) => `\x1b[34m${text}\x1b[0m`;
 async function test(name, fn) {
   try {
     await fn();
-    console.log(green(`✓ ${name}`));
+    console.log(green(`PASS ${name}`));
   } catch (error) {
-    console.log(red(`✗ ${name}`));
+    console.log(red(`FAIL ${name}`));
     if (error.response) {
       console.error(red(`  Status: ${error.response.status}`));
       console.error(red(`  Error: ${error.response.data?.error || error.message}`));
@@ -51,9 +49,8 @@ async function adminRequest(endpoint, options = {}) {
 }
 
 async function runTests() {
-  console.log(blue('\n🔧 Testing Admin System\n'));
+  console.log(blue('\nTesting Admin System\n'));
 
-  // 1. Admin Login
   await test('Admin login', async () => {
     const response = await axios.post(`${API_BASE}/admin/login`, adminCredentials);
     if (!response.data.success || !response.data.token) {
@@ -63,7 +60,6 @@ async function runTests() {
     console.log(yellow(`  Admin logged in as: ${response.data.user.username}`));
   });
 
-  // 2. Get Admin Stats
   await test('Get admin stats', async () => {
     const response = await adminRequest('/admin/stats');
     const stats = response.data.stats;
@@ -72,7 +68,6 @@ async function runTests() {
     console.log(yellow(`  Connected clients: ${stats.websocket.connectedClients}`));
   });
 
-  // 3. Get Users List
   await test('Get users list', async () => {
     const response = await adminRequest('/admin/users?limit=5');
     const users = response.data.users;
@@ -83,7 +78,6 @@ async function runTests() {
     }
   });
 
-  // 4. Get User Details
   if (testUserId) {
     await test('Get user details', async () => {
       const response = await adminRequest(`/admin/users/${testUserId}`);
@@ -93,7 +87,6 @@ async function runTests() {
       console.log(yellow(`  Role: ${user.role}`));
     });
 
-    // 5. Adjust User Balance
     await test('Adjust user balance', async () => {
       const response = await adminRequest(`/admin/users/${testUserId}/adjust-balance`, {
         method: 'POST',
@@ -106,7 +99,6 @@ async function runTests() {
     });
   }
 
-  // 6. Get Game Rounds
   await test('Get game rounds', async () => {
     const response = await adminRequest('/admin/game-rounds?limit=5');
     const rounds = response.data.rounds.rounds;
@@ -116,7 +108,6 @@ async function runTests() {
     }
   });
 
-  // 7. Get Referrals
   await test('Get referrals', async () => {
     const response = await adminRequest('/admin/referrals?limit=5');
     const referrals = response.data.referrals;
@@ -124,7 +115,6 @@ async function runTests() {
     console.log(yellow(`  Total pages: ${response.data.totalPages}`));
   });
 
-  // 8. Get Audit Logs
   await test('Get audit logs', async () => {
     const response = await adminRequest('/admin/audit-logs?limit=5');
     const logs = response.data.logs;
@@ -134,16 +124,14 @@ async function runTests() {
     }
   });
 
-  // 9. Test IP Restriction (if enabled)
   if (process.env.ADMIN_IP_RANGES) {
     console.log(yellow('\n  Note: IP restrictions are enabled. Make sure your IP is in ADMIN_IP_RANGES'));
   }
 
-  console.log(blue('\n✅ Admin system tests completed!\n'));
+  console.log(blue('\nAdmin system tests completed!\n'));
 }
 
-// Run tests
 runTests().catch(error => {
-  console.error(red('\n❌ Test suite failed:'), error.message);
+  console.error(red('\nTest suite failed:'), error.message);
   process.exit(1);
 });

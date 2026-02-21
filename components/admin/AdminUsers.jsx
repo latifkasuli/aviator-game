@@ -17,18 +17,15 @@ const AdminUsers = () => {
       setIsLoading(true);
       const response = await authService.apiRequest(`/admin/users?page=${page}&limit=20&search=${search}`);
       
-      console.log('Admin users API response:', response); // Debug log
+      console.log('Admin users API response:', response);
       
       if (response.success) {
-        // Check if response has nested structure or direct array
         let usersData, totalPagesData;
         
         if (Array.isArray(response.users)) {
-          // Direct array format: { users: [...], totalPages: X }
           usersData = response.users;
           totalPagesData = response.totalPages || 1;
         } else if (response.users?.users && Array.isArray(response.users.users)) {
-          // Nested format: { users: { users: [...], totalPages: X } }
           usersData = response.users.users;
           totalPagesData = response.users.totalPages || 1;
         } else {
@@ -69,14 +66,11 @@ const AdminUsers = () => {
       const response = await authService.apiRequest(endpoint, { method: 'POST' });
       
       if (response.success) {
-        // Refresh the user list
         loadUsers();
-        // Update selected user if it's the same
         if (selectedUser?.id === userId) {
           setSelectedUser(response.user);
         }
         
-        // Show success message
         alert(`User ${ban ? 'banned' : 'unbanned'} successfully`);
       }
     } catch (err) {
@@ -109,7 +103,7 @@ const AdminUsers = () => {
         onClose={() => setSelectedUser(null)}
         onUserUpdate={(updatedUser) => {
           setSelectedUser(updatedUser);
-          loadUsers(); // Refresh the list
+          loadUsers();
         }}
       />
     );
@@ -117,11 +111,9 @@ const AdminUsers = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-white mb-4">User Management</h2>
         
-        {/* Search */}
         <form onSubmit={handleSearch} className="flex gap-2 mb-4">
           <input
             type="text"
@@ -152,21 +144,18 @@ const AdminUsers = () => {
         </form>
       </div>
 
-      {/* Loading */}
       {isLoading && (
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       )}
 
-      {/* Error */}
       {error && (
         <div className="bg-red-900 bg-opacity-50 border border-red-600 rounded-lg p-4">
           <p className="text-red-300">{error}</p>
         </div>
       )}
 
-      {/* Users Table */}
       {!isLoading && !error && (
         <>
           <div className="bg-gray-800 rounded-lg overflow-hidden">
@@ -255,7 +244,8 @@ const AdminUsers = () => {
             </table>
           </div>
 
-          {/* Pagination */}
+          {
+}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2">
               <button

@@ -1,19 +1,16 @@
-// Replacement for getAdminStats method
-// Copy this into databaseService.js to replace the existing method
 
 async getAdminStats() {
   try {
-    console.log('🔧 Getting admin stats...');
+    console.log('Getting admin stats...');
     
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    console.log('📅 Date ranges:', { today, weekAgo });
+    console.log('Date ranges:', { today, weekAgo });
 
-    // Get basic counts
-    console.log('1️⃣ Getting user counts...');
+    console.log('1. Getting user counts...');
     const totalUsers = await prisma.user.count();
     const activeToday = await prisma.user.count({
       where: { lastLoginAt: { gte: today } }
@@ -22,17 +19,16 @@ async getAdminStats() {
       where: { lastLoginAt: { gte: weekAgo } }
     });
 
-    console.log('2️⃣ Getting game counts...');
+    console.log('2. Getting game counts...');
     const roundsToday = await prisma.gameRound.count({
       where: { createdAt: { gte: today } }
     });
 
-    console.log('3️⃣ Getting bet statistics...');
+    console.log('3. Getting bet statistics...');
     const totalBetsToday = await prisma.bet.count({
       where: { placedAt: { gte: today } }
     });
 
-    // Get unique players today
     const uniquePlayers = await prisma.bet.findMany({
       where: { placedAt: { gte: today } },
       select: { userId: true },
@@ -40,15 +36,13 @@ async getAdminStats() {
     });
     const uniquePlayersToday = uniquePlayers.length;
 
-    console.log('4️⃣ Getting financial stats...');
-    // Total wagered today
+    console.log('4. Getting financial stats...');
     const wagerResult = await prisma.bet.aggregate({
       where: { placedAt: { gte: today } },
       _sum: { amount: true }
     });
     const totalWageredToday = wagerResult._sum.amount || 0;
 
-    // Total won today (use CASHED_OUT status)
     const wonResult = await prisma.bet.aggregate({
       where: { 
         placedAt: { gte: today },
@@ -58,7 +52,7 @@ async getAdminStats() {
     });
     const totalWonToday = wonResult._sum.payout || 0;
 
-    console.log('5️⃣ Getting referral stats...');
+    console.log('5. Getting referral stats...');
     const referralsToday = await prisma.referral.count({
       where: { createdAt: { gte: today } }
     }).catch(err => {
@@ -76,7 +70,7 @@ async getAdminStats() {
       return 0;
     });
 
-    console.log('6️⃣ Getting average crash point...');
+    console.log('6. Getting average crash point...');
     const avgCrashResult = await prisma.gameRound.aggregate({
       where: {
         createdAt: { gte: today },
@@ -86,11 +80,10 @@ async getAdminStats() {
     });
     const avgCrashToday = avgCrashResult._avg.crashPoint || 0;
 
-    // Calculate derived metrics
     const houseEdgeToday = totalWageredToday - totalWonToday;
 
-    console.log('✅ All queries completed successfully');
-    console.log('📊 Stats summary:', {
+    console.log('All queries completed successfully');
+    console.log('Stats summary:', {
       totalUsers,
       activeToday,
       roundsToday,
@@ -128,8 +121,7 @@ async getAdminStats() {
     };
 
   } catch (error) {
-    console.error('❌ Error getting admin stats:', error);
+    console.error('Error getting admin stats:', error);
     throw error;
   }
 }
-

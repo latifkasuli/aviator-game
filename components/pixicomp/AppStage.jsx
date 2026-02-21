@@ -49,12 +49,10 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
             try {
                 const assetsPath = import.meta.env.VITE_ASSETS_IMAGE_URL || '/assets/';
                 
-                // Load spritesheets using PIXI's Assets API
                 const planeSheet = await Assets.load(`${assetsPath}plane-anim.json`);
                 const parachuteRedSheet = await Assets.load(`${assetsPath}parachute-red-anim.json`);
                 const parachuteGraySheet = await Assets.load(`${assetsPath}parachute-gray-anim.json`);
                 
-                // Extract frames from loaded spritesheets
                 const _plane = [];
                 for (let i = 1; i <= 15; i++) {
                     const frameKey = `plane-anim-${i}.${webpORpng}`;
@@ -219,7 +217,7 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
                             fontFamily: 'Roboto',
                             fontSize: 100,
                             fontWeight: '700',
-                            fill: ['#ffffff', '#ffffff'], // gradient
+                            fill: ['#ffffff', '#ffffff'],
                             stroke: '#111111',
                             strokeThickness: 2,
                             letterSpacing: 0,
@@ -258,7 +256,8 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
             </Container>
             <Graphics draw={drawOuterBoundery} />
 
-            {/* <WaitingSprite visible={game_anim_status === "WAITING"} dimension={dimension} /> */}
+            {
+}
 
         </Container>
     );

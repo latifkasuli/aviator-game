@@ -1,6 +1,3 @@
-// 🚀 Fred's Canvas Renderer - High-Performance Plane + Multiplier
-// Uses Canvas 2D instead of DOM for better performance on weak devices
-
 import React, { useEffect, useRef, useCallback } from 'react';
 import { perf, perfMonitor, getPlaneFPS, isLowSpec } from '../state/performanceGovernor.js';
 
@@ -20,7 +17,6 @@ export default function CanvasRenderer({
     targetY: 0
   });
 
-  // Canvas rendering function
   const render = useCallback((timestamp) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -28,7 +24,6 @@ export default function CanvasRenderer({
     const ctx = canvas.getContext('2d');
     const now = timestamp || performance.now();
     
-    // Frame rate limiting based on performance governor
     const targetFPS = getPlaneFPS();
     const frameInterval = 1000 / targetFPS;
     
@@ -38,19 +33,15 @@ export default function CanvasRenderer({
     }
     lastFrameRef.current = now;
     
-    // Update performance monitor
     perfMonitor.tick();
     
-    // Get current multiplier
     const multiplier = getCurrentMultiplier();
     
-    // Canvas setup
-    const DPR = Math.min(window.devicePixelRatio || 1, isLowSpec() ? 1 : 2); // Limit DPR on low-spec
+    const DPR = Math.min(window.devicePixelRatio || 1, isLowSpec() ? 1 : 2);
     const rect = canvas.getBoundingClientRect();
     const W = rect.width * DPR;
     const H = rect.height * DPR;
     
-    // Only resize if dimensions changed (avoid constant reallocation)
     if (canvas.width !== W || canvas.height !== H) {
       canvas.width = W;
       canvas.height = H;
@@ -60,32 +51,25 @@ export default function CanvasRenderer({
     const w = rect.width;
     const h = rect.height;
     
-    // Clear canvas
-    ctx.fillStyle = isLowSpec() ? '#111827' : '#0f172a'; // Darker on low-spec
+    ctx.fillStyle = isLowSpec() ? '#111827' : '#0f172a';
     ctx.fillRect(0, 0, w, h);
     
-    // ==================== PLANE ANIMATION ====================
-    
     if (gameState === 'running' && multiplier > 1) {
-      // Smooth plane movement based on multiplier
-      const progress = Math.max(0, multiplier - 1); // 0 to infinity
+      const progress = Math.max(0, multiplier - 1);
       const maxX = w - 40;
       const maxY = h * 0.4;
       
-      // Eased movement (tanh provides nice curve)
       animationStateRef.current.targetX = 20 + maxX * Math.tanh(progress / 6);
       animationStateRef.current.targetY = h * 0.7 - maxY * Math.tanh(progress / 8);
       
-      // Smooth interpolation for plane position (reduced on low-spec for performance)
       const lerpFactor = isLowSpec() ? 0.3 : 0.15;
       animationStateRef.current.planeX += (animationStateRef.current.targetX - animationStateRef.current.planeX) * lerpFactor;
       animationStateRef.current.planeY += (animationStateRef.current.targetY - animationStateRef.current.planeY) * lerpFactor;
       
-      // Draw plane (simple triangle - more complex shapes are expensive)
       const x = animationStateRef.current.planeX;
       const y = animationStateRef.current.planeY;
       
-      ctx.fillStyle = isLowSpec() ? '#10b981' : '#2dd4bf'; // Simpler color on low-spec
+      ctx.fillStyle = isLowSpec() ? '#10b981' : '#2dd4bf';
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x - 16, y + 8);
@@ -94,7 +78,6 @@ export default function CanvasRenderer({
       ctx.closePath();
       ctx.fill();
       
-      // Add simple trail effect only on high-spec devices
       if (!isLowSpec() && progress > 2) {
         ctx.fillStyle = 'rgba(45, 212, 191, 0.3)';
         for (let i = 1; i <= 3; i++) {
@@ -104,11 +87,9 @@ export default function CanvasRenderer({
         }
       }
     } else {
-      // Reset plane position when not flying
       animationStateRef.current.planeX = 20;
       animationStateRef.current.planeY = h * 0.7;
       
-      // Draw stationary plane
       ctx.fillStyle = '#6b7280';
       ctx.beginPath();
       ctx.moveTo(20, h * 0.7);
@@ -119,16 +100,12 @@ export default function CanvasRenderer({
       ctx.fill();
     }
     
-    // ==================== MULTIPLIER TEXT ====================
-    
-    // Font size based on device capability
     const baseFontSize = isLowSpec() ? 28 : 36;
-    const fontSize = Math.min(baseFontSize, w / 8); // Responsive sizing
+    const fontSize = Math.min(baseFontSize, w / 8);
     ctx.font = `bold ${fontSize}px ${isLowSpec() ? 'monospace' : 'ui-monospace, monospace'}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Multiplier color based on value (simplified on low-spec)
     let multiplierColor;
     if (gameState === 'crashed') {
       multiplierColor = '#ef4444';
@@ -144,7 +121,6 @@ export default function CanvasRenderer({
     
     ctx.fillStyle = multiplierColor;
     
-    // Multiplier text content
     let multiplierText;
     if (gameState === 'crashed') {
       multiplierText = crashPoint ? `${crashPoint.toFixed(2)}x` : 'CRASHED!';
@@ -152,7 +128,6 @@ export default function CanvasRenderer({
       multiplierText = `${multiplier.toFixed(2)}x`;
     }
     
-    // Add glow effect only on high-spec devices
     if (!isLowSpec() && gameState === 'running') {
       ctx.shadowColor = multiplierColor;
       ctx.shadowBlur = 15;
@@ -160,10 +135,7 @@ export default function CanvasRenderer({
     
     ctx.fillText(multiplierText, w / 2, h * 0.25);
     
-    // Reset shadow
     ctx.shadowBlur = 0;
-    
-    // ==================== STATUS TEXT ====================
     
     ctx.font = `${isLowSpec() ? 12 : 14}px ${isLowSpec() ? 'sans-serif' : 'ui-sans-serif, sans-serif'}`;
     ctx.fillStyle = '#9ca3af';
@@ -188,8 +160,6 @@ export default function CanvasRenderer({
     
     ctx.fillText(statusText, w / 2, h * 0.85);
     
-    // ==================== PERFORMANCE HUD (DEBUG) ====================
-    
     if (perf.showPerfHUD) {
       ctx.font = '10px monospace';
       ctx.fillStyle = '#ffffff';
@@ -200,19 +170,15 @@ export default function CanvasRenderer({
       ctx.fillText(`Canvas: ${W}x${H} (DPR: ${DPR})`, 10, 65);
     }
     
-    // Continue animation loop
     rafRef.current = requestAnimationFrame(render);
   }, [getCurrentMultiplier, gameState, countdown, crashPoint]);
 
-  // Setup and cleanup
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Initial render
     rafRef.current = requestAnimationFrame(render);
 
-    // Cleanup function
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
@@ -221,7 +187,6 @@ export default function CanvasRenderer({
     };
   }, [render]);
 
-  // Pause animation when page is hidden (battery saving)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {

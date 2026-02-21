@@ -48,7 +48,7 @@ const AdminReferrals = () => {
       });
       
       if (response.success) {
-        loadReferrals(); // Reload the list
+        loadReferrals();
         if (window.Telegram?.WebApp?.showAlert) {
           window.Telegram.WebApp.showAlert('Referral approved successfully');
         }
@@ -73,7 +73,7 @@ const AdminReferrals = () => {
       });
       
       if (response.success) {
-        loadReferrals(); // Reload the list
+        loadReferrals();
         if (window.Telegram?.WebApp?.showAlert) {
           window.Telegram.WebApp.showAlert('Referral rejected');
         }
@@ -108,11 +108,13 @@ const AdminReferrals = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {
+}
       <div>
         <h2 className="text-2xl font-bold text-white mb-4">Referral Management</h2>
         
-        {/* Status Filter */}
+        {
+}
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setStatusFilter('')}
@@ -140,21 +142,24 @@ const AdminReferrals = () => {
         </div>
       </div>
 
-      {/* Loading */}
+      {
+}
       {isLoading && (
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       )}
 
-      {/* Error */}
+      {
+}
       {error && (
         <div className="bg-red-900 bg-opacity-50 border border-red-600 rounded-lg p-4">
           <p className="text-red-300">{error}</p>
         </div>
       )}
 
-      {/* Referrals Table */}
+      {
+}
       {!isLoading && !error && (
         <>
           <div className="bg-gray-800 rounded-lg overflow-hidden">
@@ -243,7 +248,8 @@ const AdminReferrals = () => {
             </table>
           </div>
 
-          {/* Pagination */}
+          {
+}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2">
               <button

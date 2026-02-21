@@ -5,26 +5,22 @@ const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 
 class DatabaseService {
-  // Helper function to get today's date as DateTime for Prisma
   getTodayDate() {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day
+    today.setHours(0, 0, 0, 0);
     return today;
   }
 
-  // ==================== USER MANAGEMENT ====================
   
   async createUser(userData) {
     const { telegramId, username, email, firstName, lastName, avatar, password, role } = userData;
     
     try {
-      // Hash password if provided
       let passwordHash = null;
       if (password) {
         passwordHash = await bcrypt.hash(password, 12);
       }
       
-      // Generate unique referral code
       let referralCode;
       let codeExists = true;
       while (codeExists) {
@@ -45,13 +41,12 @@ class DatabaseService {
           avatar,
           passwordHash,
           referralCode,
-          role: role || 'PLAYER', // Default to PLAYER if no role specified
+          role: role || 'PLAYER',
           balance: process.env.DEFAULT_BALANCE || 1000,
-          isVerified: !!telegramId, // Auto-verify Telegram users
+          isVerified: !!telegramId,
         },
       });
 
-      // Create default player settings (best-effort)
       try {
         await prisma.playerSettings.create({
           data: {
@@ -63,22 +58,19 @@ class DatabaseService {
         });
       } catch (_) {}
       
-      console.log(`👤 Created user: ${username} (${user.id})`);
+      console.log(`Created user: ${username} (${user.id})`);
       return { success: true, user: this.sanitizeUser(user) };
     } catch (error) {
-      console.error('❌ Error creating user:', error);
+      console.error('Error creating user:', error);
       return { success: false, error: 'Failed to create user' };
     }
   }
-
-  // ==================== PLAYER SETTINGS ====================
 
   async getPlayerSettings(userId) {
     try {
       const settings = await prisma.playerSettings.findUnique({ where: { userId } });
       if (!settings) return null;
       
-      // Convert Decimal fields to numbers for frontend consumption
       return {
         ...settings,
         autoCashoutMultiplier: settings.autoCashoutMultiplier ? Number(settings.autoCashoutMultiplier) : 2.0,
@@ -86,14 +78,14 @@ class DatabaseService {
         maxDailyLoss: settings.maxDailyLoss ? Number(settings.maxDailyLoss) : 5000
       };
     } catch (error) {
-      console.error('❌ Error getting player settings:', error);
+      console.error('Error getting player settings:', error);
       return null;
     }
   }
 
   async upsertPlayerSettings(userId, partialSettings) {
     try {
-      console.log(`📝 upsertPlayerSettings called for user ${userId} with:`, partialSettings);
+      console.log(`upsertPlayerSettings called for user ${userId} with:`, partialSettings);
       
       const updated = await prisma.playerSettings.upsert({
         where: { userId },
@@ -117,9 +109,8 @@ class DatabaseService {
           maxGamesPerDay: partialSettings.maxGamesPerDay ?? 100,
         }
       });
-      console.log(`✅ Player settings upserted successfully:`, updated);
+      console.log(`Player settings upserted successfully:`, updated);
       
-      // Convert Decimal fields to numbers for frontend consumption
       return {
         ...updated,
         autoCashoutMultiplier: updated.autoCashoutMultiplier ? Number(updated.autoCashoutMultiplier) : 2.0,
@@ -127,7 +118,7 @@ class DatabaseService {
         maxDailyLoss: updated.maxDailyLoss ? Number(updated.maxDailyLoss) : 5000
       };
     } catch (error) {
-      console.error('❌ Error upserting player settings:', error);
+      console.error('Error upserting player settings:', error);
       console.error('Full error details:', error);
       return null;
     }
@@ -148,7 +139,7 @@ class DatabaseService {
       
       return user ? this.sanitizeUser(user) : null;
     } catch (error) {
-      console.error('❌ Error finding user by ID:', error);
+      console.error('Error finding user by ID:', error);
       return null;
     }
   }
@@ -168,7 +159,7 @@ class DatabaseService {
       
       return user ? this.sanitizeUser(user) : null;
     } catch (error) {
-      console.error('❌ Error finding user by Telegram ID:', error);
+      console.error('Error finding user by Telegram ID:', error);
       return null;
     }
   }
@@ -181,7 +172,7 @@ class DatabaseService {
       
       return user ? this.sanitizeUser(user) : null;
     } catch (error) {
-      console.error('❌ Error finding user by username:', error);
+      console.error('Error finding user by username:', error);
       return null;
     }
   }
@@ -201,7 +192,6 @@ class DatabaseService {
         return null;
       }
       
-      // Update last login
       await prisma.user.update({
         where: { id: user.id },
         data: { lastLoginAt: new Date() }
@@ -209,17 +199,15 @@ class DatabaseService {
       
       return this.sanitizeUser(user);
     } catch (error) {
-      console.error('❌ Error authenticating user:', error);
+      console.error('Error authenticating user:', error);
       return null;
     }
   }
   
-  // ==================== BALANCE MANAGEMENT ====================
   
   async updateBalance(userId, amount, description = null) {
     try {
       const result = await prisma.$transaction(async (tx) => {
-        // Get current user
         const user = await tx.user.findUnique({
           where: { id: userId }
         });
@@ -235,13 +223,11 @@ class DatabaseService {
           throw new Error('Insufficient balance');
         }
         
-        // Update user balance
         const updatedUser = await tx.user.update({
           where: { id: userId },
           data: { balance: balanceAfter }
         });
         
-        // Create transaction record
         await tx.transaction.create({
           data: {
             userId,
@@ -256,19 +242,17 @@ class DatabaseService {
         return updatedUser;
       });
       
-      console.log(`💰 Updated balance for ${userId}: ${amount} (new: ${result.balance})`);
+      console.log(`Updated balance for ${userId}: ${amount} (new: ${result.balance})`);
       return this.sanitizeUser(result);
     } catch (error) {
-      console.error('❌ Error updating balance:', error);
+      console.error('Error updating balance:', error);
       throw error;
     }
   }
   
-  // ==================== GAME ROUND MANAGEMENT ====================
   
   async createGameRound(fairRoundData) {
     try {
-      // fairRoundData should contain: serverSeed, serverSeedHash, clientSeed, nonce, crashPoint
       const gameRound = await prisma.gameRound.create({
         data: {
           serverSeed: fairRoundData.serverSeed,
@@ -281,10 +265,10 @@ class DatabaseService {
         }
       });
       
-      console.log(`🎮 Created game round ${gameRound.roundNumber} (crash: ${fairRoundData.crashPoint}x)`);
+      console.log(`Created game round ${gameRound.roundNumber} (crash: ${fairRoundData.crashPoint}x)`);
       return gameRound;
     } catch (error) {
-      console.error('❌ Error creating game round:', error);
+      console.error('Error creating game round:', error);
       throw error;
     }
   }
@@ -303,7 +287,7 @@ class DatabaseService {
       
       return gameRound;
     } catch (error) {
-      console.error('❌ Error updating game round status:', error);
+      console.error('Error updating game round status:', error);
       throw error;
     }
   }
@@ -319,17 +303,15 @@ class DatabaseService {
       
       return gameRound;
     } catch (error) {
-      console.error('❌ Error getting current game round:', error);
+      console.error('Error getting current game round:', error);
       return null;
     }
   }
   
-  // ==================== BET MANAGEMENT ====================
   
   async placeBet(userId, gameRoundId, amount, cashoutAt = null) {
     try {
       const result = await prisma.$transaction(async (tx) => {
-        // Validate user balance
         const user = await tx.user.findUnique({
           where: { id: userId }
         });
@@ -342,10 +324,8 @@ class DatabaseService {
           throw new Error('Insufficient balance');
         }
         
-        // Check daily limits
         await this.checkDailyLimits(userId, amount, tx);
         
-        // Deduct balance
         const balanceBefore = parseFloat(user.balance);
         const balanceAfter = balanceBefore - amount;
         
@@ -357,7 +337,6 @@ class DatabaseService {
           }
         });
         
-        // Create bet
         const bet = await tx.bet.create({
           data: {
             userId,
@@ -368,7 +347,6 @@ class DatabaseService {
           }
         });
         
-        // Create transaction record
         await tx.transaction.create({
           data: {
             userId,
@@ -381,37 +359,32 @@ class DatabaseService {
           }
         });
         
-        // Update daily limits
         await this.updateDailyLimits(userId, amount, 0, 1, tx);
         
-        // Check if this is user's first bet for referral activation
         const betCount = await tx.bet.count({
           where: { userId }
         });
         
-        // Store for after transaction
         const isFirstBet = betCount === 1;
         
         return { bet, isFirstBet };
       });
       
-      // Handle referral activation after successful transaction
       if (result.isFirstBet) {
         try {
           const activationResult = await this.markReferralActivated(userId);
           if (activationResult.success && activationResult.paid) {
-            console.log(`🎉 Referral activated for user ${userId} - referrer received bonus`);
+            console.log(`Referral activated for user ${userId} - referrer received bonus`);
           }
         } catch (error) {
-          // Don't fail the bet if referral activation fails
           console.error('Referral activation error (non-fatal):', error);
         }
       }
       
-      console.log(`🎯 Bet placed: ${userId} - ${amount} (${result.bet.id})`);
+      console.log(`Bet placed: ${userId} - ${amount} (${result.bet.id})`);
       return result.bet;
     } catch (error) {
-      console.error('❌ Error placing bet:', error);
+      console.error('Error placing bet:', error);
       throw error;
     }
   }
@@ -419,7 +392,6 @@ class DatabaseService {
   async cashoutBet(betId, multiplier) {
     try {
       const result = await prisma.$transaction(async (tx) => {
-        // Get bet
         const bet = await tx.bet.findUnique({
           where: { id: betId },
           include: { user: true }
@@ -433,7 +405,6 @@ class DatabaseService {
         const balanceBefore = parseFloat(bet.user.balance);
         const balanceAfter = balanceBefore + payout;
         
-        // Update bet
         const updatedBet = await tx.bet.update({
           where: { id: betId },
           data: {
@@ -444,9 +415,7 @@ class DatabaseService {
           }
         });
         
-        // Update user balance
-        // Calculate experience based on win multiplier
-        const expGained = Math.min(50, Math.floor(10 + (multiplier * 5))); // 10 base + 5 per multiplier, max 50
+        const expGained = Math.min(50, Math.floor(10 + (multiplier * 5)));
         
         await tx.user.update({
           where: { id: bet.userId },
@@ -459,7 +428,6 @@ class DatabaseService {
           }
         });
         
-        // Create transaction record
         await tx.transaction.create({
           data: {
             userId: bet.userId,
@@ -475,13 +443,12 @@ class DatabaseService {
         return updatedBet;
       });
       
-      // Update user level based on new experience
       await this.updateUserLevel(result.userId);
       
-      console.log(`💰 Bet cashed out: ${betId} at ${multiplier}x (payout: ${result.payout})`);
+      console.log(`Bet cashed out: ${betId} at ${multiplier}x (payout: ${result.payout})`);
       return result;
     } catch (error) {
-      console.error('❌ Error cashing out bet:', error);
+      console.error('Error cashing out bet:', error);
       throw error;
     }
   }
@@ -489,7 +456,6 @@ class DatabaseService {
   async crashBets(gameRoundId, crashPoint) {
     try {
       const result = await prisma.$transaction(async (tx) => {
-        // Get all active bets for this round
         const activeBets = await tx.bet.findMany({
           where: {
             gameRoundId,
@@ -501,7 +467,6 @@ class DatabaseService {
         let lostBets = 0;
         
         for (const bet of activeBets) {
-          // Update bet as lost
           await tx.bet.update({
             where: { id: bet.id },
             data: {
@@ -510,7 +475,6 @@ class DatabaseService {
             }
           });
           
-          // Update user stats
           const betAmount = parseFloat(bet.amount);
           const currentUser = await tx.user.findUnique({
             where: { id: bet.userId },
@@ -522,16 +486,13 @@ class DatabaseService {
             data: {
               totalLost: { increment: betAmount },
               gamesPlayed: { increment: 1 },
-              // Update biggest loss if this is larger
               biggestLoss: betAmount > parseFloat(currentUser.biggestLoss || 0) 
                 ? betAmount 
                 : currentUser.biggestLoss,
-              // Add experience for playing (even on loss)
               experience: { increment: 5 }
             }
           });
           
-          // Create transaction record
           await tx.transaction.create({
             data: {
               userId: bet.userId,
@@ -544,7 +505,6 @@ class DatabaseService {
             }
           });
           
-          // Update daily limits
           await this.updateDailyLimits(bet.userId, 0, parseFloat(bet.amount), 0, tx);
           
           lostBets++;
@@ -553,20 +513,18 @@ class DatabaseService {
         return { lostBets, totalBets: activeBets.length, userIds: activeBets.map(bet => bet.userId) };
       });
       
-      // Update levels for all affected users
       for (const userId of result.userIds) {
         await this.updateUserLevel(userId);
       }
       
-      console.log(`💥 Crashed ${result.lostBets} bets at ${crashPoint}x`);
+      console.log(`Crashed ${result.lostBets} bets at ${crashPoint}x`);
       return result;
     } catch (error) {
-      console.error('❌ Error crashing bets:', error);
+      console.error('Error crashing bets:', error);
       throw error;
     }
   }
   
-  // ==================== DAILY LIMITS ====================
   
   async checkDailyLimits(userId, betAmount, tx = prisma) {
     const today = this.getTodayDate();
@@ -616,7 +574,6 @@ class DatabaseService {
     });
   }
   
-  // ==================== STATISTICS ====================
   
   async getUserStats(userId) {
     try {
@@ -639,7 +596,6 @@ class DatabaseService {
       
       if (!user) return null;
       
-      // Calculate additional stats
       const totalBets = user.bets.length;
       const wonBets = user.bets.filter(bet => bet.status === 'CASHED_OUT').length;
       const winRate = totalBets > 0 ? (wonBets / totalBets * 100).toFixed(2) : 0;
@@ -657,7 +613,7 @@ class DatabaseService {
         }
       };
     } catch (error) {
-      console.error('❌ Error getting user stats:', error);
+      console.error('Error getting user stats:', error);
       return null;
     }
   }
@@ -686,25 +642,23 @@ class DatabaseService {
         }
       });
       
-      // Only reveal server seeds for rounds older than 5 minutes
       const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
       
       return rounds.map(round => ({
         ...round,
         serverSeed: round.endTime && new Date(round.endTime) < fiveMinutesAgo 
           ? round.serverSeed 
-          : null, // Hide seed for recent rounds
+          : null,
         crashPoint: round.crashPoint.toString()
       }));
     } catch (error) {
-      console.error('❌ Error getting recent rounds for fairness:', error);
+      console.error('Error getting recent rounds for fairness:', error);
       return [];
     }
   }
   
   async getLeaderboard(type = 'balance', limit = 10) {
     try {
-      // Determine sort order based on type
       let orderBy = {};
       switch (type) {
         case 'balance':
@@ -714,8 +668,7 @@ class DatabaseService {
           orderBy = { totalWon: 'desc' };
           break;
         case 'winRate':
-          // For win rate, we need to fetch all and sort manually
-          orderBy = { gamesPlayed: 'desc' }; // At least some games
+          orderBy = { gamesPlayed: 'desc' };
           break;
         default:
           orderBy = { balance: 'desc' };
@@ -724,10 +677,10 @@ class DatabaseService {
       const users = await prisma.user.findMany({
         where: {
           isActive: true,
-          role: 'PLAYER' // Exclude admins from leaderboard
+          role: 'PLAYER'
         },
         orderBy,
-        take: type === 'winRate' ? 100 : limit, // Get more for winRate calculation
+        take: type === 'winRate' ? 100 : limit,
         include: {
           bets: {
             select: {
@@ -737,7 +690,6 @@ class DatabaseService {
         }
       });
       
-      // Calculate additional stats
       let processedUsers = users.map(user => {
         const wonBets = user.bets.filter(bet => bet.status === 'CASHED_OUT').length;
         const totalBets = user.bets.length;
@@ -757,17 +709,16 @@ class DatabaseService {
         };
       });
       
-      // Sort by win rate if needed and limit
       if (type === 'winRate') {
         processedUsers = processedUsers
-          .filter(user => user.gamesPlayed >= 10) // Min 10 games for win rate leaderboard
+          .filter(user => user.gamesPlayed >= 10)
           .sort((a, b) => b.winRate - a.winRate)
           .slice(0, limit);
       }
       
       return processedUsers;
     } catch (error) {
-      console.error('❌ Error getting leaderboard:', error);
+      console.error('Error getting leaderboard:', error);
       return [];
     }
   }
@@ -781,14 +732,13 @@ class DatabaseService {
       
       return { success: true, user: this.sanitizeUser(user) };
     } catch (error) {
-      console.error('❌ Error updating user:', error);
+      console.error('Error updating user:', error);
       return { success: false, error: 'Failed to update user' };
     }
   }
 
   async authenticateUser(usernameOrEmail, password) {
     try {
-      // Find user by username or email
       const user = await prisma.user.findFirst({
         where: {
           OR: [
@@ -806,7 +756,6 @@ class DatabaseService {
         return { success: false, error: 'No password set for this user' };
       }
 
-      // Check password
       const isValidPassword = await bcrypt.compare(password, user.passwordHash);
       if (!isValidPassword) {
         return { success: false, error: 'Invalid password' };
@@ -818,12 +767,11 @@ class DatabaseService {
 
       return { success: true, user: this.sanitizeUser(user) };
     } catch (error) {
-      console.error('❌ Error authenticating user:', error);
+      console.error('Error authenticating user:', error);
       return { success: false, error: 'Authentication failed' };
     }
   }
 
-  // ==================== REFERRAL SYSTEM ====================
   
   async attributeReferral({ inviteeUserId, referralCode, ip, deviceId }) {
     try {
@@ -835,12 +783,10 @@ class DatabaseService {
         throw new Error('Invitee user not found');
       }
 
-      // Check if already attributed
       if (invitee.referredByUserId) {
         return { success: true, alreadyAttributed: true };
       }
 
-      // Find referrer by code (case-insensitive)
       const referrer = await prisma.user.findFirst({
         where: { 
           referralCode: {
@@ -854,19 +800,15 @@ class DatabaseService {
         throw new Error('Invalid referral code');
       }
 
-      // Prevent self-referral
       if (referrer.id === invitee.id) {
         throw new Error('Self-referral not allowed');
       }
 
-      // Also check if same Telegram ID (different accounts, same person)
       if (invitee.telegramId && referrer.telegramId && invitee.telegramId === referrer.telegramId) {
         throw new Error('Cannot refer yourself');
       }
 
-      // Start transaction
       const result = await prisma.$transaction(async (tx) => {
-        // Create referral record
         await tx.referral.create({
           data: {
             referrerUserId: referrer.id,
@@ -877,7 +819,6 @@ class DatabaseService {
           }
         });
 
-        // Update invitee with referrer info
         await tx.user.update({
           where: { id: invitee.id },
           data: {
@@ -886,7 +827,6 @@ class DatabaseService {
           }
         });
 
-        // Pay invitee join bonus (1000 points)
         let inviteeBonusPaid = false;
         if (!invitee.referralJoinRewardClaimed) {
           const newBalance = parseFloat(invitee.balance) + 1000;
@@ -899,7 +839,6 @@ class DatabaseService {
             }
           });
 
-          // Record transaction
           await tx.transaction.create({
             data: {
               userId: invitee.id,
@@ -927,18 +866,17 @@ class DatabaseService {
         };
       });
 
-      console.log(`✅ Referral attributed: ${invitee.username} referred by ${referrer.username}`);
+      console.log(`Referral attributed: ${invitee.username} referred by ${referrer.username}`);
       return result;
 
     } catch (error) {
-      console.error('❌ Error attributing referral:', error);
+      console.error('Error attributing referral:', error);
       throw error;
     }
   }
 
   async markReferralActivated(inviteeUserId) {
     try {
-      // Find the referral record
       const referral = await prisma.referral.findUnique({
         where: { inviteeUserId },
         include: {
@@ -955,7 +893,6 @@ class DatabaseService {
         return { success: false, reason: 'Referral already processed' };
       }
 
-      // Basic fraud checks
       const fraudChecks = await this.performReferralFraudChecks(referral);
       if (!fraudChecks.passed) {
         await prisma.referral.update({
@@ -969,18 +906,15 @@ class DatabaseService {
         return { success: false, reason: 'Failed fraud checks', details: fraudChecks.reason };
       }
 
-      // Process referrer reward (1000 points)
       const result = await prisma.$transaction(async (tx) => {
         const referrerBonus = 1000;
         const newBalance = parseFloat(referral.referrer.balance) + referrerBonus;
 
-        // Update referrer balance
         await tx.user.update({
           where: { id: referral.referrerUserId },
           data: { balance: newBalance }
         });
 
-        // Update referral record
         await tx.referral.update({
           where: { id: referral.id },
           data: {
@@ -989,7 +923,6 @@ class DatabaseService {
           }
         });
 
-        // Record transaction
         await tx.transaction.create({
           data: {
             userId: referral.referrerUserId,
@@ -1014,33 +947,30 @@ class DatabaseService {
         };
       });
 
-      console.log(`💰 Referral activation bonus paid: ${referral.referrer.username} earned 1000 pts`);
+      console.log(`Referral activation bonus paid: ${referral.referrer.username} earned 1000 pts`);
       return result;
 
     } catch (error) {
-      console.error('❌ Error marking referral activated:', error);
+      console.error('Error marking referral activated:', error);
       throw error;
     }
   }
 
   async performReferralFraudChecks(referral) {
-    // Basic fraud detection
     try {
-      // Check 1: Account age (invitee should be relatively new)
       const inviteeAge = Date.now() - new Date(referral.invitee.createdAt).getTime();
-      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+      const maxAge = 7 * 24 * 60 * 60 * 1000;
       if (inviteeAge > maxAge) {
         return { passed: false, reason: 'Invitee account too old' };
       }
 
-      // Check 2: Same IP check (if we have IPs)
       if (referral.ip) {
         const sameIpReferrals = await prisma.referral.count({
           where: {
             referrerUserId: referral.referrerUserId,
             ip: referral.ip,
             createdAt: {
-              gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+              gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
             }
           }
         });
@@ -1049,7 +979,6 @@ class DatabaseService {
         }
       }
 
-      // Check 3: Daily referral limit
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const paidReferralsToday = await prisma.referral.count({
@@ -1067,8 +996,7 @@ class DatabaseService {
 
       return { passed: true };
     } catch (error) {
-      console.error('❌ Error in fraud checks:', error);
-      // Be conservative - reject on error
+      console.error('Error in fraud checks:', error);
       return { passed: false, reason: 'Fraud check error' };
     }
   }
@@ -1104,7 +1032,7 @@ class DatabaseService {
         totalPages: Math.ceil(total / limit)
       };
     } catch (error) {
-      console.error('❌ Error getting user bets:', error);
+      console.error('Error getting user bets:', error);
       return { success: false, error: 'Failed to get user bets' };
     }
   }
@@ -1156,12 +1084,11 @@ class DatabaseService {
 
       return stats;
     } catch (error) {
-      console.error('❌ Error getting referral stats:', error);
+      console.error('Error getting referral stats:', error);
       return null;
     }
   }
 
-  // ==================== FARMING SYSTEM ====================
   
   async claimFarmingPoints(userId) {
     try {
@@ -1177,19 +1104,18 @@ class DatabaseService {
       const lastClaimed = user.lastClaimedAt ? new Date(user.lastClaimedAt) : null;
       const hoursElapsed = lastClaimed 
         ? (now - lastClaimed) / (1000 * 60 * 60) 
-        : 6; // If never claimed, allow first claim
+        : 6;
 
       if (hoursElapsed < 6) {
         const timeRemaining = 6 - hoursElapsed;
         return { 
           success: false, 
           error: 'Cannot claim yet',
-          timeRemaining: timeRemaining * 60 * 60 * 1000, // milliseconds
+          timeRemaining: timeRemaining * 60 * 60 * 1000,
           nextClaimTime: new Date(lastClaimed.getTime() + 6 * 60 * 60 * 1000)
         };
       }
 
-      // Award 6000 points
       const pointsToAward = 6000;
       const newBalance = parseFloat(user.balance) + pointsToAward;
 
@@ -1198,12 +1124,10 @@ class DatabaseService {
         data: {
           balance: newBalance,
           lastClaimedAt: now,
-          // Add 20 experience for farming claim
           experience: { increment: 20 }
         }
       });
 
-      // Record transaction
       await prisma.transaction.create({
         data: {
           userId,
@@ -1220,10 +1144,9 @@ class DatabaseService {
         }
       });
 
-      // Update user level based on new experience
       await this.updateUserLevel(userId);
       
-      console.log(`🌾 User ${userId} claimed ${pointsToAward} farming points`);
+      console.log(`User ${userId} claimed ${pointsToAward} farming points`);
 
       return {
         success: true,
@@ -1233,12 +1156,11 @@ class DatabaseService {
         nextClaimTime: new Date(now.getTime() + 6 * 60 * 60 * 1000)
       };
     } catch (error) {
-      console.error('❌ Error claiming farming points:', error);
+      console.error('Error claiming farming points:', error);
       return { success: false, error: 'Failed to claim farming points' };
     }
   }
 
-  // ==================== ADMIN METHODS ====================
   
   async getAdminStats() {
     try {
@@ -1256,7 +1178,7 @@ class DatabaseService {
         prisma.user.count({
           where: {
             createdAt: {
-              gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+              gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
             }
           }
         })
@@ -1282,7 +1204,7 @@ class DatabaseService {
         houseProfit: (totalWagered._sum.amount || 0) - (totalWon._sum.payout || 0)
       };
     } catch (error) {
-      console.error('❌ Error getting admin stats:', error);
+      console.error('Error getting admin stats:', error);
       throw error;
     }
   }
@@ -1333,7 +1255,7 @@ class DatabaseService {
         totalPages: Math.ceil(total / limit)
       };
     } catch (error) {
-      console.error('❌ Error getting all users:', error);
+      console.error('Error getting all users:', error);
       throw error;
     }
   }
@@ -1375,12 +1297,11 @@ class DatabaseService {
         totalPages: Math.ceil(total / limit)
       };
     } catch (error) {
-      console.error('❌ Error getting game rounds:', error);
+      console.error('Error getting game rounds:', error);
       throw error;
     }
   }
 
-  // ==================== ADMIN METHODS ====================
   
   async incrementBalance(userId, amount) {
     try {
@@ -1395,7 +1316,7 @@ class DatabaseService {
       
       return this.sanitizeUser(user);
     } catch (error) {
-      console.error('❌ Error incrementing balance:', error);
+      console.error('Error incrementing balance:', error);
       throw error;
     }
   }
@@ -1420,7 +1341,7 @@ class DatabaseService {
       
       return round;
     } catch (error) {
-      console.error('❌ Error getting game round with bets:', error);
+      console.error('Error getting game round with bets:', error);
       return null;
     }
   }
@@ -1447,7 +1368,7 @@ class DatabaseService {
         }
       });
     } catch (error) {
-      console.error('❌ Error getting referral:', error);
+      console.error('Error getting referral:', error);
       return null;
     }
   }
@@ -1470,7 +1391,6 @@ class DatabaseService {
         throw new Error('Referral is not pending');
       }
 
-      // Process payment
       const result = await prisma.$transaction(async (tx) => {
         const referrerBonus = 1000;
         const newBalance = parseFloat(referral.referrer.balance) + referrerBonus;
@@ -1511,7 +1431,7 @@ class DatabaseService {
 
       return result;
     } catch (error) {
-      console.error('❌ Error approving referral:', error);
+      console.error('Error approving referral:', error);
       throw error;
     }
   }
@@ -1528,7 +1448,7 @@ class DatabaseService {
 
       return { success: true, referral };
     } catch (error) {
-      console.error('❌ Error rejecting referral:', error);
+      console.error('Error rejecting referral:', error);
       throw error;
     }
   }
@@ -1539,14 +1459,14 @@ class DatabaseService {
         data
       });
     } catch (error) {
-      console.error('❌ Error creating admin change request:', error);
+      console.error('Error creating admin change request:', error);
       throw error;
     }
   }
 
   async getAdminStats() {
     try {
-      console.log('🔧 Getting admin stats...');
+      console.log('Getting admin stats...');
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const yesterday = new Date(today);
@@ -1554,36 +1474,36 @@ class DatabaseService {
       const weekAgo = new Date(today);
       weekAgo.setDate(weekAgo.getDate() - 7);
 
-      console.log('📅 Date ranges:', { today, weekAgo });
+      console.log('Date ranges:', { today, weekAgo });
 
       let totalUsers, activeToday, activeThisWeek, roundsToday, totalBetsToday,
           uniquePlayersToday, totalWageredToday, totalWonToday, referralsToday, activationsToday;
 
       try {
-        console.log('1️⃣ Getting total users...');
+        console.log('Getting total users...');
         totalUsers = await prisma.user.count();
         
-        console.log('2️⃣ Getting active users today...');
+        console.log('Getting active users today...');
         activeToday = await prisma.user.count({
           where: { lastLoginAt: { gte: today } }
         });
         
-        console.log('3️⃣ Getting active users this week...');
+        console.log('Getting active users this week...');
         activeThisWeek = await prisma.user.count({
           where: { lastLoginAt: { gte: weekAgo } }
         });
         
-        console.log('4️⃣ Getting game rounds today...');
+        console.log('Getting game rounds today...');
         roundsToday = await prisma.gameRound.count({
           where: { createdAt: { gte: today } }
         });
         
-        console.log('5️⃣ Getting bets today...');
+        console.log('Getting bets today...');
         totalBetsToday = await prisma.bet.count({
           where: { placedAt: { gte: today } }
         });
         
-        console.log('6️⃣ Getting unique players today...');
+        console.log('Getting unique players today...');
         const uniquePlayers = await prisma.bet.findMany({
           where: { placedAt: { gte: today } },
           select: { userId: true },
@@ -1591,14 +1511,14 @@ class DatabaseService {
         });
         uniquePlayersToday = uniquePlayers.length;
         
-        console.log('7️⃣ Getting total wagered today...');
+        console.log('Getting total wagered today...');
         const wagerResult = await prisma.bet.aggregate({
           where: { placedAt: { gte: today } },
           _sum: { amount: true }
         });
         totalWageredToday = wagerResult._sum.amount || 0;
         
-        console.log('8️⃣ Getting total won today...');
+        console.log('Getting total won today...');
         const wonResult = await prisma.bet.aggregate({
           where: { 
             placedAt: { gte: today },
@@ -1608,12 +1528,12 @@ class DatabaseService {
         });
         totalWonToday = wonResult._sum.payout || 0;
         
-        console.log('9️⃣ Getting referrals today...');
+        console.log('Getting referrals today...');
         referralsToday = await prisma.referral.count({
           where: { createdAt: { gte: today } }
         });
         
-        console.log('🔟 Getting activations today...');
+        console.log('Getting activations today...');
         activationsToday = await prisma.referral.count({
           where: {
             activationEventAt: { gte: today },
@@ -1621,16 +1541,13 @@ class DatabaseService {
           }
         });
         
-        console.log('✅ All queries completed successfully');
+        console.log('All queries completed successfully');
         
       } catch (queryError) {
-        console.error('❌ Query error in admin stats:', queryError);
+        console.error('Query error in admin stats:', queryError);
         throw queryError;
       }
 
-
-
-      // Calculate derived metrics
       const houseEdgeToday = totalWageredToday - totalWonToday;
       const avgCrashToday = await prisma.gameRound.aggregate({
         where: {
@@ -1671,11 +1588,10 @@ class DatabaseService {
         }
       };
     } catch (error) {
-      console.error('❌ Error getting admin stats:', error);
-      console.error('❌ Error details:', error.message);
-      console.error('❌ Error stack:', error.stack);
+      console.error('Error getting admin stats:', error);
+      console.error('Error details:', error.message);
+      console.error('Error stack:', error.stack);
       
-      // Return a safe fallback instead of throwing
       return {
         users: { total: 0, activeToday: 0, activeThisWeek: 0, percentActiveToday: 0 },
         gameplay: { roundsToday: 0, betsToday: 0, uniquePlayersToday: 0, avgBetsPerPlayer: 0, avgCrashToday: '0.00' },
@@ -1686,11 +1602,8 @@ class DatabaseService {
     }
   }
 
-  // ==================== UTILITY METHODS ====================
   
-  // Generate a unique referral code
   generateReferralCode() {
-    // Format: AV8R-XXXXX (where X is alphanumeric)
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = '';
     for (let i = 0; i < 5; i++) {
@@ -1699,10 +1612,7 @@ class DatabaseService {
     return `AV8R-${code}`;
   }
   
-  // Calculate level based on experience
   calculateLevel(experience) {
-    // Level progression: 0-99 XP = Level 1, 100-249 = Level 2, etc.
-    // Each level requires more XP than the previous
     if (experience < 100) return 1;
     if (experience < 250) return 2;
     if (experience < 500) return 3;
@@ -1714,11 +1624,9 @@ class DatabaseService {
     if (experience < 11000) return 9;
     if (experience < 15000) return 10;
     
-    // After level 10, each level requires 5000 more XP
     return Math.floor(10 + (experience - 15000) / 5000);
   }
 
-  // Update user level based on experience
   async updateUserLevel(userId) {
     try {
       const user = await prisma.user.findUnique({
@@ -1738,7 +1646,7 @@ class DatabaseService {
       
       return newLevel;
     } catch (error) {
-      console.error('❌ Error updating user level:', error);
+      console.error('Error updating user level:', error);
     }
   }
 
@@ -1764,7 +1672,7 @@ class DatabaseService {
       await prisma.$queryRaw`SELECT 1`;
       return { status: 'healthy', database: 'connected' };
     } catch (error) {
-      console.error('❌ Database health check failed:', error);
+      console.error('Database health check failed:', error);
       return { status: 'unhealthy', database: 'disconnected', error: error.message };
     }
   }

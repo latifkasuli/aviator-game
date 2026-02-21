@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-// Script to generate referral codes for existing users who don't have one
-
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -16,7 +14,6 @@ function generateReferralCode() {
 
 async function generateCodesForExistingUsers() {
   try {
-    // Find users without referral codes
     const usersWithoutCodes = await prisma.user.findMany({
       where: {
         referralCode: null
@@ -29,7 +26,6 @@ async function generateCodesForExistingUsers() {
       let referralCode;
       let codeExists = true;
       
-      // Generate unique code
       while (codeExists) {
         referralCode = generateReferralCode();
         const existing = await prisma.user.findUnique({
@@ -38,22 +34,20 @@ async function generateCodesForExistingUsers() {
         codeExists = !!existing;
       }
 
-      // Update user with new code
       await prisma.user.update({
         where: { id: user.id },
         data: { referralCode }
       });
 
-      console.log(`✅ Generated code ${referralCode} for user ${user.username}`);
+      console.log(`Generated code ${referralCode} for user ${user.username}`);
     }
 
-    console.log('✅ All users now have referral codes!');
+    console.log('All users now have referral codes!');
   } catch (error) {
-    console.error('❌ Error generating referral codes:', error);
+    console.error('Error generating referral codes:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Run the script
 generateCodesForExistingUsers();

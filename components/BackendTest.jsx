@@ -1,6 +1,3 @@
-// 🧪 Backend Test Component
-// Simple component to test our backend connection
-
 import React from 'react';
 import { useGameBackend } from './hooks/useGameBackend';
 import ConnectionStatus from './ConnectionStatus';
@@ -23,12 +20,12 @@ const BackendTest = () => {
   } = useGameBackend();
 
   const handleTestBet = () => {
-    placeBet(100); // Place a 100 point bet
+    placeBet(100);
   };
 
   const handleTestCashOut = () => {
-    console.log('🧪 [BackendTest] Attempting cash out...');
-    console.log('🧪 [BackendTest] Current state:', { gameState, hasActiveBet, activeBetAmount, cashedOut });
+    console.log('[BackendTest] Attempting cash out...');
+    console.log('[BackendTest] Current state:', { gameState, hasActiveBet, activeBetAmount, cashedOut });
     cashOut();
   };
 
@@ -40,15 +37,17 @@ const BackendTest = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-gray-800 rounded-lg">
-      <h2 className="text-2xl font-bold text-white mb-6">🧪 Backend Connection Test</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">Backend Connection Test</h2>
       
-      {/* Connection Status */}
+      {
+}
       <div className="mb-6 p-4 bg-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold text-white mb-2">Connection Status</h3>
         <ConnectionStatus isConnected={isConnected} playersOnline={playersOnline} />
       </div>
 
-      {/* Game State */}
+      {
+}
       <div className="mb-6 p-4 bg-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold text-white mb-2">Game State</h3>
         <div className="grid grid-cols-2 gap-4 text-sm">
@@ -71,7 +70,8 @@ const BackendTest = () => {
         </div>
       </div>
 
-      {/* Player State */}
+      {
+}
       <div className="mb-6 p-4 bg-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold text-white mb-2">Player State</h3>
         <div className="grid grid-cols-2 gap-4 text-sm">
@@ -94,7 +94,8 @@ const BackendTest = () => {
         </div>
       </div>
 
-      {/* Test Actions */}
+      {
+}
       <div className="mb-6 p-4 bg-gray-700 rounded-lg">
         <h3 className="text-lg font-semibold text-white mb-4">Test Actions</h3>
         <div className="flex space-x-4">
@@ -123,7 +124,8 @@ const BackendTest = () => {
         </div>
       </div>
 
-      {/* Instructions */}
+      {
+}
       <div className="p-4 bg-blue-900 bg-opacity-50 rounded-lg">
         <h3 className="text-lg font-semibold text-blue-400 mb-2">Instructions</h3>
         <ul className="text-sm text-blue-200 space-y-1">

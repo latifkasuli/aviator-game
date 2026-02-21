@@ -4,25 +4,21 @@ import { dimensionType, aviatorStateType } from '../utils/aviatorTypes'
 import AppStage from './pixicomp/AppStage'
 import { webpORpng } from '../utils/aviatorUtils'
 
-// Internal context for PIXI - self-contained
 interface InternalAviatorState {
     dimension: dimensionType;
     game_anim_status: 'WAITING' | 'ANIM_STARTED' | 'ANIM_CRASHED';
 }
 
-// External props - only server data
 interface AviatorGameStandaloneProps {
     gameState: 'betting' | 'running' | 'crashed'
     multiplier: number
     countdown: number
     crashHistory?: number[]
     
-    // Optional styling
     width?: number
     height?: number
     className?: string
     
-    // Optional callbacks
     onGameStateChange?: (state: string) => void
     onMultiplierChange?: (multiplier: number) => void
 }
@@ -39,9 +35,8 @@ const AviatorGameStandalone = ({
     onMultiplierChange
 }: AviatorGameStandaloneProps) => {
     
-    // Internal PIXI state - self-managed
     const [internalAviatorState, setInternalAviatorState] = useState<InternalAviatorState>({
-        dimension: { width: 1920, height: 630 }, // Default PIXI dimensions
+        dimension: { width: 1920, height: 630 },
         game_anim_status: 'WAITING'
     })
     
@@ -52,7 +47,6 @@ const AviatorGameStandalone = ({
     
     const pixi_ref = useRef<HTMLDivElement>(null)
 
-    // Calculate PIXI scaling
     useEffect(() => {
         const newScale = Math.min(
             pixiDimension.width / internalAviatorState.dimension.width,
@@ -61,7 +55,6 @@ const AviatorGameStandalone = ({
         setScale(newScale)
     }, [pixiDimension, internalAviatorState.dimension])
 
-    // Update dimensions and internal state
     const updateDimensions = useCallback(() => {
         const containerWidth = pixi_ref.current?.clientWidth || width
         const finalWidth = Math.min(containerWidth, width)
@@ -69,7 +62,6 @@ const AviatorGameStandalone = ({
         
         setPixiDimension({ width: finalWidth, height: finalHeight })
         
-        // Update internal aviator state for PIXI scaling
         setInternalAviatorState(prev => {
             const new_width = prev.dimension.width
             const new_height = new_width * finalHeight / finalWidth
@@ -83,7 +75,6 @@ const AviatorGameStandalone = ({
         })
     }, [width, height])
 
-    // Handle game state changes
     useEffect(() => {
         let newAnimStatus: 'WAITING' | 'ANIM_STARTED' | 'ANIM_CRASHED' = 'WAITING'
         
@@ -91,10 +82,8 @@ const AviatorGameStandalone = ({
             newAnimStatus = 'ANIM_STARTED'
         } else if (gameState === 'crashed') {
             newAnimStatus = 'ANIM_CRASHED'
-            // Trigger parachute animation
             setTrigParachute(prev => ({ uniqId: prev.uniqId + 1, isMe: true }))
             
-            // Reset to waiting after 3 seconds
             setTimeout(() => {
                 setInternalAviatorState(prev => ({ ...prev, game_anim_status: 'WAITING' }))
             }, 3000)
@@ -104,21 +93,17 @@ const AviatorGameStandalone = ({
         
         setInternalAviatorState(prev => ({ ...prev, game_anim_status: newAnimStatus }))
         
-        // Optional callback
         onGameStateChange?.(gameState)
     }, [gameState, onGameStateChange])
 
-    // Optional multiplier callback
     useEffect(() => {
         onMultiplierChange?.(multiplier)
     }, [multiplier, onMultiplierChange])
 
-    // Initialize dimensions and propeller rotation
     useEffect(() => {
         updateDimensions()
         window.addEventListener('resize', updateDimensions)
         
-        // Propeller rotation
         const rotationInterval = setInterval(() => setRotate(prev => prev + 10), 100)
         
         return () => {
@@ -129,7 +114,8 @@ const AviatorGameStandalone = ({
 
     return (
         <div className={`aviator-game-standalone ${className}`}>
-            {/* Game Canvas with Professional Styling */}
+            {
+}
             <div className="w-full max-w-4xl mx-auto mb-6">
                 <div 
                     className="flex justify-center w-full relative border-4 border-gray-800 rounded-2xl bg-black overflow-hidden shadow-2xl" 
@@ -139,7 +125,8 @@ const AviatorGameStandalone = ({
                     }} 
                     ref={pixi_ref}
                 >
-                    {/* Game State Overlay */}
+                    {
+}
                     <div 
                         className='flex flex-col gap-10 absolute top-0 justify-center items-center z-10'
                         style={{
@@ -149,7 +136,8 @@ const AviatorGameStandalone = ({
                             width: '100%'
                         }}
                     >
-                        {/* Spinning Propeller */}
+                        {
+}
                         <div 
                             style={{ 
                                 display: internalAviatorState.game_anim_status === "WAITING" ? "block" : "none",
@@ -163,7 +151,8 @@ const AviatorGameStandalone = ({
                             />
                         </div>
                         
-                        {/* Game Status Messages */}
+                        {
+}
                         <div className='flex flex-col justify-center items-center px-4 py-2 lg:px-8 lg:py-2 bg-black/70 border-dashed border border-[#E59407] rounded-lg'>
                             <p className='text-[#E59407] uppercase font-bold text-[21px] lg:text-[30px]'>
                                 {internalAviatorState.game_anim_status === "ANIM_CRASHED" ? "FLEW AWAY" : "PLACE YOUR BET"}
@@ -181,7 +170,8 @@ const AviatorGameStandalone = ({
                         </div>
                     </div>
                     
-                    {/* Self-Contained PIXI Stage */}
+                    {
+}
                     <Stage width={pixiDimension.width} height={pixiDimension.height} options={{ antialias: true }}>
                         <Container scale={scale}>
                             <AppStage 
@@ -196,10 +186,11 @@ const AviatorGameStandalone = ({
                 </div>
             </div>
 
-            {/* Optional Crash History Display */}
+            {
+}
             {crashHistory.length > 0 && (
                 <div className="mt-4 bg-black bg-opacity-30 p-4 rounded-xl w-full max-w-4xl mx-auto">
-                    <h3 className="text-lg font-bold mb-3 text-purple-400 text-center">📈 Crash History</h3>
+                    <h3 className="text-lg font-bold mb-3 text-purple-400 text-center">Crash History</h3>
                     <div className="flex flex-wrap gap-2 justify-center">
                         {crashHistory.slice(-10).map((crash, index) => {
                             const colorClass = crash < 2 ? 'bg-red-500' : 

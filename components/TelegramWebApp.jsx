@@ -2,16 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import authService from './services/authService.js';
 import gameService from './services/gameService.js';
 
-// Fred's Build Tag System - capture version from URL or Telegram params  
 const getBuildTag = () => {
   const qsV = new URLSearchParams(location.search).get('v');
   const tgV = window.Telegram?.WebApp?.initDataUnsafe?.start_param || null;
-  // support "ref_XXXX__v_YYYY" combined param
   if (tgV && tgV.includes('__v_')) return tgV.split('__v_')[1];
   return qsV || tgV || null;
 };
 
-// Telegram WebApp integration component
 const TelegramWebApp = ({ children }) => {
   const [tg, setTg] = useState(null);
   const [user, setUser] = useState(null);
@@ -19,53 +16,47 @@ const TelegramWebApp = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState(null);
-  const [debugLogs, setDebugLogs] = useState([]);
-  const [showDebugPanel, setShowDebugPanel] = useState(false);
 
-  // Add debug log function
-  const addDebugLog = (message) => {
-    console.log(message);
-    setDebugLogs(prev => [...prev.slice(-10), `${new Date().toLocaleTimeString()}: ${message}`]);
-  };
+  const addDebugLog = useCallback((message) => {
+    if (import.meta.env.DEV || import.meta.env.VITE_DEBUG === 'true') {
+      console.log(message);
+    }
+  }, []);
 
-  // Authenticate user with backend
   const authenticateUser = async (telegramUser, startParam) => {
     try {
-      addDebugLog(`🔐 Authenticating: ${telegramUser.username || telegramUser.first_name}`);
-      addDebugLog(`📨 Start param: ${startParam || 'NONE'}`);
-      addDebugLog(`📋 Telegram data: id=${telegramUser.id} (${typeof telegramUser.id})`);
-      addDebugLog(`📋 First name: "${telegramUser.first_name || 'MISSING'}"`);
-      addDebugLog('🔍 Calling authService.authenticateWithTelegram...');
+      addDebugLog(`Authenticating: ${telegramUser.username || telegramUser.first_name}`);
+      addDebugLog(`Start param: ${startParam || 'NONE'}`);
+      addDebugLog(`Telegram data: id=${telegramUser.id} (${typeof telegramUser.id})`);
+      addDebugLog(`First name: "${telegramUser.first_name || 'MISSING'}"`);
+      addDebugLog('Calling authService.authenticateWithTelegram...');
       
       const result = await authService.authenticateWithTelegram(telegramUser, startParam);
-      addDebugLog(`🔍 Auth result: ${result.success ? 'SUCCESS' : 'FAILED'}`);
+      addDebugLog(`Auth result: ${result.success ? 'SUCCESS' : 'FAILED'}`);
       
       if (!result.success) {
-        addDebugLog(`❌ Auth error: ${result.error || 'Unknown error'}`);
+        addDebugLog(`Auth error: ${result.error || 'Unknown error'}`);
         if (result.details) {
-          addDebugLog(`🔍 Error details: ${result.details}`);
+          addDebugLog(`Error details: ${result.details}`);
         }
         if (result.status) {
-          addDebugLog(`🌐 HTTP status: ${result.status}`);
+          addDebugLog(`HTTP status: ${result.status}`);
         }
-        // Check if XMLHttpRequest fallback was used
         if (result.details && result.details.includes('XHR:')) {
-          addDebugLog(`🔄 XMLHttpRequest fallback attempted!`);
+          addDebugLog('XMLHttpRequest fallback attempted');
         }
-        addDebugLog(`🔍 Full result: ${JSON.stringify(result)}`);
+        addDebugLog(`Full result: ${JSON.stringify(result)}`);
       }
       
       if (result.success) {
         setIsAuthenticated(true);
         setAuthError(null);
-        addDebugLog('✅ Authentication successful');
+        addDebugLog('Authentication successful');
         
-        // Fred's Fix: Reconnect WebSocket with fresh JWT token
-        addDebugLog('🔄 Reconnecting WebSocket...');
-        addDebugLog(`🔍 Auth token: ${authService.getToken() ? 'PRESENT' : 'MISSING'}`);
+        addDebugLog('Reconnecting WebSocket...');
+        addDebugLog(`Auth token: ${authService.getToken() ? 'PRESENT' : 'MISSING'}`);
         gameService.reconnect();
         
-        // Show referral message if present - Safe for older browsers
         if (result.referralMessage) {
           if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
             window.Telegram.WebApp.showAlert(result.referralMessage);
@@ -76,98 +67,89 @@ const TelegramWebApp = ({ children }) => {
       } else {
         setIsAuthenticated(false);
         setAuthError(result.error);
-        console.error('❌ Authentication failed:', result.error);
+        console.error('Authentication failed:', result.error);
       }
     } catch (error) {
       setIsAuthenticated(false);
       setAuthError('Network error');
-      console.error('❌ Authentication error:', error);
+      console.error('Authentication error:', error);
     }
   };
 
   useEffect(() => {
-    // Initialize Telegram WebApp - Safe for older browsers  
-    addDebugLog('🔍 TelegramWebApp useEffect triggered');
-    addDebugLog(`🔍 window.Telegram: ${!!window.Telegram}`);
-    addDebugLog(`🔍 window.Telegram.WebApp: ${!!window.Telegram?.WebApp}`);
+    addDebugLog('TelegramWebApp useEffect triggered');
+    addDebugLog(`window.Telegram: ${!!window.Telegram}`);
+    addDebugLog(`window.Telegram.WebApp: ${!!window.Telegram?.WebApp}`);
     
     if (window.Telegram && window.Telegram.WebApp) {
       const webApp = window.Telegram.WebApp;
       setTg(webApp);
 
-      addDebugLog(`🤖 Telegram WebApp detected: platform=${webApp.platform}, version=${webApp.version}`);
-      addDebugLog(`🤖 User data: ${webApp.initDataUnsafe?.user ? 'FOUND' : 'MISSING'}`);
+      addDebugLog(`Telegram WebApp detected: platform=${webApp.platform}, version=${webApp.version}`);
+      addDebugLog(`User data: ${webApp.initDataUnsafe?.user ? 'FOUND' : 'MISSING'}`);
 
-      // Initialize the app
       webApp.ready();
       webApp.expand();
 
-      // Fred's One-time hard reload for new builds
       try {
         const buildTag = getBuildTag();
         if (buildTag) {
           const key = 'aviator_reload_for_' + buildTag;
           if (!sessionStorage.getItem(key)) {
             sessionStorage.setItem(key, '1');
-            // bumps query to bust HTML cache once
             location.replace(location.pathname + '?v=' + encodeURIComponent(buildTag) + '&r=' + Date.now());
-            return; // stop init; new load will continue
+            return;
           }
         }
       } catch (_) {}
       
-      // Get user data and authenticate - Safe for older browsers
-      addDebugLog('🔍 Checking for Telegram user...');
-      addDebugLog(`🔍 initDataUnsafe exists: ${!!webApp.initDataUnsafe}`);
-      addDebugLog(`🔍 user exists: ${!!webApp.initDataUnsafe?.user}`);
+      addDebugLog('Checking for Telegram user...');
+      addDebugLog(`initDataUnsafe exists: ${!!webApp.initDataUnsafe}`);
+      addDebugLog(`user exists: ${!!webApp.initDataUnsafe?.user}`);
       
       if (webApp.initDataUnsafe && webApp.initDataUnsafe.user) {
         const telegramUser = webApp.initDataUnsafe.user;
         const startParam = webApp.initDataUnsafe.start_param || null;
         
-        addDebugLog(`✅ Telegram user found: ${telegramUser.username || telegramUser.first_name}`);
-        addDebugLog(`📨 Start param: ${startParam || 'NONE'}`);
+        addDebugLog(`Telegram user found: ${telegramUser.username || telegramUser.first_name}`);
+        addDebugLog(`Start param: ${startParam || 'NONE'}`);
         
         setUser(telegramUser);
         
-        // Fred's Token Freshness Guard - comprehensive authentication flow
         const ensureFreshAuth = async () => {
-          addDebugLog('🔒 Starting authentication flow...');
-          addDebugLog(`🔍 Currently authenticated: ${authService.isAuthenticated()}`);
+          addDebugLog('Starting authentication flow...');
+          addDebugLog(`Currently authenticated: ${authService.isAuthenticated()}`);
           
           if (authService.isAuthenticated()) {
-            addDebugLog('🔄 Validating existing token...');
+            addDebugLog('Validating existing token...');
             const validation = await authService.validateCurrentToken();
-            addDebugLog(`🔍 Token validation result: ${validation.valid}`);
+            addDebugLog(`Token validation result: ${validation.valid}`);
             
             if (!validation.valid) {
-              addDebugLog('🧹 Clearing invalid token and re-authenticating...');
+              addDebugLog('Clearing invalid token and re-authenticating...');
               authService.clearTokens();
               await authenticateUser(telegramUser, startParam);
               gameService.reconnect();
             } else {
-              addDebugLog('✅ Token valid, setting authenticated state...');
+              addDebugLog('Token valid, setting authenticated state...');
               setIsAuthenticated(true);
               gameService.reconnect();
             }
           } else {
-            addDebugLog('🔐 No existing authentication, starting fresh...');
+            addDebugLog('No existing authentication, starting fresh...');
             await authenticateUser(telegramUser, startParam);
           }
         };
         ensureFreshAuth();
       } else {
-        addDebugLog('❌ No Telegram user found - this explains the guest session!');
-        addDebugLog(`🔍 initDataUnsafe: ${JSON.stringify(webApp.initDataUnsafe)}`);
+        addDebugLog('No Telegram user found');
+        addDebugLog(`initDataUnsafe: ${JSON.stringify(webApp.initDataUnsafe)}`);
       }
 
-      // Get theme parameters
       setThemeParams(webApp.themeParams);
 
-      // Apply Telegram theme
       applyTelegramTheme(webApp.themeParams);
 
-      // Set up event listeners
       webApp.onEvent('themeChanged', () => {
         setThemeParams(webApp.themeParams);
         applyTelegramTheme(webApp.themeParams);
@@ -179,25 +161,22 @@ const TelegramWebApp = ({ children }) => {
 
       setIsReady(true);
 
-      console.log('🤖 Telegram WebApp initialized:', {
+      console.log('Telegram WebApp initialized:', {
         user: webApp.initDataUnsafe && webApp.initDataUnsafe.user,
         platform: webApp.platform,
         version: webApp.version,
         colorScheme: webApp.colorScheme
       });
     } else {
-      // Fallback for development/testing outside Telegram
-      console.log('⚠️ Running outside Telegram - using fallback mode');
-      console.log('🔍 window.Telegram exists:', !!window.Telegram);
-      console.log('🔍 window.Telegram.WebApp exists:', !!window.Telegram?.WebApp);
+      console.log('Running outside Telegram - using fallback mode');
+      console.log('window.Telegram exists:', !!window.Telegram);
+      console.log('window.Telegram.WebApp exists:', !!window.Telegram?.WebApp);
       setIsReady(true);
     }
   }, []);
 
-  // Fred's Auth Stale Event Listener - handles real-time token recovery
   useEffect(() => {
     const onStale = () => {
-      // Re-run Telegram auth using current initDataUnsafe
       const webApp = window.Telegram?.WebApp;
       const u = webApp?.initDataUnsafe?.user;
       const sp = webApp?.initDataUnsafe?.start_param || null;
@@ -209,8 +188,7 @@ const TelegramWebApp = ({ children }) => {
 
   const applyTelegramTheme = (theme) => {
     const root = document.documentElement;
-    
-    // Apply Telegram theme colors
+
     if (theme.bg_color) {
       root.style.setProperty('--tg-bg-color', theme.bg_color);
       root.style.setProperty('--tw-bg-gray-900', theme.bg_color);
@@ -240,7 +218,6 @@ const TelegramWebApp = ({ children }) => {
       root.style.setProperty('--tw-bg-gray-800', theme.secondary_bg_color);
     }
 
-    // Apply theme class to body - Safe for older browsers
     document.body.className = 'telegram-theme ' + (tg && tg.colorScheme ? tg.colorScheme : 'dark');
   };
 
@@ -254,88 +231,13 @@ const TelegramWebApp = ({ children }) => {
       authError,
       authenticateUser 
     }}>
-      {/* Debug Toggle Button */}
-      {debugLogs.length > 0 && (
-        <button
-          onClick={() => setShowDebugPanel(!showDebugPanel)}
-          style={{
-            position: 'fixed',
-            bottom: 20,
-            right: 20,
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            background: showDebugPanel ? '#0f0' : '#333',
-            color: showDebugPanel ? '#000' : '#0f0',
-            border: '2px solid #0f0',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            zIndex: 10000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-          title={showDebugPanel ? 'Hide Debug Panel' : 'Show Debug Panel'}
-        >
-          🔍
-        </button>
-      )}
-
-      {/* Debug Panel - Toggleable */}
-      {showDebugPanel && debugLogs.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          top: 10,
-          left: 10,
-          right: 10,
-          maxHeight: '200px',
-          background: '#000',
-          color: '#0f0',
-          padding: '10px',
-          fontSize: '10px',
-          fontFamily: 'monospace',
-          overflowY: 'auto',
-          zIndex: 9999,
-          border: '1px solid #333',
-          borderRadius: '5px'
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '5px'
-          }}>
-            <div style={{ fontWeight: 'bold' }}>🔍 DEBUG LOG:</div>
-            <button
-              onClick={() => setShowDebugPanel(false)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#0f0',
-                cursor: 'pointer',
-                fontSize: '14px',
-                padding: '0 5px'
-              }}
-              title="Close Debug Panel"
-            >
-              ✕
-            </button>
-          </div>
-          {debugLogs.map((log, i) => (
-            <div key={i} style={{ marginBottom: '2px' }}>{log}</div>
-          ))}
-        </div>
-      )}
       {children}
     </TelegramContext.Provider>
   );
 };
 
-// Context for Telegram WebApp
 const TelegramContext = React.createContext({});
 
-// Hook to use Telegram WebApp features
 export const useTelegramWebApp = () => {
   const context = React.useContext(TelegramContext);
   
@@ -360,17 +262,16 @@ export const useTelegramWebApp = () => {
     if (context.tg && context.tg.HapticFeedback) {
       switch (type) {
         case 'impact':
-          context.tg.HapticFeedback.impactOccurred(style); // light, medium, heavy
+          context.tg.HapticFeedback.impactOccurred(style);
           break;
         case 'notification':
-          context.tg.HapticFeedback.notificationOccurred(style); // error, success, warning
+          context.tg.HapticFeedback.notificationOccurred(style);
           break;
         case 'selection':
           context.tg.HapticFeedback.selectionChanged();
           break;
       }
     } else if (navigator.vibrate) {
-      // Fallback vibration
       const patterns = {
         light: 10,
         medium: 20,
@@ -439,7 +340,6 @@ export const useTelegramWebApp = () => {
   };
 };
 
-// Telegram-specific button component
 export const TelegramButton = ({ 
   children, 
   onClick, 
@@ -469,7 +369,6 @@ export const TelegramButton = ({
   );
 };
 
-// Telegram theme styles component
 export const TelegramThemeStyles = () => {
   return (
     <style>{`
@@ -513,19 +412,16 @@ export const TelegramThemeStyles = () => {
         cursor: not-allowed;
       }
 
-      /* Telegram-specific viewport handling */
       .telegram-viewport {
         height: 100vh;
         height: var(--tg-viewport-height, 100vh);
         overflow: hidden;
       }
 
-      /* Hide elements that shouldn't appear in Telegram */
       .telegram-theme .hide-in-telegram {
         display: none !important;
       }
 
-      /* Telegram-safe scrolling */
       .telegram-scroll {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;

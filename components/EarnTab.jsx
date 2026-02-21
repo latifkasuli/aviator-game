@@ -43,10 +43,8 @@ const EarnTab = ({ isOpen, onClose }) => {
       const res = await authService.apiRequest('/farming/claim', { method: 'POST' });
       if (res.success && res.rewardPoints) {
         hapticFeedback('notification', 'success');
-        // Refresh farming status
         loadData();
-        // Show success message - use both methods for compatibility
-        const message = `+${res.rewardPoints} pts claimed ✅`;
+        const message = `+${res.rewardPoints} pts claimed`;
         if (tg?.showAlert) {
           tg.showAlert(message);
         } else {
@@ -76,13 +74,11 @@ const EarnTab = ({ isOpen, onClose }) => {
   const shareReferral = () => {
     if (!refStats?.referralCode) return;
     
-    // Use existing bot configuration
     const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'aviador_game_test_bot';
     const shortName = import.meta.env.VITE_TELEGRAM_SHORT_NAME || 'aviador_game_test_bot';
     
-    // Use Mini App format (same as copy button)
     const deepLink = `https://t.me/${botUsername}/${shortName}?startapp=ref_${refStats.referralCode}`;
-    const text = `🚀 Join me in Aviator! Claim your bonus with my link:`;
+    const text = `Join me in Aviator! Claim your bonus with my link:`;
     
     if (tg?.openTelegramLink) {
       tg.openTelegramLink(
@@ -91,7 +87,6 @@ const EarnTab = ({ isOpen, onClose }) => {
       hapticFeedback('notification', 'success');
     } else if (navigator.share) {
       navigator.share({ title: 'Aviator', text, url: deepLink }).catch(() => {
-        // Fallback to direct share URL
         window.location.href = `https://t.me/share/url?url=${encodeURIComponent(deepLink)}&text=${encodeURIComponent(text)}`;
       });
     } else {
@@ -103,11 +98,9 @@ const EarnTab = ({ isOpen, onClose }) => {
     const q = quests.find(q => q.id === questId);
     if (!q || q.status !== 'COMPLETED') return;
     
-    // Optimistic update
     setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'CLAIMING' } : x));
     
     try {
-      // Find the quest to get its type
       const quest = quests.find(q => q.id === questId);
       if (!quest) {
         throw new Error('Quest not found');
@@ -122,17 +115,15 @@ const EarnTab = ({ isOpen, onClose }) => {
         hapticFeedback('notification', 'success');
         setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'CLAIMED' } : x));
         
-        const message = `+${res.rewardPoints} pts for "${quest.name}" ✅`;
+        const message = `+${res.rewardPoints} pts for "${quest.name}"`;
         if (tg?.showAlert) {
           tg.showAlert(message);
         } else {
           alert(message);
         }
         
-        // Refresh data to get updated balances
         loadData();
       } else {
-        // Revert optimistic update
         setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'COMPLETED' } : x));
         const errorMsg = res.error || 'Failed to claim quest reward';
         if (tg?.showAlert) {
@@ -143,7 +134,6 @@ const EarnTab = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error('Quest claim error:', error);
-      // Revert optimistic update
       setQuests(prev => prev.map(x => x.id === questId ? { ...x, status: 'COMPLETED' } : x));
       const errorMsg = 'Quest endpoints not implemented yet';
       if (tg?.showAlert) {
@@ -159,9 +149,10 @@ const EarnTab = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white">💰 Earn Points</h2>
+          <h2 className="text-xl font-bold text-white">Earn Points</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
@@ -172,7 +163,8 @@ const EarnTab = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Content */}
+        {
+}
         <div className="p-4 space-y-4 max-h-[calc(90vh-80px)] overflow-y-auto">
           {loading ? (
             <div className="flex justify-center py-8">
@@ -181,11 +173,12 @@ const EarnTab = ({ isOpen, onClose }) => {
           ) : (
             <>
 
-      {/* Daily Farming Card */}
+      {
+}
       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <div className="text-lg font-semibold text-white mb-1">🌱 Daily Farming</div>
+            <div className="text-lg font-semibold text-white mb-1">Daily Farming</div>
             <div className="text-sm text-gray-400">
               {farming?.canClaim 
                 ? `Ready to claim: +${farming.rewardPoints} pts`
@@ -208,16 +201,17 @@ const EarnTab = ({ isOpen, onClose }) => {
         </div>
         {farming?.streak && (
           <div className="mt-2 text-xs text-orange-400">
-            🔥 {farming.streak} day streak • {farming.multiplier || 1}x multiplier
+            {farming.streak} day streak • {farming.multiplier || 1}x multiplier
           </div>
         )}
       </div>
 
-      {/* Referral Card */}
+      {
+}
       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <div className="text-lg font-semibold text-white mb-1">👥 Invite & Earn</div>
+            <div className="text-lg font-semibold text-white mb-1">Invite & Earn</div>
             <div className="text-sm text-gray-400">
               {refStats 
                 ? `${refStats.totalReferrals || 0} friends joined • ${refStats.totalEarned || 0} pts earned`
@@ -239,13 +233,14 @@ const EarnTab = ({ isOpen, onClose }) => {
         )}
       </div>
 
-      {/* Quests Card */}
+      {
+}
       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-        <div className="text-lg font-semibold text-white mb-3">🎯 Daily Quests</div>
+        <div className="text-lg font-semibold text-white mb-3">Daily Quests</div>
         <div className="space-y-3">
           {quests.length === 0 ? (
             <div className="text-gray-400 text-sm text-center py-4">
-              No quests available right now. Check back soon! 🔄
+              No quests available right now. Check back soon!
             </div>
           ) : (
             quests.map(q => (
@@ -272,7 +267,7 @@ const EarnTab = ({ isOpen, onClose }) => {
                 </div>
                 <div className="ml-3">
                   {q.status === 'CLAIMED' ? (
-                    <span className="text-green-400 text-sm font-medium">Claimed ✓</span>
+                    <span className="text-green-400 text-sm font-medium">Claimed</span>
                   ) : q.status === 'COMPLETED' ? (
                     <button 
                       className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors"
@@ -293,9 +288,10 @@ const EarnTab = ({ isOpen, onClose }) => {
         </div>
       </div>
 
-              {/* Coming Soon Card */}
+              {
+}
               <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 opacity-60">
-                <div className="text-lg font-semibold text-white mb-2">🚀 Coming Soon</div>
+                <div className="text-lg font-semibold text-white mb-2">Coming Soon</div>
                 <div className="text-sm text-gray-400 space-y-1">
                   <div>• Promo codes for special events</div>
                   <div>• Weekly challenges with bigger rewards</div>

@@ -21,7 +21,7 @@ describe('Provably Fair Service', () => {
       const hash1 = provablyFairService.hashServerSeed(seed);
       const hash2 = provablyFairService.hashServerSeed(seed);
       expect(hash1).toBe(hash2);
-      expect(hash1).toHaveLength(64); // SHA256 produces 64 char hex
+      expect(hash1).toHaveLength(64);
     });
   });
 
@@ -98,12 +98,10 @@ describe('Provably Fair Service', () => {
     it('should return pure provably fair result without manipulation', () => {
       const result = provablyFairService.generateRealisticCrashPoint();
       
-      // Verify it's a valid fair round
       expect(result).toHaveProperty('serverSeed');
       expect(result).toHaveProperty('serverSeedHash');
       expect(result).toHaveProperty('crashPoint');
       
-      // Verify the crash point is verifiable
       const isValid = provablyFairService.verifyCrashPoint(
         result.serverSeed,
         result.clientSeed,

@@ -65,7 +65,8 @@ const AdminRounds = () => {
   if (selectedRound) {
     return (
       <div className="space-y-6">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between">
           <button 
             onClick={() => setSelectedRound(null)} 
@@ -77,7 +78,8 @@ const AdminRounds = () => {
           <div className="w-24"></div>
         </div>
 
-        {/* Round Info */}
+        {
+}
         <div className="bg-gray-800 rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Round Information</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -120,7 +122,8 @@ const AdminRounds = () => {
           </div>
         </div>
 
-        {/* Bets */}
+        {
+}
         {selectedRound.bets && selectedRound.bets.length > 0 && (
           <div className="bg-gray-800 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-4">
@@ -180,26 +183,30 @@ const AdminRounds = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {
+}
       <div>
         <h2 className="text-2xl font-bold text-white mb-4">Game Rounds</h2>
       </div>
 
-      {/* Loading */}
+      {
+}
       {isLoading && (
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       )}
 
-      {/* Error */}
+      {
+}
       {error && (
         <div className="bg-red-900 bg-opacity-50 border border-red-600 rounded-lg p-4">
           <p className="text-red-300">{error}</p>
         </div>
       )}
 
-      {/* Rounds Table */}
+      {
+}
       {!isLoading && !error && (
         <>
           <div className="bg-gray-800 rounded-lg overflow-hidden">
@@ -258,7 +265,8 @@ const AdminRounds = () => {
             </table>
           </div>
 
-          {/* Pagination */}
+          {
+}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2">
               <button

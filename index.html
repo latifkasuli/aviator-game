@@ -5,46 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Aviator - Crash Game</title>
     <meta name="description" content="Experience the thrill of Aviator - a modern crash game with stunning visuals" />
-    
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#1f2937" />
     <meta name="background-color" content="#111827" />
     <meta name="display" content="standalone" />
     <meta name="orientation" content="portrait" />
-    
-    <!-- iOS PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Aviator" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
     <link rel="apple-touch-startup-image" href="/icons/icon-512x512.svg" />
-    
-    <!-- Standard Icons -->
     <link rel="icon" type="image/svg+xml" href="/icons/icon-192x192.svg" />
     <link rel="shortcut icon" href="/icons/icon-192x192.svg" />
-    
-    <!-- Microsoft Tiles -->
     <meta name="msapplication-TileColor" content="#1f2937" />
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
-    
-    <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Browser Compatibility Polyfills - LOAD FIRST -->
     <script src="/polyfills.js"></script>
-    
-    <!-- Telegram WebApp Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Fred's Low-Spec Device Optimizations -->
     <link rel="stylesheet" href="/styles/lowSpecOptimizations.css">
-    
-    <!-- Preload WebSocket connection -->
     <link rel="dns-prefetch" href="wss://aviator-game-production.up.railway.app" />
     <link rel="preconnect" href="https://aviator-game-production.up.railway.app" />
     <style>
@@ -56,32 +38,23 @@
         color: white;
         overflow-x: hidden;
       }
-      
       #root {
         min-height: 100vh;
         min-height: 100dvh;
       }
-
-      /* Prevent zoom on double tap */
       * {
         touch-action: manipulation;
       }
-
-      /* Custom scrollbar for better mobile experience */
       ::-webkit-scrollbar {
         width: 4px;
       }
-
       ::-webkit-scrollbar-track {
         background: transparent;
       }
-
       ::-webkit-scrollbar-thumb {
         background: rgba(156, 163, 175, 0.5);
         border-radius: 2px;
       }
-
-      /* Loading animation */
       .loading {
         display: flex;
         justify-content: center;
@@ -89,7 +62,6 @@
         height: 100vh;
         background: linear-gradient(135deg, #111827, #1f2937);
       }
-
       .loading::after {
         content: '';
         width: 40px;
@@ -99,27 +71,21 @@
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
-
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-
-      /* Fallback styles for browsers without CSS Custom Properties */
       .no-css-vars {
         background-color: #111827 !important;
         color: #ffffff !important;
       }
-      
       .no-css-vars .bg-gray-900 { background-color: #111827 !important; }
       .no-css-vars .bg-gray-800 { background-color: #1f2937 !important; }
       .no-css-vars .bg-gray-700 { background-color: #374151 !important; }
       .no-css-vars .bg-blue-600 { background-color: #2563eb !important; }
       .no-css-vars .text-white { color: #ffffff !important; }
       .no-css-vars .text-gray-400 { color: #9ca3af !important; }
-      .no-css-vars .border-gray-700 { border-color: #374151 !important; }
-      
-      /* Flexbox fallback for very old browsers */
+      .no-css-vars .border-gray-700 { border-color: #374151 !important;       }
       .flex-fallback {
         display: -webkit-box;
         display: -moz-box;
@@ -127,7 +93,6 @@
         display: -webkit-flex;
         display: flex;
       }
-      
       .flex-fallback.justify-center {
         -webkit-box-pack: center;
         -moz-box-pack: center;
@@ -135,7 +100,6 @@
         -webkit-justify-content: center;
         justify-content: center;
       }
-      
       .flex-fallback.items-center {
         -webkit-box-align: center;
         -moz-box-align: center;
@@ -149,7 +113,6 @@
     <div id="root">
       <div class="loading"></div>
     </div>
-    <!-- dev only, Vite will rewrite this on build -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

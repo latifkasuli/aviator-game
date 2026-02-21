@@ -1,13 +1,8 @@
-// 🔧 Fred's Optimized Polyfills - Feature Detection First!
-// Only loads what's needed, avoids penalizing modern phones
-
 (function(){ 
   'use strict';
   
-  // Promise polyfill (only for very old browsers)
   if (typeof Promise === 'undefined') { 
-    console.warn('⚠️ Promise not supported - loading lightweight polyfill');
-    // Minimal Promise implementation
+    console.warn('Promise not supported - loading lightweight polyfill');
     window.Promise = function(fn) {
       var state = 'pending', value, handlers = [];
       function resolve(result) {
@@ -33,7 +28,6 @@
     };
   }
 
-  // fetch -> XHR fallback (feature detected)
   if (!window.fetch) {
     window.fetch = function(url, opts) {
       return new Promise(function(resolve, reject){
@@ -60,7 +54,6 @@
     };
   }
 
-  // Object.assign (minimal)
   if (typeof Object.assign !== 'function') {
     Object.assign = function(target) {
       if (target == null) throw new TypeError('Cannot convert undefined or null to object');
@@ -73,7 +66,6 @@
     };
   }
 
-  // Array.prototype.find (minimal)
   if (!Array.prototype.find) {
     Object.defineProperty(Array.prototype, 'find', {
       value: function(predicate) {
@@ -89,7 +81,6 @@
     });
   }
 
-  // Clipboard fallback (simple)
   if (!navigator.clipboard) {
     window.copyText = function (text) {
       var el = document.createElement('textarea');
@@ -98,12 +89,10 @@
     };
   }
 
-  // Console stub (very old devices)
   if (!window.console) {
     window.console = { log: function(){}, warn: function(){}, error: function(){}, info: function(){} };
   }
 
-  // Vibration stub
   if (!navigator.vibrate) {
     navigator.vibrate = function() { return false; };
   }

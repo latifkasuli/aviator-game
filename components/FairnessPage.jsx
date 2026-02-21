@@ -11,7 +11,6 @@ const FairnessPage = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       loadRecentRounds();
-      // Update current time every second for countdown
       const interval = setInterval(() => {
         setCurrentTime(Date.now());
       }, 1000);
@@ -36,35 +35,27 @@ const FairnessPage = ({ isOpen, onClose }) => {
     }
   };
 
-  // Provably fair crash point calculation (matching backend algorithm)
   const calculateCrashPoint = (serverSeed, clientSeed = '', nonce = 0) => {
     try {
-      // Create HMAC hash using server seed as key and client seed + nonce as message
       const message = `${clientSeed}:${nonce}`;
       const hash = crypto.HmacSHA256(message, serverSeed).toString();
       
-      // Take first 8 characters and convert to integer
       const hex = hash.substring(0, 8);
       const intValue = parseInt(hex, 16);
       
-      // Maximum value for 8 hex characters
       const maxValue = 0xFFFFFFFF;
       
-      // Calculate the probability (0 to 1)
       const probability = intValue / maxValue;
       
-      // Apply house edge (0.01 = 1%)
       const houseEdge = 0.01;
       const adjustedProbability = probability * (1 - houseEdge);
       
-      // Convert to crash multiplier using exponential distribution
       if (adjustedProbability === 0) {
         return 1.00;
       }
       
       const crashPoint = 1 / adjustedProbability;
       
-      // Cap at reasonable maximum (1000x) and ensure minimum of 1.00
       return Math.max(1.00, Math.min(crashPoint, 1000));
     } catch (error) {
       console.error('Error calculating crash point:', error);
@@ -84,7 +75,6 @@ const FairnessPage = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Verify server seed hash matches
     const seedHash = crypto.SHA256(round.serverSeed).toString();
     if (seedHash !== round.serverSeedHash) {
       setVerificationResults({
@@ -97,7 +87,6 @@ const FairnessPage = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Calculate crash point
     const calculatedCrash = calculateCrashPoint(
       round.serverSeed, 
       round.clientSeed || '', 
@@ -143,10 +132,11 @@ const FairnessPage = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <div>
-            <h2 className="text-xl font-bold text-white">🎲 Provably Fair - Game Verification</h2>
+            <h2 className="text-xl font-bold text-white">Provably Fair - Game Verification</h2>
             <p className="text-sm text-gray-400 mt-1">
               Verify that game outcomes are truly random and not manipulated
             </p>
@@ -161,7 +151,8 @@ const FairnessPage = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* How it works - Collapsible on mobile */}
+        {
+}
         <div className="p-4 bg-gray-800 border-b border-gray-700">
           <details className="md:open" open>
             <summary className="cursor-pointer md:cursor-default list-none">
@@ -195,7 +186,8 @@ const FairnessPage = ({ isOpen, onClose }) => {
           </details>
         </div>
 
-        {/* Recent Rounds */}
+        {
+}
         <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 280px)' }}>
           <h3 className="text-lg font-semibold mb-4">Recent Game Rounds</h3>
           
@@ -239,7 +231,7 @@ const FairnessPage = ({ isOpen, onClose }) => {
                                 ? 'bg-green-600 text-white' 
                                 : 'bg-red-600 text-white'
                             }`}>
-                              {verification.success ? '✓' : '✗'}
+                              {verification.success ? 'Pass' : 'Fail'}
                               <span className="hidden sm:inline ml-1">
                                 {verification.success ? 'Verified' : 'Failed'}
                               </span>
@@ -320,7 +312,7 @@ const FairnessPage = ({ isOpen, onClose }) => {
                               : 'bg-red-900 bg-opacity-30 border border-red-600'
                           }`}>
                             <div className="font-semibold mb-1">
-                              {verification.success ? '✓ Verification Passed' : '✗ Verification Failed'}
+                              {verification.success ? 'Verification Passed' : 'Verification Failed'}
                             </div>
                             <div className="text-sm text-gray-300">
                               {verification.message}
@@ -336,7 +328,8 @@ const FairnessPage = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
+        {
+}
         <div className="p-4 border-t border-gray-700 bg-gray-800">
           <div className="text-sm text-gray-400 text-center">
             <p>All game outcomes are predetermined and can be independently verified using the provided seeds.</p>

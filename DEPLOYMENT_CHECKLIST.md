@@ -1,12 +1,12 @@
-# 🚀 Aviator Game Deployment Checklist
+# Aviator Game Deployment Checklist
 
-## 📋 Pre-Deployment Status
-- ✅ Code pushed to GitHub
-- ✅ Admin system implemented and tested
-- ✅ Database migrations ready
-- 🔄 Ready for deployment
+## Pre-Deployment Status
+- [OK] Code pushed to GitHub
+- [OK] Admin system implemented and tested
+- [OK] Database migrations ready
+- [Ready] Ready for deployment
 
-## 🚂 Backend Deployment (Railway)
+## Backend Deployment (Railway)
 
 ### Step 1: Create Railway Project
 1. Go to [Railway.app](https://railway.app)
@@ -59,7 +59,7 @@ COUNTDOWN_DURATION=5000
 
 ---
 
-## 🎨 Frontend Deployment (Vercel)
+## Frontend Deployment (Vercel)
 
 ### Step 1: Import to Vercel
 1. Go to [Vercel.com](https://vercel.com)
@@ -91,7 +91,7 @@ VITE_ENABLE_AUTO_UPDATE=false
 
 ---
 
-## 🔧 Post-Deployment Setup
+## Post-Deployment Setup
 
 ### 1. Update CORS Origins
 Go back to Railway and update:
@@ -119,14 +119,14 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'admin';
 
 ---
 
-## ⚠️ Important Security Steps
+## Important Security Steps
 
 ### Before Going Live:
-1. ✅ Change default admin password
-2. ✅ Set strong JWT secrets
-3. ✅ Configure ADMIN_IP_RANGES (optional but recommended)
-4. ✅ Update ADMIN_REGISTRATION_KEY
-5. ✅ Enable HTTPS (automatic on Railway/Vercel)
+1. [OK] Change default admin password
+2. [OK] Set strong JWT secrets
+3. [OK] Configure ADMIN_IP_RANGES (optional but recommended)
+4. [OK] Update ADMIN_REGISTRATION_KEY
+5. [OK] Enable HTTPS (automatic on Railway/Vercel)
 
 ### Admin Credentials:
 - Current: `admin` / `admin123`
@@ -134,7 +134,7 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'admin';
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Backend Issues:
 - Check Railway logs
@@ -157,7 +157,7 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'admin';
 
 ---
 
-## 📱 Testing Checklist
+## Testing Checklist
 
 - [ ] Game loads and connects
 - [ ] Can create account/login
@@ -171,7 +171,7 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'admin';
 
 ---
 
-## 🎉 Launch Checklist
+## Launch Checklist
 
 - [ ] All tests passing
 - [ ] Security configured
@@ -180,4 +180,4 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'admin';
 - [ ] Backups configured
 - [ ] Support contact ready
 
-Need help? The logs are your friend! 🔍
+Need help? The logs are your friend!

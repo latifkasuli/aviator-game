@@ -1,6 +1,3 @@
-// 🚀 Fred's Professional-Grade Plane Component
-// Uses his animation hook for butter-smooth 60fps performance
-
 import React, { useEffect, useRef } from 'react';
 import useOptimizedAnimation from './hooks/useOptimizedAnimation.js';
 
@@ -9,7 +6,6 @@ export default function PlaneOptimized({ wsState, gameState, lastServerTick }) {
 
   const { updateServerFrame, setCrashed } = useOptimizedAnimation({
     onApply: (mult) => {
-      // Light DOM write: GPU-accelerated transform
       if (!planeRef.current) return;
       
       let x = 20, y = 75, rotation = 0;
@@ -22,7 +18,6 @@ export default function PlaneOptimized({ wsState, gameState, lastServerTick }) {
         y = 75 - Math.pow(t, 0.7) * 50;
         rotation = 2 - (t * 12);
         
-        // Mobile bounds
         const isMobile = window.innerWidth < 640;
         const maxX = isMobile ? 80 : 85;
         const minY = isMobile ? 20 : 15;
@@ -32,13 +27,11 @@ export default function PlaneOptimized({ wsState, gameState, lastServerTick }) {
         x = 110; y = 5; rotation = -15;
       }
       
-      // Apply transform directly to DOM (GPU accelerated)
       planeRef.current.style.transform = `translate(${x}vw, ${y}vh) rotate(${rotation}deg)`;
       planeRef.current.style.willChange = 'transform';
     }
   });
 
-  // Feed server frames to the animator
   useEffect(() => {
     if (!lastServerTick) return;
     const { serverTime, multiplier, state } = lastServerTick;
@@ -57,7 +50,6 @@ export default function PlaneOptimized({ wsState, gameState, lastServerTick }) {
         }}
         aria-label="plane"
       >
-        {/* Plane SVG */}
         <svg viewBox="0 0 48 32" className="w-full h-full">
           <defs>
             <linearGradient id="planeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -70,14 +62,11 @@ export default function PlaneOptimized({ wsState, gameState, lastServerTick }) {
             </filter>
           </defs>
           
-          {/* Plane body */}
           <ellipse cx="24" cy="16" rx="20" ry="3" fill="url(#planeGradient)" filter="url(#planeShadow)" />
-          
-          {/* Wings */}
+
           <ellipse cx="18" cy="16" rx="8" ry="2" fill="#1e40af" />
           <ellipse cx="30" cy="16" rx="6" ry="1.5" fill="#1e3a8a" />
-          
-          {/* Cockpit */}
+
           <circle cx="38" cy="16" r="2" fill="#60a5fa" />
           <circle cx="38" cy="16" r="1" fill="#93c5fd" opacity="0.8" />
         </svg>

@@ -1,8 +1,8 @@
-# 🚀 Aviator Game Backend
+# Aviator Game Backend
 
 This is the backend server for the Aviator Telegram Mini App.
 
-## 📋 What This Does
+## What This Does
 
 - **Real-time game state** - Manages the plane flight and multiplier
 - **Player connections** - Handles multiple players simultaneously  
@@ -10,7 +10,7 @@ This is the backend server for the Aviator Telegram Mini App.
 - **WebSocket communication** - Live updates to all players
 - **Game loop** - Automated game rounds (betting → flying → crash → repeat)
 
-## 🛠 Setup Instructions
+## Setup Instructions
 
 ### 1. Install Dependencies
 ```bash
@@ -40,13 +40,13 @@ Open your browser and go to: http://localhost:3001/api/health
 
 You should see: `{"status":"OK","message":"Aviator backend is running!"}`
 
-## 🔗 API Endpoints
+## API Endpoints
 
 - `GET /api/health` - Check if server is running
 - `GET /api/game-state` - Get current game state
 - `WebSocket ws://localhost:3001` - Real-time game updates
 
-## 🎮 Game Flow
+## Game Flow
 
 1. **Betting Phase** (5 seconds)
    - Players can place bets
@@ -62,18 +62,18 @@ You should see: `{"status":"OK","message":"Aviator backend is running!"}`
    - Players who didn't cash out lose their bet
    - New round starts automatically
 
-## 📊 Current Features
+## Current Features
 
-✅ Real-time multiplayer game state  
-✅ WebSocket connections  
-✅ Betting and cash out system  
-✅ Automated game rounds  
-✅ Player balance management  
-✅ Crash point generation  
+[OK] Real-time multiplayer game state  
+[OK] WebSocket connections  
+[OK] Betting and cash out system  
+[OK] Automated game rounds  
+[OK] Player balance management  
+[OK] Crash point generation  
 
-## 🔮 Coming Next
+## Coming Next
 
-🔄 Connect to React frontend  
-🤖 Telegram bot integration  
-🗄️ Database for persistence  
-🚀 Deploy to Railway  
+[ ] Connect to React frontend  
+[ ] Telegram bot integration  
+[ ] Database for persistence  
+[ ] Deploy to Railway  

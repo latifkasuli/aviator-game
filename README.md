@@ -1,30 +1,30 @@
-# 🛩️ Aviator Crash Game - Telegram Mini App
+# Aviator Crash Game - Telegram Mini App
 
 A beautiful Telegram Mini App featuring an Aviator-style crash game built with React 18 and TailwindCSS. Fully integrated with Telegram's WebApp API for native mobile experience.
 
-## ✨ Features
+## Features
 
-### 🤖 Telegram Integration
+### Telegram Integration
 - **Native WebApp**: Runs seamlessly inside Telegram
 - **User Authentication**: Uses Telegram identity (no separate login)
 - **Haptic Feedback**: Native vibration on interactions
 - **Theme Integration**: Adapts to user's Telegram theme
 - **MainButton Support**: Uses Telegram's native button API
 
-### 🎮 Game Features
+### Game Features
 - **Real-time Gameplay**: Live multiplier with crash mechanics
 - **Smart Betting**: Auto-cashout and quick bet options
 - **Statistics Tracking**: Comprehensive bet history and analytics
 - **Responsible Gaming**: Daily limits and spending controls
 - **Sound Effects**: Immersive audio feedback
 
-### 📱 Mobile Optimized
+### Mobile Optimized
 - **Touch-First Design**: Optimized for mobile interactions
 - **Responsive Layout**: Works on all screen sizes
 - **Performance Optimized**: Smooth 60fps animations
 - **Offline Support**: PWA capabilities with service worker
 
-## 🎮 Game Components
+## Game Components
 
 ### Header
 - Game title with logo
@@ -51,7 +51,7 @@ A beautiful Telegram Mini App featuring an Aviator-style crash game built with R
 - 6 tabs: Play, Ranks, Earn, Wallet, Friends, Work
 - Only "Play" tab is functional in this demo
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 16+ 
@@ -85,7 +85,7 @@ npm run build
 
 The built files will be in the `dist` folder.
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
 - **Primary Background**: `#111827` (gray-900)
@@ -103,7 +103,7 @@ The built files will be in the `dist` folder.
 - **Hover Effects**: Scale and glow transformations
 - **Game States**: Pulse, bounce, and shimmer effects
 
-## 📱 Mobile Optimization
+## Mobile Optimization
 
 - Touch-friendly controls (44px minimum)
 - Optimized for various screen sizes
@@ -111,7 +111,7 @@ The built files will be in the `dist` folder.
 - Safe area considerations for modern phones
 - Smooth scrolling with hidden scrollbars
 
-## 🎯 Game States
+## Game States
 
 The game supports three main states controlled by the `gameState` prop:
 
@@ -119,14 +119,14 @@ The game supports three main states controlled by the `gameState` prop:
 2. **'running'**: Multiplier increasing, plane flying, users can cash out
 3. **'crashed'**: Round ended, showing crash multiplier and waiting for next round
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **React 18**: Modern functional components with hooks
 - **TailwindCSS**: Utility-first CSS framework
 - **Vite**: Fast build tool and dev server
 - **PostCSS**: CSS processing with Autoprefixer
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 aviator-game/
@@ -145,7 +145,7 @@ aviator-game/
 └── package.json              # Dependencies and scripts
 ```
 
-## 🎮 Usage
+## Usage
 
 The main `App.js` component manages the game state and coordinates all child components. You can customize the game by:
 
@@ -154,11 +154,11 @@ The main `App.js` component manages the game state and coordinates all child com
 - Adding new game features in the component files
 - Customizing the bet amounts and balance logic
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to submit issues, feature requests, or pull requests to improve the game!
 
-## 📄 License
+## License
 
 MIT License - feel free to use this code for your own projects.
 
@@ -172,7 +172,7 @@ User authentication - Persistent accounts and balances
 Better error handling - Connection drops, invalid bets
 Performance optimization - Reduce WebSocket message frequency
 
-5. Advanced Game Features 🎮
+5. Advanced Game Features
 Multiple betting positions - Bet on multiple rounds simultaneously
 Tournament mode - Compete in structured competitions
 Achievements system - Unlock rewards for milestones

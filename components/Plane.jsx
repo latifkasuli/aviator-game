@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 const Plane = ({ gameState, multiplier, countdown }) => {
-  // Enhanced position calculation with countdown taxi and better bounds
   const getPlanePosition = () => {
     if (gameState === 'betting') {
-      // Plane stands still and visible during betting phase
-      return { x: 20, y: 75 }; // Stationary position on the ground
+      return { x: 20, y: 75 };
     }
     
     if (gameState === 'running') {
       const t = Math.min(multiplier / 5, 1);
-      // Enhanced flight path with mobile-friendly bounds
-      const x = 20 + t * 50 + Math.sin(Date.now() / 300) * 2; // Reduced oscillation for mobile
-      const y = 75 - Math.pow(t, 0.7) * 50; // Slightly higher climb
+      const x = 20 + t * 50 + Math.sin(Date.now() / 300) * 2;
+      const y = 75 - Math.pow(t, 0.7) * 50;
       
-      // Mobile-responsive bounds
       const isMobile = window.innerWidth < 640;
       const maxX = isMobile ? 80 : 85;
       const minY = isMobile ? 20 : 15;
@@ -26,32 +22,29 @@ const Plane = ({ gameState, multiplier, countdown }) => {
     }
     
     if (gameState === 'crashed') {
-      // Fast fly away and disappear
-      return { x: 110, y: 5 }; // Fly off screen quickly
+      return { x: 110, y: 5 };
     }
     
     return { x: 20, y: 75 };
   };
 
-  // Enhanced rotation with gradual climb angle
   const getPlaneRotation = () => {
     if (gameState === 'betting') {
-      return 0; // Level and ready for takeoff
+      return 0;
     }
     
     if (gameState === 'running') {
       const t = Math.min(multiplier / 5, 1);
-      return 2 - (t * 12); // Gradual climb from +2° to -10°
+      return 2 - (t * 12);
     }
     
     if (gameState === 'crashed') {
-      return -15; // Slight upward angle as it flies away
+      return -15;
     }
     
     return 0;
   };
 
-  // Performance optimization with memoization
   const position = useMemo(() => getPlanePosition(), [gameState, multiplier, countdown]);
   const rotation = useMemo(() => getPlaneRotation(), [gameState, multiplier, countdown]);
   
@@ -59,12 +52,14 @@ const Plane = ({ gameState, multiplier, countdown }) => {
 
   return (
     <div className="relative w-full h-full plane-element">
-      {/* Runway/Ground line - positioned relative to plane */}
+      {
+}
       <div 
         className="absolute w-full h-0.5 bg-gradient-to-r from-transparent via-gray-600 to-transparent"
         style={{ top: '79%' }}
       >
-        {/* Runway markers */}
+        {
+}
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
@@ -77,7 +72,8 @@ const Plane = ({ gameState, multiplier, countdown }) => {
         ))}
       </div>
 
-      {/* Main plane container with enhanced transitions */}
+      {
+}
       <div 
         className="absolute transition-all duration-300 ease-out"
         style={{
@@ -88,7 +84,8 @@ const Plane = ({ gameState, multiplier, countdown }) => {
           transition: gameState === 'crashed' ? 'all 0.6s ease-in' : 'opacity 0.3s ease-out'
         }}
       >
-        {/* Enhanced SVG Plane */}
+        {
+}
         <svg 
           className="w-16 h-10 sm:w-20 sm:h-12" 
           version="1.0" 
@@ -106,7 +103,8 @@ const Plane = ({ gameState, multiplier, countdown }) => {
           </g>
         </svg>
 
-        {/* Enhanced Dynamic Exhaust Trail */}
+        {
+}
         {gameState === 'running' && (
           <div className="absolute -left-6 top-1/2 -translate-y-1/2">
             <div 
@@ -117,7 +115,8 @@ const Plane = ({ gameState, multiplier, countdown }) => {
                 boxShadow: `0 0 ${Math.min(multiplier * 2, 8)}px rgba(255, 69, 0, 0.6)`
               }}
             />
-            {/* Secondary exhaust trail for higher multipliers */}
+            {
+}
             {multiplier > 2 && (
               <div 
                 className="absolute top-0 h-0.5 bg-gradient-to-r from-yellow-400 via-orange-400 to-transparent rounded-full animate-pulse"
@@ -132,7 +131,8 @@ const Plane = ({ gameState, multiplier, countdown }) => {
           </div>
         )}
 
-        {/* Countdown Engine Warm-up Effect - More visible */}
+        {
+}
         {gameState === 'betting' && countdown > 0 && countdown <= 3 && (
           <div className="absolute -left-4 top-1/2 -translate-y-1/2">
             <div 
@@ -146,7 +146,6 @@ const Plane = ({ gameState, multiplier, countdown }) => {
           </div>
         )}
       </div>
-
 
     </div>
   );

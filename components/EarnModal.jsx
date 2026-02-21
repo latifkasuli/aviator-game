@@ -1,5 +1,3 @@
-// 🎮 EarnModal.jsx - Daily Quest System Modal
-// Complete earn system with daily login, bets, wins, referrals, and more!
 
 import React, { useState, useEffect } from 'react';
 import authService from './services/authService.js';
@@ -12,19 +10,17 @@ const EarnModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Quest icons mapping
   const questIcons = {
-    DAILY_LOGIN: '📅',
-    PLACE_BETS: '🎲',
-    WIN_ROUNDS: '🏆',
-    REACH_MULTIPLIER: '🚀',
-    PLAY_TIME: '⏰',
-    REFER_PLAYER: '👥',
-    SHARE_GAME: '📤',
-    WEEKLY_STREAK: '🔥'
+    DAILY_LOGIN: '[L]',
+    PLACE_BETS: '[D]',
+    WIN_ROUNDS: '[W]',
+    REACH_MULTIPLIER: '[R]',
+    PLAY_TIME: '[T]',
+    REFER_PLAYER: '[F]',
+    SHARE_GAME: '[S]',
+    WEEKLY_STREAK: '[S]'
   };
 
-  // Quest colors for progress bars
   const questColors = {
     DAILY_LOGIN: 'bg-green-500',
     PLACE_BETS: 'bg-blue-500', 
@@ -36,7 +32,6 @@ const EarnModal = ({ isOpen, onClose }) => {
     WEEKLY_STREAK: 'bg-red-500'
   };
 
-  // Load quests when modal opens
   useEffect(() => {
     if (isOpen) {
       const token = authService.getToken();
@@ -51,7 +46,6 @@ const EarnModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Cleanup play session when modal closes
   useEffect(() => {
     return () => {
       if (playSession) {
@@ -84,7 +78,7 @@ const EarnModal = ({ isOpen, onClose }) => {
         throw new Error(data.error || 'Failed to load quests');
       }
     } catch (error) {
-      console.error('❌ Failed to load quests:', error);
+      console.error('Failed to load quests:', error);
       setError('Failed to load daily quests');
     } finally {
       setLoading(false);
@@ -111,12 +105,11 @@ const EarnModal = ({ isOpen, onClose }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Show success popup
         const popup = document.createElement('div');
         popup.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce';
         popup.innerHTML = `
           <div class="flex items-center space-x-2">
-            <span class="text-xl">🎉</span>
+            <span class="text-xl">+</span>
             <span class="font-bold">+${data.rewardPoints} pts!</span>
           </div>
         `;
@@ -126,13 +119,12 @@ const EarnModal = ({ isOpen, onClose }) => {
           document.body.removeChild(popup);
         }, 3000);
 
-        // Reload quests to update status
         await loadQuests();
       } else {
         throw new Error(data.error || 'Failed to claim quest');
       }
     } catch (error) {
-      console.error('❌ Failed to claim quest:', error);
+      console.error('Failed to claim quest:', error);
       alert(`Failed to claim quest: ${error.message}`);
     } finally {
       setClaimingQuest(null);
@@ -142,7 +134,6 @@ const EarnModal = ({ isOpen, onClose }) => {
   const shareGame = async () => {
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
-      // Record the share action
       const response = await fetch(`${backendUrl}/api/quests/share`, {
         method: 'POST',
         headers: {
@@ -152,11 +143,10 @@ const EarnModal = ({ isOpen, onClose }) => {
       });
 
       if (response.ok) {
-        console.log('📤 Share recorded successfully');
-        await loadQuests(); // Reload to update quest progress
+        console.log('Share recorded successfully');
+        await loadQuests();
       }
 
-      // Try native sharing first
       if (navigator.share) {
         await navigator.share({
           title: 'Aviator Game',
@@ -164,16 +154,14 @@ const EarnModal = ({ isOpen, onClose }) => {
           url: window.location.origin
         });
       } else if (window.Telegram?.WebApp?.openTelegramLink) {
-        // Telegram share
         const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent('Join me in this exciting Aviator game!')}`;
         window.Telegram.WebApp.openTelegramLink(shareUrl);
       } else {
-        // Fallback: copy to clipboard
         await navigator.clipboard.writeText(window.location.origin);
         alert('Game link copied to clipboard!');
       }
     } catch (error) {
-      console.error('❌ Failed to share game:', error);
+      console.error('Failed to share game:', error);
     }
   };
 
@@ -192,11 +180,11 @@ const EarnModal = ({ isOpen, onClose }) => {
         const data = await response.json();
         if (data.success) {
           setPlaySession(data.sessionId);
-          console.log('⏰ Play session started:', data.sessionId);
+          console.log('Play session started:', data.sessionId);
         }
       }
     } catch (error) {
-      console.error('❌ Failed to start play session:', error);
+      console.error('Failed to start play session:', error);
     }
   };
 
@@ -215,11 +203,11 @@ const EarnModal = ({ isOpen, onClose }) => {
       });
 
       if (response.ok) {
-        console.log('⏰ Play session ended:', playSession);
+        console.log('Play session ended:', playSession);
         setPlaySession(null);
       }
     } catch (error) {
-      console.error('❌ Failed to end play session:', error);
+      console.error('Failed to end play session:', error);
     }
   };
 
@@ -240,16 +228,15 @@ const EarnModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Show login required message for guests
   if (!isAuthenticated && !loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center p-6">
-          <div className="text-yellow-400 text-6xl mb-4">🔐</div>
+          <div className="text-yellow-400 text-6xl mb-4">!</div>
           <h2 className="text-xl font-bold text-white mb-2">Login Required</h2>
           <p className="text-gray-400 mb-4">You need to login to access daily quests and earn rewards!</p>
           <div className="text-sm text-gray-500">
-            <p>🎯 Login to unlock:</p>
+            <p>Login to unlock:</p>
             <p>• Daily login rewards (100pts)</p>
             <p>• Quest system (up to 2,350pts/day)</p>
             <p>• Weekly streak bonuses (1,000pts)</p>
@@ -274,7 +261,7 @@ const EarnModal = ({ isOpen, onClose }) => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="text-red-400 text-4xl mb-2">❌</div>
+          <div className="text-red-400 text-4xl mb-2">X</div>
           <div className="text-red-400 mb-4">{error}</div>
           <button 
             onClick={loadQuests}
@@ -287,16 +274,16 @@ const EarnModal = ({ isOpen, onClose }) => {
     );
   }
 
-  // Don't render if modal is not open
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        {/* Header with close button */}
+        {
+}
         <div className="flex items-center justify-between mb-6">
           <div className="text-center flex-1">
-            <h2 className="text-2xl font-bold text-white mb-1">🎯 Daily Quests</h2>
+            <h2 className="text-2xl font-bold text-white mb-1">Daily Quests</h2>
             <p className="text-gray-400 text-sm">Complete tasks to earn points!</p>
           </div>
           <button 
@@ -307,7 +294,8 @@ const EarnModal = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Quest List */}
+        {
+}
         <div className="space-y-3">
         {quests.map((quest) => (
           <div
@@ -316,7 +304,7 @@ const EarnModal = ({ isOpen, onClose }) => {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-3">
-                <span className="text-2xl">{questIcons[quest.questType] || '⭐'}</span>
+                <span className="text-2xl">{questIcons[quest.questType] || '*'}</span>
                 <div>
                   <h3 className="font-semibold text-white">{quest.description}</h3>
                   <p className="text-sm text-gray-400">
@@ -327,7 +315,7 @@ const EarnModal = ({ isOpen, onClose }) => {
               
               {quest.isClaimed ? (
                 <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                  ✅ Claimed
+                  Claimed
                 </div>
               ) : quest.isCompleted ? (
                 <button
@@ -344,7 +332,8 @@ const EarnModal = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Progress Bar */}
+            {
+}
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className={`h-2 rounded-full transition-all duration-300 ${questColors[quest.questType] || 'bg-gray-500'}`}
@@ -352,13 +341,14 @@ const EarnModal = ({ isOpen, onClose }) => {
               ></div>
             </div>
 
-            {/* Special Actions */}
+            {
+}
             {quest.questType === 'SHARE_GAME' && !quest.isCompleted && (
               <button
                 onClick={shareGame}
                 className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm"
               >
-                📤 Share Game
+                Share Game
               </button>
             )}
           </div>
@@ -367,7 +357,7 @@ const EarnModal = ({ isOpen, onClose }) => {
 
         {quests.length === 0 && (
           <div className="text-center text-gray-400 py-8">
-            <div className="text-4xl mb-2">🎯</div>
+            <div className="text-4xl mb-2">*</div>
             <p>No active quests available</p>
             <button 
               onClick={loadQuests}
@@ -378,12 +368,13 @@ const EarnModal = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* Info Footer */}
+        {
+}
         <div className="text-center text-xs text-gray-500 border-t border-gray-700 pt-4 mt-6">
           <p>Quests reset daily at midnight UTC</p>
           <p>Keep playing to unlock more rewards!</p>
           {playSession && (
-            <p className="text-green-400 mt-1">⏰ Play session active</p>
+            <p className="text-green-400 mt-1">Play session active</p>
           )}
         </div>
       </div>

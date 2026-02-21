@@ -4,11 +4,10 @@ const prisma = require('../lib/prisma');
 const databaseService = require('../services/databaseService');
 
 async function seedDatabase() {
-  console.log('🌱 Seeding database with initial data...\n');
+  console.log('Seeding database with initial data...\n');
   
   try {
-    // Create demo users
-    console.log('👤 Creating demo users...');
+    console.log('Creating demo users...');
     
     const demoUser = await databaseService.createUser({
       username: 'demo_player',
@@ -16,7 +15,7 @@ async function seedDatabase() {
       lastName: 'Player',
       email: 'demo@aviator.game'
     });
-    console.log(`✅ Created demo user: ${demoUser.username}`);
+    console.log(`Created demo user: ${demoUser.username}`);
     
     const testUser = await databaseService.createUser({
       telegramId: '123456789',
@@ -24,10 +23,9 @@ async function seedDatabase() {
       firstName: 'Telegram',
       lastName: 'User'
     });
-    console.log(`✅ Created Telegram user: ${testUser.username}`);
+    console.log(`Created Telegram user: ${testUser.username}`);
     
-    // Create system configuration
-    console.log('\n⚙️  Setting up system configuration...');
+    console.log('\nSetting up system configuration...');
     
     const configs = [
       { key: 'GAME_VERSION', value: '1.0.0', description: 'Current game version' },
@@ -45,10 +43,9 @@ async function seedDatabase() {
         create: config
       });
     }
-    console.log(`✅ Created ${configs.length} system configurations`);
+    console.log(`Created ${configs.length} system configurations`);
     
-    // Create some sample game rounds for testing
-    console.log('\n🎮 Creating sample game rounds...');
+    console.log('\nCreating sample game rounds...');
     
     const provablyFairService = require('../services/provablyFairService');
     
@@ -56,10 +53,9 @@ async function seedDatabase() {
       const fairRound = provablyFairService.generateFairRound();
       await databaseService.createGameRound(fairRound);
     }
-    console.log(`✅ Created 10 sample game rounds with provably fair data`);
+    console.log(`Created 10 sample game rounds with provably fair data`);
     
-    // Set daily limits for demo user
-    console.log('\n📊 Setting up daily limits...');
+    console.log('\nSetting up daily limits...');
     
     const today = new Date().toISOString().split('T')[0];
     await prisma.dailyLimit.create({
@@ -74,32 +70,31 @@ async function seedDatabase() {
         currentGames: 0
       }
     });
-    console.log('✅ Set daily limits for demo user');
+    console.log('Set daily limits for demo user');
     
-    console.log('\n🎉 Database seeding completed successfully!');
-    console.log('\n📊 Summary:');
+    console.log('\nDatabase seeding completed successfully!');
+    console.log('\nSummary:');
     console.log(`- Users created: 2`);
     console.log(`- System configs: ${configs.length}`);
-    console.log(`- Sample game rounds: ${sampleCrashPoints.length}`);
+    console.log('- Sample game rounds: 10');
     console.log(`- Daily limits configured: 1`);
     
   } catch (error) {
-    console.error('❌ Database seeding failed:', error);
+    console.error('Database seeding failed:', error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Run seeding if called directly
 if (require.main === module) {
   seedDatabase()
     .then(() => {
-      console.log('\n✅ Seeding completed successfully');
+      console.log('\nSeeding completed successfully');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('\n❌ Seeding failed:', error);
+      console.error('\nSeeding failed:', error);
       process.exit(1);
     });
 }

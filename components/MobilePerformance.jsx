@@ -1,32 +1,25 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-// Mobile performance optimization utilities
 const MobilePerformance = {
-  // Detect mobile device
   isMobile: () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   },
 
-  // Detect touch device
   isTouchDevice: () => {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   },
 
-  // Get device pixel ratio for high-DPI displays
   getPixelRatio: () => {
     return window.devicePixelRatio || 1;
   },
 
-  // Optimize animations for mobile
   optimizeAnimations: () => {
     if (MobilePerformance.isMobile()) {
-      // Reduce animation complexity on mobile
       document.documentElement.style.setProperty('--animation-duration', '0.2s');
       document.documentElement.style.setProperty('--transition-duration', '0.15s');
     }
   },
 
-  // Debounce function for performance
   debounce: (func, wait) => {
     let timeout;
     return function executedFunction(...args) {
@@ -39,7 +32,6 @@ const MobilePerformance = {
     };
   },
 
-  // Throttle function for scroll/resize events
   throttle: (func, limit) => {
     let inThrottle;
     return function() {
@@ -53,7 +45,6 @@ const MobilePerformance = {
     };
   },
 
-  // Lazy load images
   lazyLoadImages: () => {
     if ('IntersectionObserver' in window) {
       const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -73,13 +64,11 @@ const MobilePerformance = {
     }
   },
 
-  // Optimize WebSocket for mobile
   optimizeWebSocket: (ws) => {
     if (MobilePerformance.isMobile()) {
-      // Reduce ping frequency on mobile to save battery
       const originalSend = ws.send;
       let lastSent = 0;
-      const minInterval = 100; // Minimum 100ms between sends
+      const minInterval = 100;
 
       ws.send = function(data) {
         const now = Date.now();
@@ -91,14 +80,11 @@ const MobilePerformance = {
     }
   },
 
-  // Memory management
   cleanupMemory: () => {
-    // Force garbage collection if available (Chrome DevTools)
     if (window.gc) {
       window.gc();
     }
     
-    // Clear unused event listeners
     const events = ['resize', 'scroll', 'touchmove', 'touchstart', 'touchend'];
     events.forEach(event => {
       const listeners = window.getEventListeners?.(window)?.[event] || [];
@@ -110,13 +96,11 @@ const MobilePerformance = {
     });
   },
 
-  // Battery optimization
   optimizeForBattery: () => {
     if ('getBattery' in navigator) {
       navigator.getBattery().then(battery => {
         const updateBatteryOptimizations = () => {
           if (battery.level < 0.2 || !battery.charging) {
-            // Low battery mode - reduce animations and effects
             document.documentElement.classList.add('low-battery-mode');
             document.documentElement.style.setProperty('--animation-duration', '0.1s');
             document.documentElement.style.setProperty('--glow-opacity', '0.1');
@@ -134,15 +118,12 @@ const MobilePerformance = {
     }
   },
 
-  // Network optimization
   optimizeForNetwork: () => {
     if ('connection' in navigator) {
       const connection = navigator.connection;
       const updateNetworkOptimizations = () => {
         if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
-          // Slow network - reduce data usage
           document.documentElement.classList.add('slow-network');
-          // Disable auto-refresh of non-critical data
           window.dispatchEvent(new CustomEvent('slowNetwork', { detail: true }));
         } else {
           document.documentElement.classList.remove('slow-network');
@@ -156,7 +137,6 @@ const MobilePerformance = {
   }
 };
 
-// React hook for mobile performance monitoring
 export const useMobilePerformance = () => {
   const [performanceMetrics, setPerformanceMetrics] = useState({
     fps: 60,
@@ -192,12 +172,10 @@ export const useMobilePerformance = () => {
   }, []);
 
   useEffect(() => {
-    // Initialize performance monitoring
     measureFPS();
     
     const memoryInterval = setInterval(measureMemory, 5000);
     
-    // Battery monitoring
     if ('getBattery' in navigator) {
       navigator.getBattery().then(battery => {
         const updatePowerMode = () => {
@@ -213,7 +191,6 @@ export const useMobilePerformance = () => {
       });
     }
 
-    // Network monitoring
     if ('connection' in navigator) {
       const connection = navigator.connection;
       const updateNetworkSpeed = () => {
@@ -234,7 +211,6 @@ export const useMobilePerformance = () => {
   return performanceMetrics;
 };
 
-// Performance monitoring component
 export const PerformanceMonitor = ({ showMetrics = false }) => {
   const metrics = useMobilePerformance();
 
@@ -250,30 +226,24 @@ export const PerformanceMonitor = ({ showMetrics = false }) => {
   );
 };
 
-// Initialize mobile optimizations
 export const initializeMobileOptimizations = () => {
-  // Run optimizations on load
   MobilePerformance.optimizeAnimations();
   MobilePerformance.optimizeForBattery();
   MobilePerformance.optimizeForNetwork();
   
-  // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     MobilePerformance.cleanupMemory();
   });
 
-  // Handle visibility changes to optimize when app is in background
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      // App is in background - reduce activity
       window.dispatchEvent(new CustomEvent('appBackground'));
     } else {
-      // App is active - resume normal activity
       window.dispatchEvent(new CustomEvent('appForeground'));
     }
   });
 
-  console.log('🚀 Mobile optimizations initialized');
+  console.log('Mobile optimizations initialized');
 };
 
 export default MobilePerformance;

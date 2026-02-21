@@ -1,6 +1,3 @@
-// 🚀 Fred's Professional-Grade MultiplierDisplay
-// Uses his animation hook for butter-smooth updates
-
 import React, { useEffect, useRef } from 'react';
 import useOptimizedAnimation from './hooks/useOptimizedAnimation.js';
 
@@ -16,7 +13,6 @@ export default function MultiplierDisplayOptimized({ lastServerTick, gameState, 
       } else {
         spanRef.current.textContent = mult.toFixed(2) + 'x';
         
-        // Update colors based on multiplier
         let colorClass, glowClass;
         if (mult >= 10) {
           colorClass = 'text-yellow-400';
@@ -51,7 +47,6 @@ export default function MultiplierDisplayOptimized({ lastServerTick, gameState, 
         1.00x
       </span>
       
-      {/* Subtitle - React handles this since it's less frequent */}
       <div className="mt-4 space-y-2">
         {gameState === 'betting' && countdown > 0 && (
           <div className="text-center">

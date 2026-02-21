@@ -55,9 +55,9 @@ const RanksPanel = ({ isOpen, onClose }) => {
 
   const getRankIcon = (position) => {
     switch (position) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
+      case 1: return '1st';
+      case 2: return '2nd';
+      case 3: return '3rd';
       default: return null;
     }
   };
@@ -67,9 +67,8 @@ const RanksPanel = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white">🏆 Leaderboard</h2>
+          <h2 className="text-xl font-bold text-white">Leaderboard</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
@@ -80,14 +79,12 @@ const RanksPanel = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-4">
-          {/* Type Selector */}
           <div className="flex space-x-2 mb-6">
             {[
-              { key: 'balance', label: 'Richest', icon: '💰' },
-              { key: 'totalWon', label: 'Top Winners', icon: '🏆' },
-              { key: 'winRate', label: 'Best Win Rate', icon: '📊' }
+              { key: 'balance', label: 'Richest', icon: null },
+              { key: 'totalWon', label: 'Top Winners', icon: null },
+              { key: 'winRate', label: 'Best Win Rate', icon: null }
             ].map(type => (
               <button
                 key={type.key}
@@ -98,13 +95,12 @@ const RanksPanel = ({ isOpen, onClose }) => {
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                <span className="mr-2">{type.icon}</span>
+                {type.icon && <span className="mr-2">{type.icon}</span>}
                 {type.label}
               </button>
             ))}
           </div>
 
-          {/* Leaderboard List */}
           {isLoading ? (
             <div className="text-center py-8 text-gray-400">
               Loading leaderboard...
@@ -171,7 +167,6 @@ const RanksPanel = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Minimum games notice for win rate */}
           {leaderboardType === 'winRate' && (
             <div className="mt-4 text-xs text-gray-500 text-center">
               * Minimum 10 games required for win rate leaderboard

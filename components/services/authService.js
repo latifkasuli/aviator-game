@@ -1,4 +1,3 @@
-// authService.js
 class AuthService {
   constructor() {
     this.baseURL = import.meta.env?.VITE_API_BASE_URL || 'https://aviator-game-production.up.railway.app/api';
@@ -9,21 +8,12 @@ class AuthService {
 
   async authenticateWithTelegram(telegramUser, startParam = null) {
     try {
-      // Create device ID for referral tracking
       let deviceId = localStorage.getItem('device_id');
       if (!deviceId) {
         deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
         localStorage.setItem('device_id', deviceId);
       }
 
-      console.log(`🌐 Sending request to: ${this.baseURL}/auth/telegram`);
-      console.log('🌐 User agent:', navigator.userAgent);
-      console.log('🌐 Request headers:', {
-        'Content-Type': 'application/json',
-        'X-Device-Id': deviceId
-      });
-      
-      // Fred's Fix: Proper payload formatting
       const payload = {
         telegramUser: {
           id: Number(telegramUser.id),
@@ -33,28 +23,22 @@ class AuthService {
           photo_url: telegramUser.photo_url || null,
           language_code: telegramUser.language_code || null
         },
-        // Only include startParam if it exists (don't send null/undefined)
         ...(startParam ? { startParam: String(startParam) } : {})
       };
-      
-      console.log('🌐 Request payload:', JSON.stringify(payload, null, 2));
 
       const res = await fetch(`${this.baseURL}/auth/telegram`, {
         method: 'POST',
-        mode: 'cors', // Explicitly set CORS mode
+        mode: 'cors',
         cache: 'no-cache',
-        credentials: 'omit', // Fred: bearer-token based, no cookies needed
+        credentials: 'omit',
         headers: { 
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Device-Id': deviceId   // Fred: now allowed by server CORS
+          'X-Device-Id': deviceId
         },
         body: JSON.stringify(payload)
       });
-      
-      console.log(`🌐 Backend response: HTTP ${res.status} ${res.statusText}`);
       const data = await this.safeJson(res);
-      console.log('🌐 Backend data:', data);
       
       if (res.ok && data?.success) {
         this.applySession(data.token, data.refreshToken, data.user);
@@ -63,21 +47,18 @@ class AuthService {
       }
       return { success: false, error: data?.error || `HTTP ${res.status}`, status: res.status, data };
     } catch (e) {
-      console.error('🚨 Fetch failed, trying XMLHttpRequest fallback...');
-      console.error('🚨 Original error:', e.name, e.message);
-      
-      // Fallback to XMLHttpRequest for Telegram WebView compatibility
+      console.error('Fetch failed, trying XMLHttpRequest fallback...');
+      console.error('Original error:', e.name, e.message);
       try {
         const result = await this.authenticateWithTelegramXHR(telegramUser, startParam, deviceId);
         return result;
       } catch (xhrError) {
-        console.error('🚨 XMLHttpRequest also failed:', xhrError);
+        console.error('XMLHttpRequest also failed:', xhrError);
         return { success: false, error: 'Network error', details: `Fetch: ${e.message}, XHR: ${xhrError.message}` };
       }
     }
   }
 
-  // XMLHttpRequest fallback for Telegram WebView compatibility
   async authenticateWithTelegramXHR(telegramUser, startParam, deviceId) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -89,11 +70,8 @@ class AuthService {
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
           try {
-            console.log(`🔄 XHR Response: ${xhr.status} ${xhr.statusText}`);
-            
             if (xhr.status === 200) {
               const data = JSON.parse(xhr.responseText);
-              console.log('🔄 XHR Success:', data);
               
               if (data.success) {
                 this.applySession(data.token, data.refreshToken, data.user);
@@ -119,10 +97,9 @@ class AuthService {
         reject(new Error('XHR Timeout'));
       };
       
-      xhr.timeout = 30000; // 30 second timeout
+      xhr.timeout = 30000;
       
       const payload = JSON.stringify({ telegramUser, startParam });
-      console.log('🔄 Sending XHR request...');
       xhr.send(payload);
     });
   }
@@ -203,12 +180,10 @@ class AuthService {
     }
   }
 
-  // Fred's graceful token validation with automatic refresh
   async validateCurrentToken() {
     if (!this.token) return { valid: false, reason: 'No token' };
     
     try {
-      // Try to get current user profile to validate token
       const res = await fetch(`${this.baseURL}/auth/profile`, {
         headers: { 'Authorization': `Bearer ${this.token}` }
       });
@@ -216,25 +191,24 @@ class AuthService {
       if (res.ok) return { valid: true, reason: 'Token valid' };
       
       if (res.status === 404 || (res.status === 401 && res.statusText.includes('User not found'))) {
-        console.log('🧹 Stale JWT detected - user no longer exists, clearing token');
+        console.log('Stale JWT detected - user no longer exists, clearing token');
         await this.logout();
         return { valid: false, reason: 'User not found - stale token cleared' };
       }
-      
-      // Fred's graceful refresh chain for expired tokens
+
       if (res.status === 401 || res.status === 403) {
         const rt = this.refreshToken;
         if (!rt) return { valid: false, reason: 'Token expired, no refresh token' };
         
-        console.log('🔄 Token expired, attempting refresh...');
+        console.log('Token expired, attempting refresh...');
         const refreshResult = await this.refreshAccessToken();
         if (!refreshResult.success) {
-          console.log('❌ Token refresh failed, clearing session');
+          console.log('Token refresh failed, clearing session');
           await this.logout();
           return { valid: false, reason: 'Token refresh failed' };
         }
-        
-        console.log('✅ Token refreshed successfully');
+
+        console.log('Token refreshed successfully');
         window.dispatchEvent(new Event('authStateChanged'));
         return { valid: true, refreshed: true, reason: 'Token refreshed' };
       }
@@ -245,7 +219,6 @@ class AuthService {
     }
   }
 
-  // Get current auth token
   getToken() {
     return this.token;
   }
@@ -380,7 +353,6 @@ class AuthService {
     }
   }
 
-  // Fred's API compatibility - alias for clearSession
   clearTokens() {
     this.clearSession();
   }

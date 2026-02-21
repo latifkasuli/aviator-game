@@ -127,7 +127,8 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {
+}
       <div className="flex items-center justify-between">
         <button onClick={onClose} className="text-blue-400 hover:text-blue-300">
           ← Back to Users
@@ -136,7 +137,8 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
         <div className="w-24"></div>
       </div>
 
-      {/* User Info Bar */}
+      {
+}
       <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
         <div>
           <h3 className="text-xl font-bold text-white">{user.username}</h3>
@@ -153,7 +155,8 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
         </div>
       </div>
 
-      {/* Tabs */}
+      {
+}
       <div className="border-b border-gray-700">
         <nav className="flex space-x-6">
           {tabs.map(tab => (
@@ -172,9 +175,11 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
         </nav>
       </div>
 
-      {/* Tab Content */}
+      {
+}
       <div>
-        {/* Profile Tab */}
+        {
+}
         {activeTab === 'profile' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -216,7 +221,8 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
           </div>
         )}
 
-        {/* Balance Tab */}
+        {
+}
         {activeTab === 'balance' && (
           <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6">
@@ -270,7 +276,8 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
           </div>
         )}
 
-        {/* Stats Tab */}
+        {
+}
         {activeTab === 'stats' && (
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-800 rounded-lg p-4">
@@ -308,7 +315,8 @@ const AdminUserDetail = ({ userId, onClose, onUserUpdate }) => {
           </div>
         )}
 
-        {/* Audit Tab */}
+        {
+}
         {activeTab === 'audit' && (
           <div className="space-y-4">
             {auditLogs.length === 0 ? (

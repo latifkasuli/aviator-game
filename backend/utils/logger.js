@@ -1,4 +1,3 @@
-// Production-safe logger utility
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -10,7 +9,6 @@ const logger = {
   },
   
   error: (...args) => {
-    // Always log errors
     console.error(...args);
   },
   
@@ -32,10 +30,8 @@ const logger = {
     }
   },
   
-  // Production logger for important events
   production: (...args) => {
     if (process.env.NODE_ENV === 'production') {
-      // In production, you'd send this to a logging service
       console.log('[PROD]', new Date().toISOString(), ...args);
     }
   }

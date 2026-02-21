@@ -1,8 +1,6 @@
 import { ColorSource, Graphics, Texture, utils } from "pixi.js";
-//import { ColorSource, Graphics, Texture } from "pixi.js";
 import { dimensionType, game_global_vars_type } from "./aviatorTypes";
 import { sound } from '@pixi/sound';
-//import { Theme, ToastPosition, toast } from "react-toastify";
 export const Game_Global_Vars: game_global_vars_type = {
     curPayout: 0,
     allowedBet: false,
@@ -21,11 +19,9 @@ export const Game_Global_Vars: game_global_vars_type = {
     },
 }
 
-// Define the function for the curve
 export const curveFunction = (x: number, dimension: dimensionType) => {
     return 0.0007 * Math.pow(x, 1.9) * dimension.height / 1500
 };
-
 
 export const renderCurve = (g: Graphics, _dimension: dimensionType) => {
     const dimension = { width: _dimension.width, height: _dimension.height - 40 }
@@ -33,7 +29,6 @@ export const renderCurve = (g: Graphics, _dimension: dimensionType) => {
     const points = xAxis.map(item => ({ x: item, y: dimension.height - curveFunction(item, dimension) }));
     g.clear()
     g.beginFill(0xE59407, 0.3);
-    // g.lineStyle(4, 0xffd900, 1);
     g.moveTo(points[0].x, points[0].y);
 
     for (let i = 1; i < points.length; i++) {
@@ -52,7 +47,6 @@ export const renderCurve = (g: Graphics, _dimension: dimensionType) => {
 }
 export const _drawOuterBoundery = (g: Graphics, dimension: dimensionType) => {
 
-
     g.clear()
 
     g.lineStyle(2, 0x2A2A2E, 1);
@@ -60,7 +54,6 @@ export const _drawOuterBoundery = (g: Graphics, dimension: dimensionType) => {
 
 }
 export const _drawInnerBoundery = (g: Graphics, dimension: dimensionType) => {
-
 
     g.clear()
 
@@ -70,7 +63,6 @@ export const _drawInnerBoundery = (g: Graphics, dimension: dimensionType) => {
     g.lineTo(dimension.width, dimension.height - 40)
 
 }
-
 
 export const createGradTexture = (dimension: dimensionType) => {
     const canvas = document.createElement('canvas');
@@ -82,7 +74,6 @@ export const createGradTexture = (dimension: dimensionType) => {
 
     if (ctx) {
         const grd = ctx.createRadialGradient(dimension.width / 4, dimension.height / 2, r / 8, dimension.width / 4, dimension.height / 2, r / 2);
-        // radial - gradient(circle, rgba(86, 0, 152, 1) 0 %, rgba(41, 0, 73, 1) 100 %)
         grd.addColorStop(0, '#E5940744');
         grd.addColorStop(1, '#00000044');
 
@@ -129,7 +120,6 @@ export const stopSound = (type: 'bg' | 'flew' | 'win' | 'take') => {
 
 export const loadSound = () => {
     try {
-        // Use correct path for localhost development
         const soundBasePath = process.env.REACT_APP_ASSETS_IMAGE_URL || "/aviator/";
         
         sound.add('bg-sound', `${soundBasePath}general/sound/bg-sound.mp3`);
@@ -154,14 +144,8 @@ export const openFullscreen = async () => {
             await elem.requestFullscreen();
         } catch (e) { }
     }
-    // else if (elem.webkitRequestFullscreen) { /* Safari */
-    //     elem.webkitRequestFullscreen();
-    // } else if (elem.msRequestFullscreen) { /* IE11 */
-    //     elem.msRequestFullscreen();
-    // }
 }
 
-/* Close fullscreen */
 export const closeFullscreen = async () => {
     if (document.exitFullscreen) {
         try {
@@ -169,11 +153,6 @@ export const closeFullscreen = async () => {
         } catch (e) { }
 
     }
-    // else if (document.webkitExitFullscreen) { /* Safari */
-    //     document.webkitExitFullscreen();
-    // } else if (document.msExitFullscreen) { /* IE11 */
-    //     document.msExitFullscreen();
-    // }
 }
 
 export function interpolate(x: number, x1: number, x2: number, y1: number, y2: number) {
@@ -221,23 +200,6 @@ export const testMobile = () => {
         }
     }
 }
-// export const showToast = (msg: string, type: "error" | "info" = "error") => {
-//     const params = {
-//         position: "top-right" as ToastPosition,
-//         autoClose: 5000,
-//         hideProgressBar: false,
-//         closeOnClick: true,
-//         pauseOnHover: true,
-//         draggable: true,
-//         progress: undefined,
-//         theme: "colored" as Theme,
-//     }
-//     if (type === "error") {
-//         toast.error(msg, params);
-//     } else {
-//         toast.info(msg, params)
-//     }
-// }
 export const setStateTemplate = (val: any, i: number) => (prev: any[]) => {
     const new_val = [...prev]
     new_val[i] = val
@@ -255,6 +217,4 @@ export const getUTCTimefromUTCTime: (timeString: string) => Date = (timeString: 
 }
 export const doDelay = (sec: number) => new Promise((resolve) => setTimeout(resolve, sec))
 export const initBet6 = JSON.parse(localStorage.getItem(`bet6`) || '["100","200","300","400","500","600"]')
-// Simple WebP/PNG format selector - modern browsers support WebP
 export const webpORpng = utils.isWebGLSupported() ? "webp" : "png"
-//export const webpORpng = 'webp'; // All modern browsers support WebP, fallback handled by having both formats

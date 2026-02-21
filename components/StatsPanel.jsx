@@ -3,16 +3,13 @@ import betHistoryService from './services/betHistoryService.js';
 import authService from './services/authService.js';
 import { usePlayerSettings } from './hooks/usePlayerSettings.js';
 
-// Deprecated: this panel has been replaced by dedicated tabs in UserProfile.
-// Keeping a lightweight component stub to avoid import errors until fully removed from codebase.
 const StatsPanel = ({ isOpen, onClose }) => {
   const [stats, setStats] = useState(null);
   const [history, setHistory] = useState([]);
   const [dailyLimits, setDailyLimits] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'history', 'limits'
+  const [activeTab, setActiveTab] = useState('overview');
   const [showLimitSettings, setShowLimitSettings] = useState(false);
   
-  // Use the player settings hook for server sync
   const { 
     settings,
     saving,
@@ -23,14 +20,11 @@ const StatsPanel = ({ isOpen, onClose }) => {
     maxGamesPerDay
   } = usePlayerSettings();
 
-  // Define loadData before using it in useEffect
   const loadData = React.useCallback(() => {
     setStats(betHistoryService.getStats());
     setHistory(betHistoryService.getRecentHistory(100));
     
-    // Sync limits from server with local state
     if (authService.isAuthenticated()) {
-      // The hook already has the latest settings, just sync them
       const serverLimits = {
         enabled: dailyLimitsEnabled,
         maxDailyWager: maxDailyWager,
@@ -38,15 +32,13 @@ const StatsPanel = ({ isOpen, onClose }) => {
         maxGamesPerDay: maxGamesPerDay
       };
       
-      // Update betHistoryService with server limits
       betHistoryService.updateDailyLimits(serverLimits);
-      console.log('✅ Daily limits synced from server');
+      console.log('Daily limits synced from server');
     }
     
     setDailyLimits(betHistoryService.getDailyLimitsStatus());
   }, [dailyLimitsEnabled, maxDailyWager, maxDailyLoss, maxGamesPerDay]);
 
-  // Load data when panel opens or settings change
   useEffect(() => {
     if (isOpen) {
       loadData();
@@ -54,14 +46,10 @@ const StatsPanel = ({ isOpen, onClose }) => {
   }, [isOpen, loadData]);
   
 
-
-  // Safe number conversion
   const safeNum = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
 
-  // Convert fraction (0-1) to percentage (0-100) if needed
   const toPercent = (val) => {
     const n = safeNum(val);
-    // If it's a fraction (0-1), convert to percentage
     return n <= 1 ? n * 100 : n;
   };
 
@@ -92,11 +80,9 @@ const StatsPanel = ({ isOpen, onClose }) => {
   );
 
   const updateDailyLimits = useCallback((newLimits) => {
-    // Update local storage immediately
     betHistoryService.updateDailyLimits(newLimits);
     setDailyLimits(betHistoryService.getDailyLimitsStatus());
     
-    // Update each changed setting using the hook
     if (authService.isAuthenticated()) {
       if ('enabled' in newLimits) {
         updateSetting('dailyLimitsEnabled', newLimits.enabled);
@@ -118,9 +104,10 @@ const StatsPanel = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white">📊 Player Statistics</h2>
+          <h2 className="text-xl font-bold text-white">Player Statistics</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
@@ -131,10 +118,11 @@ const StatsPanel = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Tabs (History and Limits moved to Profile) */}
+        {
+}
         <div className="flex border-b border-gray-700">
           {[
-            { id: 'overview', label: 'Overview', icon: '📈' }
+            { id: 'overview', label: 'Overview', icon: null }
           ].map(tab => (
             <button
               key={tab.id}
@@ -151,15 +139,17 @@ const StatsPanel = ({ isOpen, onClose }) => {
           ))}
         </div>
 
-        {/* Content */}
+        {
+}
         <div className="p-4 overflow-y-auto max-h-[60vh]">
           {activeTab === 'overview' && stats && (
             <div className="space-y-6">
-              {/* Local Stats Notice */}
+              {
+}
               <div className="bg-blue-900 bg-opacity-30 border border-blue-700 rounded-lg p-3 text-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-blue-400">ℹ️</span>
+                    <span className="text-blue-400">[i]</span>
                     <span className="text-gray-300">
                       These statistics are based on your current session. 
                       View your profile for lifetime stats.
@@ -186,72 +176,75 @@ const StatsPanel = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               </div>
-              {/* Key Metrics */}
+              {
+}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
                   title="Total Bets"
                   value={formatNumber(stats.totalBets)}
                   subtitle={`${stats.gamesPlayed} rounds played`}
-                  icon="🎲"
+                  icon={null}
                 />
                 <StatCard
                   title="Win Rate"
                   value={formatPercentage(toPercent(stats.winRate))}
                   subtitle={`${stats.currentStreak} ${stats.currentStreakType || 'game'} streak`}
                   color={toPercent(stats.winRate) >= 50 ? 'text-green-400' : 'text-red-400'}
-                  icon="🎯"
+                  icon={null}
                 />
                 <StatCard
                   title="Total Wagered"
                   value={formatCurrency(stats.totalWagered)}
                   subtitle="This session"
-                  icon="💰"
+                  icon={null}
                 />
                 <StatCard
                   title="Net Profit"
                   value={formatCurrency(stats.netProfit)}
                   subtitle={`ROI: ${formatPercentage(toPercent(stats.roi))}`}
                   color={stats.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}
-                  icon={stats.netProfit >= 0 ? '📈' : '📉'}
+                  icon={null}
                 />
               </div>
 
-              {/* Performance Metrics */}
+              {
+}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <StatCard
                   title="Biggest Win"
                   value={formatCurrency(stats.biggestWin)}
                   color="text-green-400"
-                  icon="🏆"
+                  icon={null}
                 />
                 <StatCard
                   title="Biggest Loss"
                   value={formatCurrency(Math.abs(stats.biggestLoss))}
                   color="text-red-400"
-                  icon="💸"
+                  icon={null}
                 />
                 <StatCard
                   title="Avg Multiplier"
                   value={safeNum(stats.averageMultiplier).toFixed(2) + 'x'}
-                  icon="✈️"
+                  icon={null}
                 />
               </div>
 
-              {/* Streaks */}
+              {
+}
               <div className="grid grid-cols-2 gap-4">
                 <StatCard
                   title="Longest Win Streak"
                   value={stats.longestWinStreak}
                   subtitle="consecutive wins"
                   color="text-green-400"
-                  icon="🔥"
+                  icon={null}
                 />
                 <StatCard
                   title="Longest Loss Streak"
                   value={stats.longestLossStreak}
                   subtitle="consecutive losses"
                   color="text-red-400"
-                  icon="❄️"
+                  icon={null}
                 />
               </div>
             </div>
@@ -317,7 +310,8 @@ const StatsPanel = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Current Usage */}
+              {
+}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                   <h4 className="text-sm text-gray-400 mb-2">Daily Wagered</h4>
@@ -368,7 +362,8 @@ const StatsPanel = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Limit Settings */}
+              {
+}
               {showLimitSettings && (
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                   <h4 className="text-lg font-semibold mb-4">Responsible Gaming Settings</h4>

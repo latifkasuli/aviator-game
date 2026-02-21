@@ -15,10 +15,9 @@ const AviatorGameStandalone = ({
     onMultiplierChange,
     triggerCashout
 }) => {
-    
-    // Internal PIXI state - self-managed
+
     const [internalAviatorState, setInternalAviatorState] = useState({
-        dimension: { width: 1920, height: 630 }, // Default PIXI dimensions
+        dimension: { width: 1920, height: 630 },
         game_anim_status: 'WAITING'
     })
     
@@ -29,7 +28,6 @@ const AviatorGameStandalone = ({
     
     const pixi_ref = useRef(null)
 
-    // Calculate PIXI scaling
     useEffect(() => {
         const newScale = Math.min(
             pixiDimension.width / internalAviatorState.dimension.width,
@@ -38,31 +36,19 @@ const AviatorGameStandalone = ({
         setScale(newScale)
     }, [pixiDimension, internalAviatorState.dimension])
 
-    // Update dimensions and internal state
     const updateDimensions = useCallback(() => {
         const containerWidth = pixi_ref.current?.clientWidth || width
         const finalWidth = Math.min(containerWidth, width)
         
-        // Mobile height adjustment
-        // Adjust these values to control canvas height on different screen sizes
         let finalHeight = height;
         if (containerWidth < 640) {
-            // MOBILE: Adjust this value to change mobile canvas height
-            // Examples:
-            // - height * 0.5 = 50% of default height
-            // - height * 0.6 = 60% of default height  
-            // - Math.min(height, 300) = max 300px height
-            // - 250 = fixed 250px height
-            finalHeight = height * 0.7; // Currently set to 65% on mobile
+            finalHeight = height * 0.7;
         } else if (containerWidth < 1024) {
-            // TABLET: Optional tablet-specific height
-            finalHeight = height * 0.8; // 80% on tablets
+            finalHeight = height * 0.8;
         }
-        // DESKTOP: Uses full height (100%)
         
         setPixiDimension({ width: finalWidth, height: finalHeight })
         
-        // Update internal aviator state for PIXI scaling
         setInternalAviatorState(prev => {
             const new_width = prev.dimension.width
             const new_height = new_width * finalHeight / finalWidth
@@ -76,7 +62,6 @@ const AviatorGameStandalone = ({
         })
     }, [width, height])
 
-    // Handle game state changes
     useEffect(() => {
         let newAnimStatus = 'WAITING'
         
@@ -85,7 +70,6 @@ const AviatorGameStandalone = ({
         } else if (gameState === 'crashed') {
             newAnimStatus = 'ANIM_CRASHED'
             
-            // Reset to waiting after 3 seconds
             setTimeout(() => {
                 setInternalAviatorState(prev => ({ ...prev, game_anim_status: 'WAITING' }))
             }, 3000)
@@ -95,14 +79,11 @@ const AviatorGameStandalone = ({
         
         setInternalAviatorState(prev => ({ ...prev, game_anim_status: newAnimStatus }))
         
-        // Optional callback
         onGameStateChange?.(gameState)
     }, [gameState, onGameStateChange])
 
-    // Listen for cashout trigger
     useEffect(() => {
         if (triggerCashout && triggerCashout.timestamp > 0) {
-            // Trigger parachute animation when cashout occurs
             setTrigParachute(prev => ({ 
                 uniqId: prev.uniqId + 1, 
                 isMe: triggerCashout.isMe 
@@ -110,17 +91,14 @@ const AviatorGameStandalone = ({
         }
     }, [triggerCashout])
 
-    // Optional multiplier callback
     useEffect(() => {
         onMultiplierChange?.(multiplier)
     }, [multiplier, onMultiplierChange])
 
-    // Initialize dimensions and propeller rotation
     useEffect(() => {
         updateDimensions()
         window.addEventListener('resize', updateDimensions)
-        
-        // Propeller rotation
+
         const rotationInterval = setInterval(() => setRotate(prev => prev + 10), 100)
         
         return () => {
@@ -131,7 +109,6 @@ const AviatorGameStandalone = ({
 
     return (
         <div className={`aviator-game-standalone ${className}`}>
-            {/* Game Canvas with Professional Styling */}
             <div className="w-full max-w-4xl mx-auto mb-0">
                 <div 
                     className="flex justify-center w-full relative border-2 border-gray-800 rounded-2xl bg-black overflow-hidden shadow-2xl" 
@@ -141,7 +118,6 @@ const AviatorGameStandalone = ({
                     }} 
                     ref={pixi_ref}
                 >
-                    {/* Game State Overlay */}
                     <div 
                         className='flex flex-col gap-10 absolute top-0 justify-center items-center z-10'
                         style={{
@@ -151,7 +127,6 @@ const AviatorGameStandalone = ({
                             width: '100%'
                         }}
                     >
-                        {/* Spinning Propeller */}
                         <div 
                             style={{ 
                                 display: internalAviatorState.game_anim_status === "WAITING" ? "block" : "none",
@@ -165,7 +140,6 @@ const AviatorGameStandalone = ({
                             />
                         </div>
                         
-                        {/* Game Status Messages */}
                         <div className='flex flex-col justify-center items-center px-4 py-2 lg:px-8 lg:py-2 bg-black/70 border-dashed border border-[#E59407] rounded-lg'>
                             <p className='text-[#E59407] uppercase font-bold text-[21px] lg:text-[30px]'>
                                 {internalAviatorState.game_anim_status === "ANIM_CRASHED" ? "FLEW AWAY" : "PLACE YOUR BET"}
@@ -183,7 +157,6 @@ const AviatorGameStandalone = ({
                         </div>
                     </div>
                     
-                    {/* Self-Contained PIXI Stage */}
                     <Stage width={pixiDimension.width} height={pixiDimension.height} options={{ antialias: true }}>
                         <Container scale={scale}>
                             <AppStage 

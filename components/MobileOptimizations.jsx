@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-// Mobile-specific optimizations and features
 const MobileOptimizations = ({ children, onInstallPrompt }) => {
   const [isStandalone, setIsStandalone] = useState(false);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [orientation, setOrientation] = useState('portrait');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-  // Check if app is running in standalone mode (PWA)
   useEffect(() => {
     const checkStandalone = () => {
       const standalone = window.matchMedia('(display-mode: standalone)').matches ||
@@ -21,13 +19,11 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
     return () => window.removeEventListener('resize', checkStandalone);
   }, []);
 
-  // Handle orientation changes
   useEffect(() => {
     const handleOrientationChange = () => {
       const newOrientation = window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
       setOrientation(newOrientation);
       
-      // Vibrate on orientation change for better UX
       if ('vibrate' in navigator) {
         navigator.vibrate(50);
       }
@@ -43,7 +39,6 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
     };
   }, []);
 
-  // Handle online/offline status
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -57,7 +52,6 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
     };
   }, []);
 
-  // Handle install prompt
   useEffect(() => {
     const handleInstallPrompt = (e) => {
       if (!isStandalone) {
@@ -72,7 +66,6 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
     return () => window.removeEventListener('showInstallPrompt', handleInstallPrompt);
   }, [isStandalone, onInstallPrompt]);
 
-  // Prevent zoom on double tap
   useEffect(() => {
     let lastTouchEnd = 0;
     const preventZoom = (e) => {
@@ -87,7 +80,6 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
     return () => document.removeEventListener('touchend', preventZoom);
   }, []);
 
-  // Handle safe area insets for devices with notches
   useEffect(() => {
     const updateSafeArea = () => {
       const safeAreaTop = getComputedStyle(document.documentElement)
@@ -106,30 +98,36 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
 
   return (
     <div className="mobile-optimized-container">
-      {/* Offline indicator */}
+      {
+}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-red-600 text-white text-center py-2 text-sm z-50">
           📶 You're offline. Some features may not work.
         </div>
       )}
 
-      {/* Install banner for PWA */}
+      {
+}
       {showInstallBanner && !isStandalone && (
         <InstallBanner onDismiss={() => setShowInstallBanner(false)} />
       )}
 
-      {/* Orientation warning for landscape */}
+      {
+}
       {orientation === 'landscape' && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-40 lg:hidden">
           <div className="text-center text-white p-6">
-            <div className="text-6xl mb-4">📱</div>
+            <div className="mb-4">
+              <svg className="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+            </div>
             <h3 className="text-xl font-bold mb-2">Please rotate your device</h3>
             <p className="text-gray-300">This game is optimized for portrait mode</p>
           </div>
         </div>
       )}
 
-      {/* Main content with mobile optimizations */}
+      {
+}
       <div 
         className={`
           ${isStandalone ? 'standalone-app' : ''}
@@ -148,7 +146,6 @@ const MobileOptimizations = ({ children, onInstallPrompt }) => {
   );
 };
 
-// Install banner component
 const InstallBanner = ({ onDismiss }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -198,14 +195,12 @@ const InstallBanner = ({ onDismiss }) => {
   );
 };
 
-// Touch feedback component for better mobile interaction
 export const TouchFeedback = ({ children, onTouch, className = '', ...props }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const handleTouchStart = useCallback((e) => {
     setIsPressed(true);
     
-    // Haptic feedback
     if ('vibrate' in navigator) {
       navigator.vibrate(10);
     }
@@ -237,7 +232,6 @@ export const TouchFeedback = ({ children, onTouch, className = '', ...props }) =
   );
 };
 
-// Swipe gesture handler
 export const SwipeHandler = ({ children, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold = 50 }) => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);

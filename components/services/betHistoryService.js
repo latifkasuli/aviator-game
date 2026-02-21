@@ -1,5 +1,3 @@
-// 📊 Bet History Service - Tracks and manages player betting history
-// Stores data locally and provides statistics
 
 class BetHistoryService {
   constructor() {
@@ -11,7 +9,6 @@ class BetHistoryService {
     this.dailyLimits = this.loadDailyLimits();
   }
 
-  // Load bet history from localStorage
   loadHistory() {
     try {
       const stored = localStorage.getItem(this.storageKey);
@@ -22,7 +19,6 @@ class BetHistoryService {
     }
   }
 
-  // Load player statistics
   loadStats() {
     try {
       const stored = localStorage.getItem(this.statsKey);
@@ -36,7 +32,7 @@ class BetHistoryService {
         longestWinStreak: 0,
         longestLossStreak: 0,
         currentStreak: 0,
-        currentStreakType: null, // 'win' or 'loss'
+        currentStreakType: null,
         averageMultiplier: 0,
         gamesPlayed: 0,
         lastPlayDate: null
@@ -47,14 +43,12 @@ class BetHistoryService {
     }
   }
 
-  // Load daily limits
   loadDailyLimits() {
     try {
       const stored = localStorage.getItem(this.limitsKey);
       const today = new Date().toDateString();
       const limits = stored ? JSON.parse(stored) : {};
       
-      // Reset daily counters if it's a new day
       if (limits.date !== today) {
         limits.date = today;
         limits.dailyWagered = 0;
@@ -71,7 +65,7 @@ class BetHistoryService {
         dailyLost: limits.dailyLost || 0,
         gamesPlayedToday: limits.gamesPlayedToday || 0,
         date: limits.date || today,
-        enabled: limits.enabled !== false // Default to enabled
+        enabled: limits.enabled !== false
       };
     } catch (error) {
       console.error('Error loading daily limits:', error);
@@ -111,7 +105,6 @@ class BetHistoryService {
     };
   }
 
-  // Save data to localStorage
   saveHistory() {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(this.history));
@@ -136,33 +129,29 @@ class BetHistoryService {
     }
   }
 
-  // Record a new bet
   recordBet(betAmount, gameId = null) {
     const bet = {
       id: Date.now() + Math.random(),
       amount: betAmount,
       timestamp: new Date().toISOString(),
       gameId: gameId || `game_${Date.now()}`,
-      status: 'active', // 'active', 'won', 'lost'
+      status: 'active',
       multiplier: null,
       winnings: 0,
       profit: -betAmount
     };
 
-    this.history.unshift(bet); // Add to beginning
+    this.history.unshift(bet);
     
-    // Keep only last 1000 bets
     if (this.history.length > 1000) {
       this.history = this.history.slice(0, 1000);
     }
 
-    // Update stats
     this.stats.totalBets++;
     this.stats.totalWagered += betAmount;
     this.stats.gamesPlayed++;
     this.stats.lastPlayDate = new Date().toISOString();
 
-    // Update daily limits
     this.dailyLimits.dailyWagered += betAmount;
     this.dailyLimits.gamesPlayedToday++;
 
@@ -173,7 +162,6 @@ class BetHistoryService {
     return bet;
   }
 
-  // Record bet outcome (win/loss)
   recordBetOutcome(betId, multiplier, winnings = 0) {
     const bet = this.history.find(b => b.id === betId);
     if (!bet) return null;
@@ -183,12 +171,10 @@ class BetHistoryService {
     bet.profit = winnings - bet.amount;
     bet.status = winnings > 0 ? 'won' : 'lost';
 
-    // Update stats
     if (bet.status === 'won') {
       this.stats.totalWon += winnings;
       this.stats.biggestWin = Math.max(this.stats.biggestWin, bet.profit);
       
-      // Update streak
       if (this.stats.currentStreakType === 'win') {
         this.stats.currentStreak++;
       } else {
@@ -201,7 +187,6 @@ class BetHistoryService {
       this.stats.biggestLoss = Math.max(this.stats.biggestLoss, bet.amount);
       this.dailyLimits.dailyLost += bet.amount;
       
-      // Update streak
       if (this.stats.currentStreakType === 'loss') {
         this.stats.currentStreak++;
       } else {
@@ -211,7 +196,6 @@ class BetHistoryService {
       this.stats.longestLossStreak = Math.max(this.stats.longestLossStreak, this.stats.currentStreak);
     }
 
-    // Calculate average multiplier
     const completedBets = this.history.filter(b => b.multiplier !== null);
     if (completedBets.length > 0) {
       this.stats.averageMultiplier = completedBets.reduce((sum, b) => sum + b.multiplier, 0) / completedBets.length;
@@ -224,19 +208,16 @@ class BetHistoryService {
     return bet;
   }
 
-  // Get recent bet history
   getRecentHistory(limit = 50) {
     return this.history.slice(0, limit);
   }
 
-  // Get statistics
   getStats() {
-    // Clean up any orphaned active bets (older than 5 minutes)
     const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
     this.history.forEach(bet => {
       if (bet.status === 'active' && new Date(bet.timestamp).getTime() < fiveMinutesAgo) {
         console.log('Cleaning up orphaned bet:', bet.id);
-        this.recordBetOutcome(bet.id, 1.0, 0); // Mark as lost at 1.0x
+        this.recordBetOutcome(bet.id, 1.0, 0);
       }
     });
     
@@ -254,7 +235,6 @@ class BetHistoryService {
     };
   }
 
-  // Check if daily limits are exceeded
   canPlaceBet(betAmount) {
     if (!this.dailyLimits.enabled) return { allowed: true };
 
@@ -278,13 +258,11 @@ class BetHistoryService {
     };
   }
 
-  // Update daily limits
   updateDailyLimits(newLimits) {
     this.dailyLimits = { ...this.dailyLimits, ...newLimits };
     this.saveDailyLimits();
   }
 
-  // Get daily limits status
   getDailyLimitsStatus() {
     return {
       ...this.dailyLimits,
@@ -294,7 +272,6 @@ class BetHistoryService {
     };
   }
 
-  // Clear all data (for testing or reset)
   clearAllData() {
     this.history = [];
     this.stats = this.getDefaultStats();
@@ -305,7 +282,6 @@ class BetHistoryService {
     localStorage.removeItem(this.limitsKey);
   }
 
-  // Export data for backup
   exportData() {
     return {
       history: this.history,
@@ -315,7 +291,6 @@ class BetHistoryService {
     };
   }
 
-  // Import data from backup
   importData(data) {
     try {
       if (data.history) this.history = data.history;
@@ -334,7 +309,6 @@ class BetHistoryService {
   }
 }
 
-// Create singleton instance
 const betHistoryService = new BetHistoryService();
 
 export default betHistoryService;

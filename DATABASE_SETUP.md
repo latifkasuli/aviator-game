@@ -1,9 +1,9 @@
-# 🗄️ PostgreSQL Database Setup Guide
+# PostgreSQL Database Setup Guide
 
-## 📋 Overview
+## Overview
 This guide will help you set up PostgreSQL with Prisma ORM for the Aviator game, making it production-ready and cheat-proof.
 
-## 🚀 Quick Setup
+## Quick Setup
 
 ### 1. Install PostgreSQL
 
@@ -56,7 +56,7 @@ chmod +x scripts/setup-database.js
 node scripts/setup-database.js
 ```
 
-## 🏗️ Database Schema
+## Database Schema
 
 ### Core Tables
 
@@ -81,7 +81,7 @@ node scripts/setup-database.js
 - **Types**: Deposits, withdrawals, bets, wins, losses
 - **Metadata**: Game rounds, bet references, descriptions
 
-## 🛡️ Security Features
+## Security Features
 
 ### Provably Fair System
 ```javascript
@@ -101,7 +101,7 @@ const crashPoint = calculateCrashPoint(serverSeed, clientSeed, nonce);
 - **Real-time Tracking**: Current usage tracked against limits
 - **Automatic Enforcement**: Bets blocked when limits exceeded
 
-## 🔧 Database Operations
+## Database Operations
 
 ### User Management
 ```javascript
@@ -138,7 +138,7 @@ const stats = await databaseService.getUserStats(userId);
 const leaderboard = await databaseService.getLeaderboard(10);
 ```
 
-## 📊 Database Migrations
+## Database Migrations
 
 ### Initial Migration
 ```bash
@@ -156,7 +156,7 @@ npx prisma migrate dev --name add_new_feature
 npx prisma migrate deploy
 ```
 
-## 🔍 Monitoring & Maintenance
+## Monitoring & Maintenance
 
 ### Health Checks
 ```javascript
@@ -178,7 +178,7 @@ pg_dump aviator_game > backup_$(date +%Y%m%d).sql
 psql aviator_game < backup_20231201.sql
 ```
 
-## 🚀 Production Considerations
+## Production Considerations
 
 ### Environment Variables
 ```env
@@ -204,7 +204,7 @@ DATABASE_TIMEOUT=30000
 - **Firewall**: Restrict database access to application servers
 - **Monitoring**: Set up alerts for unusual activity
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -235,26 +235,26 @@ EXPLAIN ANALYZE SELECT * FROM bets WHERE user_id = 'user123';
 SELECT pg_size_pretty(pg_database_size('aviator_game'));
 ```
 
-## 📈 Benefits of Database Migration
+## Benefits of Database Migration
 
 ### Before (File-based)
-- ❌ No transaction safety
-- ❌ Easy to manipulate
-- ❌ No audit trail
-- ❌ Limited scalability
-- ❌ No concurrent access
+- [X] No transaction safety
+- [X] Easy to manipulate
+- [X] No audit trail
+- [X] Limited scalability
+- [X] No concurrent access
 
 ### After (PostgreSQL)
-- ✅ ACID transactions
-- ✅ Server-side validation
-- ✅ Complete audit trail
-- ✅ Horizontal scaling
-- ✅ Concurrent users
-- ✅ Provably fair system
-- ✅ Real-time statistics
-- ✅ Backup & recovery
+- [OK] ACID transactions
+- [OK] Server-side validation
+- [OK] Complete audit trail
+- [OK] Horizontal scaling
+- [OK] Concurrent users
+- [OK] Provably fair system
+- [OK] Real-time statistics
+- [OK] Backup & recovery
 
-## 🎯 Next Steps
+## Next Steps
 
 1. **Set up PostgreSQL** following the installation guide
 2. **Run the setup script** to initialize the database
@@ -262,4 +262,4 @@ SELECT pg_size_pretty(pg_database_size('aviator_game'));
 4. **Test the migration** with the existing frontend
 5. **Deploy to production** with proper security measures
 
-The database is now ready to handle thousands of concurrent users with complete transaction safety and provably fair gameplay! 🚀
+The database is now ready to handle thousands of concurrent users with complete transaction safety and provably fair gameplay!

@@ -16,7 +16,6 @@ const WorkPanel = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Format currency with k/M notation
   const formatCompact = (num) => {
     if (!num) return '0';
     const n = Number(num);
@@ -51,29 +50,23 @@ const WorkPanel = ({ isOpen, onClose }) => {
       const result = await authService.claimFarmingPoints();
       
       if (result.success) {
-        // Update user balance
         const updatedUser = authService.getUser();
         setUser(updatedUser);
         
-        // Dispatch custom event to notify App.jsx of balance update
         window.dispatchEvent(new CustomEvent('balanceUpdated', { 
           detail: { balance: updatedUser?.balance } 
         }));
         
-        // Reload farming status from backend (single source of truth)
         await loadFarmingStatus();
 
-        // Show success message
         const points = farmingStatus.rewardPoints || 6000;
         setSuccess(`Successfully claimed ${points.toLocaleString()} points!`);
         setTimeout(() => setSuccess(''), 3000);
 
-        // Show success animation
         if (window.Telegram?.WebApp?.HapticFeedback) {
           window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         }
       } else {
-        // Show user-facing error message
         setError(result.error || 'Failed to claim points. Please try again.');
         if (window.Telegram?.WebApp?.HapticFeedback) {
           window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
@@ -90,7 +83,6 @@ const WorkPanel = ({ isOpen, onClose }) => {
     }
   };
 
-  // Update countdown timer
   useEffect(() => {
     if (!farmingStatus.nextClaimTime || farmingStatus.canClaim) {
       setTimeRemaining('');
@@ -104,7 +96,7 @@ const WorkPanel = ({ isOpen, onClose }) => {
 
       if (diff <= 0) {
         setTimeRemaining('Ready to claim!');
-        loadFarmingStatus(); // Reload to update canClaim status
+        loadFarmingStatus();
         return;
       }
 
@@ -124,13 +116,11 @@ const WorkPanel = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       loadFarmingStatus();
-      // Always get fresh user data when panel opens
       const currentUser = authService.getUser();
       setUser(currentUser);
     }
   }, [isOpen, loadFarmingStatus]);
 
-  // Listen for balance updates from game or other components
   useEffect(() => {
     const handleBalanceUpdate = (event) => {
       const currentUser = authService.getUser();
@@ -154,9 +144,10 @@ const WorkPanel = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-md max-h-[90vh] overflow-hidden">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white">💰 Work & Earn</h2>
+          <h2 className="text-xl font-bold text-white">Work & Earn</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
@@ -167,9 +158,11 @@ const WorkPanel = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Content */}
+        {
+}
         <div className="p-6">
-          {/* Current Balance */}
+          {
+}
           <div className="text-center mb-6">
             <div className="text-gray-400 text-sm">Current Balance</div>
             <div className="text-3xl font-bold text-yellow-400">
@@ -177,28 +170,31 @@ const WorkPanel = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Error/Success Messages */}
+          {
+}
           {error && (
             <div className="mb-4 p-3 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg text-red-400 text-sm">
-              ⚠️ {error}
+              {error}
             </div>
           )}
           {success && (
             <div className="mb-4 p-3 bg-green-900 bg-opacity-30 border border-green-700 rounded-lg text-green-400 text-sm">
-              ✅ {success}
+              {success}
             </div>
           )}
 
-          {/* Farming Card */}
+          {
+}
           <div className="bg-gray-800 rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">🌾 Points Farming</h3>
+              <h3 className="text-lg font-semibold">Points Farming</h3>
               <div className="text-yellow-400 font-bold">
                 +{formatCompact(farmingStatus.rewardPoints || 6000)} pts
               </div>
             </div>
 
-            {/* Progress Bar */}
+            {
+}
             <div className="mb-4">
               <div className="flex justify-between text-sm text-gray-400 mb-2">
                 <span>Progress</span>
@@ -212,7 +208,8 @@ const WorkPanel = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Timer or Ready State */}
+            {
+}
             <div className="text-center mb-4">
               {farmingStatus.canClaim ? (
                 <div className="text-green-400 font-semibold text-lg">
@@ -228,7 +225,8 @@ const WorkPanel = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Claim Button */}
+            {
+}
             <button
               onClick={handleClaim}
               disabled={!farmingStatus.canClaim || isClaiming}
@@ -254,7 +252,8 @@ const WorkPanel = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Info */}
+          {
+}
           <div className="bg-blue-900 bg-opacity-30 border border-blue-700 rounded-lg p-4">
             <h4 className="text-blue-400 font-semibold mb-2">How it works:</h4>
             <ul className="text-sm text-gray-300 space-y-1">
@@ -265,7 +264,8 @@ const WorkPanel = ({ isOpen, onClose }) => {
             </ul>
           </div>
 
-          {/* Last Claimed */}
+          {
+}
           {farmingStatus.lastClaimedAt && (
             <div className="mt-4 text-center text-sm text-gray-500">
               Last claimed: {new Date(farmingStatus.lastClaimedAt).toLocaleString()}

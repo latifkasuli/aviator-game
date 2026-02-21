@@ -1,18 +1,15 @@
-// 🎮 Quest System Seeder - Initialize all daily quests
-// Creates the quest definitions that users can complete
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const quests = [
-  // Your Core Quests
   {
     type: 'DAILY_LOGIN',
     name: 'Daily Login Bonus',
     description: 'Open the game daily to claim your reward',
-    icon: '🎯',
+    icon: '[T]',
     rewardPoints: 100,
-    targetValue: 1, // Just need to login once
+    targetValue: 1,
     resetPeriod: 'daily',
     sortOrder: 1
   },
@@ -20,9 +17,9 @@ const quests = [
     type: 'PLACE_BETS', 
     name: 'Active Player',
     description: 'Place 5 bets to show your dedication',
-    icon: '🎲',
+    icon: '[D]',
     rewardPoints: 500,
-    targetValue: 5, // 5 bets required
+    targetValue: 5,
     resetPeriod: 'daily',
     sortOrder: 2
   },
@@ -30,21 +27,20 @@ const quests = [
     type: 'SUCCESSFUL_REFERRAL',
     name: 'Referral Master', 
     description: 'Successfully refer 1 new player',
-    icon: '👥',
+    icon: '[F]',
     rewardPoints: 500,
-    targetValue: 1, // 1 referral required
+    targetValue: 1,
     resetPeriod: 'daily',
     sortOrder: 3
   },
   
-  // Additional Engaging Quests
   {
     type: 'LUCKY_STREAK',
     name: 'Lucky Streak',
     description: 'Cash out successfully 3 times in a row',
-    icon: '🍀',
+    icon: '[L]',
     rewardPoints: 300,
-    targetValue: 3, // 3 consecutive cashouts
+    targetValue: 3,
     resetPeriod: 'daily',
     sortOrder: 4
   },
@@ -52,9 +48,9 @@ const quests = [
     type: 'HIGH_ROLLER',
     name: 'High Roller',
     description: 'Place a bet of 1000 points or more',
-    icon: '💎',
+    icon: '[H]',
     rewardPoints: 200,
-    targetValue: 1000, // Minimum bet amount
+    targetValue: 1000,
     resetPeriod: 'daily',
     sortOrder: 5
   },
@@ -62,9 +58,9 @@ const quests = [
     type: 'EARLY_BIRD',
     name: 'Early Bird',
     description: 'Play within the first hour of day reset',
-    icon: '🌅',
+    icon: '[E]',
     rewardPoints: 150,
-    targetValue: 1, // Just need to play early
+    targetValue: 1,
     resetPeriod: 'daily',
     sortOrder: 6
   },
@@ -72,9 +68,9 @@ const quests = [
     type: 'NIGHT_OWL',
     name: 'Night Owl', 
     description: 'Play after 10 PM local time',
-    icon: '🦉',
+    icon: '[N]',
     rewardPoints: 150,
-    targetValue: 1, // Just need to play late
+    targetValue: 1,
     resetPeriod: 'daily',
     sortOrder: 7
   },
@@ -82,19 +78,18 @@ const quests = [
     type: 'RISK_TAKER',
     name: 'Risk Taker',
     description: 'Successfully cash out at 5x multiplier or higher',
-    icon: '🚀',
+    icon: '[R]',
     rewardPoints: 400,
-    targetValue: 500, // 5.00x multiplier (stored as 500 for precision)
+    targetValue: 500,
     resetPeriod: 'daily',
     sortOrder: 8
   }
 ];
 
 async function seedQuests() {
-  console.log('🎮 Starting quest system seeding...');
+  console.log('Starting quest system seeding...');
   
   try {
-    // Create or update each quest
     for (const questData of quests) {
       const quest = await prisma.quest.upsert({
         where: { type: questData.type },
@@ -111,23 +106,22 @@ async function seedQuests() {
         create: questData
       });
       
-      console.log(`✅ ${quest.type}: ${quest.name} (${quest.rewardPoints} pts)`);
+      console.log(`${quest.type}: ${quest.name} (${quest.rewardPoints} pts)`);
     }
     
-    console.log(`\n🎯 Successfully seeded ${quests.length} quests!`);
-    console.log('\n📊 Quest Summary:');
-    console.log(`💰 Total daily rewards available: ${quests.reduce((sum, q) => sum + q.rewardPoints, 0)} points`);
-    console.log(`🎮 Quest types: ${quests.map(q => q.type).join(', ')}`);
+    console.log(`\nSuccessfully seeded ${quests.length} quests!`);
+    console.log('\nQuest Summary:');
+    console.log(`Total daily rewards available: ${quests.reduce((sum, q) => sum + q.rewardPoints, 0)} points`);
+    console.log(`Quest types: ${quests.map(q => q.type).join(', ')}`);
     
   } catch (error) {
-    console.error('❌ Error seeding quests:', error);
+    console.error('Error seeding quests:', error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Run the seeder
 if (require.main === module) {
   seedQuests();
 }

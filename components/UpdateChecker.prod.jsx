@@ -1,11 +1,9 @@
-// Production-ready version check (manual only)
 import React, { useState } from 'react';
 
 const UpdateChecker = () => {
   const [hasUpdate, setHasUpdate] = useState(false);
   const [checking, setChecking] = useState(false);
   
-  // Only show in production if explicitly enabled
   const isEnabled = process.env.REACT_APP_ENABLE_UPDATE_CHECK === 'true';
   
   const checkForUpdates = async () => {
@@ -18,7 +16,6 @@ const UpdateChecker = () => {
       if (storedVersion && storedVersion !== serverVersion.buildTime) {
         setHasUpdate(true);
         
-        // Log to analytics instead of auto-showing
         if (window.gtag) {
           window.gtag('event', 'update_available', {
             old_version: storedVersion,
@@ -33,7 +30,6 @@ const UpdateChecker = () => {
     }
   };
 
-  // Manual check only - no automatic polling
   window.checkForAppUpdate = checkForUpdates;
 
   if (!isEnabled || !hasUpdate) return null;

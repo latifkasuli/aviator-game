@@ -1,7 +1,3 @@
-// 🚀 Fred's Professional-Grade Animation Hook
-// rAF-driven animation with zero React re-renders.
-// You push server frames in; it interpolates multiplier locally.
-
 import { useEffect, useRef } from 'react';
 
 export default function useOptimizedAnimation({ onApply, onStopped }) {

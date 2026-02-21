@@ -5,12 +5,11 @@ import { usePlayerSettings } from './hooks/usePlayerSettings.js';
 
 const UserProfile = ({ isOpen, onClose, initialTab }) => {
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState(initialTab || 'profile'); // 'profile', 'security', 'leaderboard', 'history', 'limits'
+  const [activeTab, setActiveTab] = useState(initialTab || 'profile');
   const [isLoading, setIsLoading] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardType, setLeaderboardType] = useState('balance');
   
-  // Password change form
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: '',
     newPassword: '',
@@ -19,16 +18,13 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
   const [passwordErrors, setPasswordErrors] = useState({});
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  // Refs for throttling profile fetches
   const lastFetchRef = useRef(0);
   const inFlightRef = useRef(false);
 
-  // Session history and limits state (moved from StatsPanel)
   const [history, setHistory] = useState([]);
   const [dailyLimits, setDailyLimits] = useState(null);
   const [showLimitSettings, setShowLimitSettings] = useState(false);
 
-  // Player settings hook for server sync of limits
   const {
     saving,
     updateSetting,
@@ -40,11 +36,11 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
 
   const fetchUserProfile = useCallback(async (force = false) => {
     const now = Date.now();
-    const MIN_INTERVAL = 3000; // 3s between calls
+    const MIN_INTERVAL = 3000;
 
     if (!force) {
-      if (inFlightRef.current) return; // Request already in flight
-      if (now - lastFetchRef.current < MIN_INTERVAL) return; // Too soon
+      if (inFlightRef.current) return;
+      if (now - lastFetchRef.current < MIN_INTERVAL) return;
     }
 
     inFlightRef.current = true;
@@ -52,7 +48,6 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
       const response = await authService.apiRequest('/auth/profile');
       if (response.success && response.user) {
         setUser(response.user);
-        // Update cached user data
         authService.saveUser(response.user);
       }
     } catch (error) {
@@ -74,12 +69,10 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
     }
   }, [leaderboardType]);
 
-  // Load session history and limits from local storage and sync with server-backed settings
   const loadSessionData = useCallback(() => {
     try {
       setHistory(betHistoryService.getRecentHistory(100));
 
-      // Sync limits from server values into local model
       const serverLimits = {
         enabled: dailyLimitsEnabled,
         maxDailyWager: maxDailyWager,
@@ -93,7 +86,6 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
     }
   }, [dailyLimitsEnabled, maxDailyWager, maxDailyLoss, maxGamesPerDay]);
 
-  // Update limits both locally and on server via the hook
   const updateDailyLimits = useCallback((newLimits) => {
     betHistoryService.updateDailyLimits(newLimits);
     setDailyLimits(betHistoryService.getDailyLimitsStatus());
@@ -109,10 +101,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
   useEffect(() => {
     if (!isOpen) return;
     
-    // Get cached user initially
     setUser(authService.getUser());
     
-    // One initial fetch when opening (forced)
     const fetchTimer = setTimeout(() => {
       fetchUserProfile(true);
     }, 100);
@@ -120,24 +110,22 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
     return () => clearTimeout(fetchTimer);
   }, [isOpen, fetchUserProfile]);
 
-  // Handle tab changes
   useEffect(() => {
     if (!isOpen) return;
     
     if (activeTab === 'leaderboard') {
       loadLeaderboard();
     } else if (activeTab === 'profile') {
-      fetchUserProfile(); // Passive fetch (throttled)
+      fetchUserProfile();
     } else if (activeTab === 'history' || activeTab === 'limits') {
       loadSessionData();
     }
   }, [activeTab, isOpen, fetchUserProfile, loadLeaderboard, loadSessionData]);
 
-  // Listen for balance updates and refresh profile
   useEffect(() => {
     if (!isOpen) return;
     
-    const handleBalanceUpdate = () => fetchUserProfile(); // Already throttled
+    const handleBalanceUpdate = () => fetchUserProfile();
     
     window.addEventListener('balanceUpdated', handleBalanceUpdate);
     window.addEventListener('authStateChanged', handleBalanceUpdate);
@@ -148,7 +136,6 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
     };
   }, [isOpen, fetchUserProfile]);
 
-  // Allow external components to request a specific tab
   useEffect(() => {
     const handler = (e) => {
       const tab = e?.detail?.tab;
@@ -161,7 +148,6 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     
-    // Validate form
     const errors = {};
     if (!passwordForm.oldPassword) {
       errors.oldPassword = 'Current password is required';
@@ -234,7 +220,6 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
     return n.toLocaleString() + ' pts';
   };
 
-  // Get XP required for next level
   const getNextLevelXP = (currentLevel) => {
     if (currentLevel < 1) return 100;
     if (currentLevel === 1) return 100;
@@ -247,17 +232,14 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
     if (currentLevel === 8) return 8000;
     if (currentLevel === 9) return 11000;
     if (currentLevel === 10) return 15000;
-    // After level 10, each level requires 5000 more XP
     return 15000 + ((currentLevel - 10) * 5000);
   };
 
-  // Get XP required for current level
   const getCurrentLevelXP = (level) => {
     if (level <= 1) return 0;
     return getNextLevelXP(level - 1);
   };
 
-  // Calculate XP progress percentage
   const getXPProgress = (experience, level) => {
     const currentLevelXP = getCurrentLevelXP(level);
     const nextLevelXP = getNextLevelXP(level);
@@ -268,9 +250,9 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
 
   const getRankIcon = (index) => {
     switch (index) {
-      case 0: return '🥇';
-      case 1: return '🥈';
-      case 2: return '🥉';
+      case 0: return '1st';
+      case 1: return '2nd';
+      case 2: return '3rd';
       default: return `#${index + 1}`;
     }
   };
@@ -280,7 +262,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
+        {
+}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
@@ -303,14 +286,15 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
           </button>
         </div>
 
-        {/* Tabs */}
+        {
+}
         <div className="flex border-b border-gray-700">
           {[
-            { id: 'profile', label: 'Profile', icon: '👤' },
-            { id: 'history', label: 'History', icon: '📋' },
-            { id: 'limits', label: 'Limits', icon: '⚠️' },
-            ...(user?.telegramId ? [] : [{ id: 'security', label: 'Security', icon: '🔐' }]),
-            { id: 'leaderboard', label: 'Leaderboard', icon: '🏆' }
+            { id: 'profile', label: 'Profile', icon: null },
+            { id: 'history', label: 'History', icon: null },
+            { id: 'limits', label: 'Limits', icon: null },
+            ...(user?.telegramId ? [] : [{ id: 'security', label: 'Security', icon: null }]),
+            { id: 'leaderboard', label: 'Leaderboard', icon: null }
           ].map(tab => (
             <button
               key={tab.id}
@@ -327,7 +311,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
           ))}
         </div>
 
-        {/* Content */}
+        {
+}
         <div className="p-4 overflow-y-auto max-h-[60vh]">
           {!user && (
             <div className="space-y-4">
@@ -339,7 +324,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
           )}
           {activeTab === 'profile' && (
             <div className="space-y-6">
-              {/* Account Stats */}
+              {
+}
               {user && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-gray-800 rounded-lg p-4 text-center">
@@ -361,7 +347,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
               </div>
               )}
 
-              {/* Experience Progress */}
+              {
+}
               {user && (
               <div className="bg-gray-800 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -386,7 +373,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
               </div>
               )}
 
-              {/* Detailed Stats */}
+              {
+}
               {user && (
               <>
               <div className="text-xs text-gray-400 text-center mb-2">
@@ -394,7 +382,7 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gray-800 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4">💰 Financial Stats</h3>
+                  <h3 className="text-lg font-semibold mb-4">Financial Stats</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Wagered:</span>
@@ -418,7 +406,7 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
                 </div>
 
                 <div className="bg-gray-800 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4">🎯 Performance</h3>
+                  <h3 className="text-lg font-semibold mb-4">Performance</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Biggest Win:</span>
@@ -442,10 +430,11 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
               </>
               )}
 
-              {/* Account Info */}
+              {
+}
               {user && (
               <div className="bg-gray-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">📧 Account Information</h3>
+                <h3 className="text-lg font-semibold mb-4">Account Information</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Email:</span>
@@ -527,7 +516,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
                 </div>
               </div>
 
-              {/* Current Usage */}
+              {
+}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                   <h4 className="text-sm text-gray-400 mb-2">Daily Wagered</h4>
@@ -578,7 +568,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
                 </div>
               </div>
 
-              {/* Limit Settings */}
+              {
+}
               {showLimitSettings && (
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                   <h4 className="text-lg font-semibold mb-4">Responsible Gaming Settings</h4>
@@ -655,9 +646,10 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
 
           {activeTab === 'security' && user && !user.telegramId && (
             <div className="space-y-6">
-              {/* Change Password */}
+              {
+}
               <div className="bg-gray-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">🔐 Change Password</h3>
+                <h3 className="text-lg font-semibold mb-4">Change Password</h3>
                 
                 {passwordSuccess && (
                   <div className="bg-green-600 text-white p-3 rounded-lg mb-4">
@@ -730,9 +722,10 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
                 </form>
               </div>
 
-              {/* Logout */}
+              {
+}
               <div className="bg-gray-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">👋 Account Actions</h3>
+                <h3 className="text-lg font-semibold mb-4">Account Actions</h3>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
@@ -745,7 +738,8 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
 
           {activeTab === 'leaderboard' && (
             <div className="space-y-4">
-              {/* Leaderboard Type Selector */}
+              {
+}
               <div className="flex space-x-2">
                 {[
                   { key: 'balance', label: 'Balance' },
@@ -769,10 +763,11 @@ const UserProfile = ({ isOpen, onClose, initialTab }) => {
                 ))}
               </div>
 
-              {/* Leaderboard List */}
+              {
+}
               <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="p-4 border-b border-gray-700">
-                  <h3 className="text-lg font-semibold">🏆 Top Players</h3>
+                  <h3 className="text-lg font-semibold">Top Players</h3>
                 </div>
                 <div className="divide-y divide-gray-700">
                   {leaderboard.map((player, index) => (

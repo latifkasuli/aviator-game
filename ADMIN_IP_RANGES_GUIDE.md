@@ -50,7 +50,7 @@ Visit: https://whatismyipaddress.com
 ### Option 3: Check Server Logs
 The admin middleware logs denied attempts with the IP:
 ```
-⚠️ Admin access denied from IP: 203.0.113.99 for user: admin
+[WARNING] Admin access denied from IP: 203.0.113.99 for user: admin
 ```
 
 ## IP Range Formats
@@ -79,7 +79,7 @@ ADMIN_IP_RANGES="2001:db8::1,2001:db8::/32"
 
 ## Security Considerations
 
-### ⚠️ Important Notes
+### Important Notes
 
 1. **IP Spoofing**: IPs can be spoofed. Use this as an additional layer, not the only security.
 
@@ -139,8 +139,8 @@ ADMIN_IP_RANGES="2001:db8::1,2001:db8::/32"
    - Cloud bastion host
 
 2. **Narrow Ranges**:
-   - ❌ `0.0.0.0/0` (allows all)
-   - ✅ `203.0.113.0/29` (8 IPs)
+   - [X] `0.0.0.0/0` (allows all)
+   - [OK] `203.0.113.0/29` (8 IPs)
 
 3. **Regular Audits**:
    - Review allowed IPs monthly

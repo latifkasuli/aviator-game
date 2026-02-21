@@ -79,12 +79,8 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
     const dotRef = useRef<GraphicsRaw>(null);
     const gameBoardMask = useRef<GraphicsRaw>(null);
 
-
-
     const curveMask = useCallback((g: GraphicsRaw) => _drawMask(g, { width: dimension.width - 40, height: dimension.height - 40 }), [dimension])
     const dotLeftBottom = useCallback((g: GraphicsRaw) => _drawMask(g, { width: 1, height: 1 }), [])
-
-
 
     const [pulseGraph, setPulseGraph] = useState(1);
     useTick((delta) => {
@@ -198,7 +194,7 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
                             fontFamily: 'Roboto',
                             fontSize: 100,
                             fontWeight: '700',
-                            fill: ['#ffffff', '#ffffff'], // gradient
+                            fill: ['#ffffff', '#ffffff'],
                             stroke: '#111111',
                             strokeThickness: 2,
                             letterSpacing: 0,
@@ -223,15 +219,12 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
                             scale={0.4}
                             image={`${process.env.REACT_APP_ASSETS_IMAGE_URL}${webpORpng}/dot.${webpORpng}`}
                             anchor={0.5}
-                            // x={20} y={coor + (Math.max(0, tickRef.current - 5) * 100 % (140000 / pixiDimension.width)) - 100}
                             x={20} y={coor + (hueRotate * 400 % (140000 / pixiDimension.width)) - 100}
                         />
                         <Sprite
                             scale={0.4}
                             image={`${process.env.REACT_APP_ASSETS_IMAGE_URL}${webpORpng}/dot.${webpORpng}`}
                             anchor={0.5}
-                            // x={coor - (Math.max(0, tickRef.current - 5) * 100 % (140000 / pixiDimension.width)) - 100}
-                            // y={dimension.height - 20}
                             x={coor - (hueRotate * 400 % (140000 / pixiDimension.width)) - 100}
                             y={dimension.height - 20}
                         />
@@ -240,32 +233,11 @@ const AppStage = ({ payout, game_anim_status, dimension, pixiDimension, trigPara
             </Container>
             <Graphics draw={drawOuterBoundery} />
 
-            {/* <WaitingSprite visible={game_anim_status === "WAITING"} dimension={dimension} /> */}
+            {
+}
 
         </Container>
 
-        // <Text text="Loading..." anchor={0.5}
-        //     x={700}
-        //     y={315}
-        //     style={
-        //         new TextStyle({
-        //             align: 'center',
-        //             fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
-        //             fontSize: 50,
-        //             fontWeight: '400',
-        //             fill: ['#ffffff', '#00ff99'], // gradient
-        //             stroke: '#01d27e',
-        //             strokeThickness: 5,
-        //             letterSpacing: 20,
-        //             dropShadow: true,
-        //             dropShadowColor: '#ccced2',
-        //             dropShadowBlur: 4,
-        //             dropShadowAngle: Math.PI / 6,
-        //             dropShadowDistance: 6,
-        //             wordWrap: true,
-        //             wordWrapWidth: 440,
-        //         })
-        //     } />
     );
 };
 export default AppStage

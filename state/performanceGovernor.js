@@ -1,111 +1,91 @@
-// 🚀 Fred's Performance Governor
-// Global performance state manager for device-appropriate settings
-
 import { detectLowSpec } from '../utils/lowSpecDetector.js';
 
-// Global performance configuration
 export const perf = {
-  // Detection state
   lowSpec: false,
   initialized: false,
   
-  // Frame rate controls
-  multiplierFps: 20,       // DOM text updates per second
-  planeFps: 60,            // Canvas animation rate
-  broadcastThrottle: 200,  // WebSocket message throttling (ms)
+  multiplierFps: 20,
+  planeFps: 60,
+  broadcastThrottle: 200,
   
-  // Visual effects
-  glowEffects: true,       // CSS glows and shadows
-  animations: true,        // CSS animations and transitions
-  backgroundEffects: true, // Particle effects, backgrounds
+  glowEffects: true,
+  animations: true,
+  backgroundEffects: true,
   
-  // Audio & interaction
-  audioEnabled: true,      // Sound effects
-  hapticsEnabled: true,    // Telegram haptic feedback
+  audioEnabled: true,
+  hapticsEnabled: true,
   
-  // Rendering optimizations
-  useCanvas: false,        // Use Canvas instead of DOM for critical animations
-  reducedMotion: false,    // Respect user's motion preferences
+  useCanvas: false,
+  reducedMotion: false,
   
-  // Debug
-  showPerfHUD: false,      // Performance debugging overlay
+  showPerfHUD: false,
 };
 
-// Initialize the performance governor
 export function initPerformanceGovernor(forceLowSpec = null) {
-  console.log('⚡ Initializing Performance Governor...');
+  console.log('Initializing performance governor...');
   
-  // Check URL parameters for overrides
   const urlParams = new URLSearchParams(window.location.search);
   const lowSpecOverride = urlParams.get('lowspec') === '1' || urlParams.get('low') === '1';
   const perfHUDOverride = urlParams.get('perf') === '1' || urlParams.get('debug') === '1';
   
-  // Determine low-spec mode
   if (forceLowSpec !== null) {
     perf.lowSpec = !!forceLowSpec;
-    console.log(`📱 Low-spec mode FORCED: ${perf.lowSpec}`);
+    console.log(`Low-spec mode forced: ${perf.lowSpec}`);
   } else if (lowSpecOverride) {
     perf.lowSpec = true;
-    console.log('📱 Low-spec mode ENABLED via URL parameter');
+    console.log('Low-spec mode enabled via URL parameter');
   } else {
     perf.lowSpec = detectLowSpec();
-    console.log(`📱 Low-spec mode AUTO-DETECTED: ${perf.lowSpec}`);
+    console.log(`Low-spec mode auto-detected: ${perf.lowSpec}`);
   }
   
-  // Configure performance settings based on device capability
   if (perf.lowSpec) {
-    // 🥔 Potato phone settings - prioritize smoothness over beauty
-    perf.multiplierFps = 10;        // Very low DOM text update rate
-    perf.planeFps = 30;             // Reduced canvas animation rate
-    perf.broadcastThrottle = 250;   // Less frequent WebSocket updates
+    perf.multiplierFps = 10;
+    perf.planeFps = 30;
+    perf.broadcastThrottle = 250;
     
-    perf.glowEffects = false;       // No expensive CSS effects
-    perf.animations = false;        // Minimal animations
-    perf.backgroundEffects = false; // No particle effects
+    perf.glowEffects = false;
+    perf.animations = false;
+    perf.backgroundEffects = false;
     
-    perf.audioEnabled = false;      // No audio processing overhead
-    perf.hapticsEnabled = false;    // No haptic feedback
+    perf.audioEnabled = false;
+    perf.hapticsEnabled = false;
     
-    perf.useCanvas = true;          // Canvas is more performant than DOM
-    perf.reducedMotion = true;      // Minimal motion
+    perf.useCanvas = true;
+    perf.reducedMotion = true;
     
-    console.log('🥔 POTATO MODE: Performance optimized for low-end devices');
+    console.log('Low-spec mode: performance profile enabled');
   } else {
-    // 🚀 High-end device settings - full experience
-    perf.multiplierFps = 20;        // Smooth DOM text updates
-    perf.planeFps = 60;             // Full-rate canvas animation
-    perf.broadcastThrottle = 200;   // Standard WebSocket throttling
+    perf.multiplierFps = 20;
+    perf.planeFps = 60;
+    perf.broadcastThrottle = 200;
     
-    perf.glowEffects = true;        // Beautiful CSS effects
-    perf.animations = true;         // Full animations
-    perf.backgroundEffects = true;  // Rich visual effects
+    perf.glowEffects = true;
+    perf.animations = true;
+    perf.backgroundEffects = true;
     
-    perf.audioEnabled = true;       // Full audio experience
-    perf.hapticsEnabled = true;     // Haptic feedback
+    perf.audioEnabled = true;
+    perf.hapticsEnabled = true;
     
-    perf.useCanvas = false;         // DOM is fine on good devices
-    perf.reducedMotion = false;     // Full motion effects
+    perf.useCanvas = false;
+    perf.reducedMotion = false;
     
-    console.log('🚀 HIGH-PERFORMANCE MODE: Full visual experience enabled');
+    console.log('High-performance mode enabled');
   }
   
-  // Debug HUD
   perf.showPerfHUD = perfHUDOverride;
   
-  // Apply CSS class to body for styling
   document.body.classList.toggle('low-spec', perf.lowSpec);
   document.body.classList.toggle('high-spec', !perf.lowSpec);
   document.body.classList.toggle('perf-hud', perf.showPerfHUD);
   
-  // Set CSS custom properties for dynamic theming
   document.documentElement.style.setProperty('--multiplier-fps', perf.multiplierFps);
   document.documentElement.style.setProperty('--plane-fps', perf.planeFps);
   
   perf.initialized = true;
   
-  console.log('⚡ Performance Governor initialized:', perf);
+  console.log('Performance governor initialized:', perf);
   
-  // Dispatch event for other components to listen
   window.dispatchEvent(new CustomEvent('performance:initialized', { 
     detail: { ...perf } 
   }));
@@ -113,29 +93,25 @@ export function initPerformanceGovernor(forceLowSpec = null) {
   return perf;
 }
 
-// Runtime performance setting updates
 export function updatePerformanceSetting(key, value) {
   if (perf.hasOwnProperty(key)) {
     const oldValue = perf[key];
     perf[key] = value;
-    console.log(`⚡ Performance setting updated: ${key} ${oldValue} → ${value}`);
+    console.log(`Performance setting updated: ${key} ${oldValue} -> ${value}`);
     
-    // Update CSS class if needed
     if (key === 'lowSpec') {
       document.body.classList.toggle('low-spec', value);
       document.body.classList.toggle('high-spec', !value);
     }
     
-    // Dispatch update event
     window.dispatchEvent(new CustomEvent('performance:updated', { 
       detail: { key, oldValue, newValue: value } 
     }));
   } else {
-    console.warn(`⚠️ Unknown performance setting: ${key}`);
+    console.warn(`Unknown performance setting: ${key}`);
   }
 }
 
-// Convenience getters for common checks
 export const isLowSpec = () => perf.lowSpec;
 export const shouldUseCanvas = () => perf.useCanvas;
 export const getMultiplierFPS = () => perf.multiplierFps;
@@ -146,7 +122,6 @@ export const shouldShowGlowEffects = () => perf.glowEffects;
 export const shouldShowAnimations = () => perf.animations;
 export const getBroadcastThrottle = () => perf.broadcastThrottle;
 
-// Performance monitoring helpers
 export const perfMonitor = {
   frameCount: 0,
   lastFrameTime: 0,
@@ -167,5 +142,4 @@ export const perfMonitor = {
   }
 };
 
-// Export the performance object as default for easy importing
 export default perf;

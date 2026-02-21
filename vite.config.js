@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   base: '/',
@@ -12,7 +11,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    // Add timestamp to all generated files for cache busting
     rollupOptions: {
       output: {
         entryFileNames: `assets/[name].[hash].js`,

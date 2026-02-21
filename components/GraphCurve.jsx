@@ -8,15 +8,12 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
     const calculateCurve = () => {
       const maxVisualMultiplier = 50;
       
-      // Starting position (bottom left corner)
       const startX = 0;
       const startY = 100;
       
-      // Create smooth exponential curve like in the screenshot
       let path = `M ${startX} ${startY}`;
       
       if (multiplier > 1) {
-        // Generate smooth curve points using exponential growth
         const points = [];
         const steps = Math.min(Math.floor((multiplier - 1) * 30), 150);
         
@@ -24,9 +21,8 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
           const stepMultiplier = 1 + (i / 30);
           
           if (stepMultiplier <= multiplier) {
-            // Exponential curve calculation for realistic growth
             const progress = (stepMultiplier - 1) / (maxVisualMultiplier - 1);
-            const exponentialProgress = Math.pow(progress, 0.7); // Slight curve
+            const exponentialProgress = Math.pow(progress, 0.7);
             
             const x = exponentialProgress * 100;
             const y = 100 - (Math.log(stepMultiplier) / Math.log(maxVisualMultiplier)) * 85;
@@ -35,7 +31,6 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
           }
         }
         
-        // Create smooth curve using quadratic bezier curves
         if (points.length > 0) {
           path += ` L ${points[0].x} ${points[0].y}`;
           
@@ -48,7 +43,6 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
             path += ` Q ${current.x} ${current.y} ${controlX} ${controlY}`;
           }
           
-          // End the curve
           if (points.length > 1) {
             const lastPoint = points[points.length - 1];
             path += ` L ${lastPoint.x} ${lastPoint.y}`;
@@ -58,7 +52,6 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
       
       setPathData(path);
       
-      // Create gradient fill area under the curve
       if (multiplier > 1 && path !== `M ${startX} ${startY}`) {
         const fillArea = path + ` L ${100 * Math.pow((multiplier - 1) / (maxVisualMultiplier - 1), 0.7)} ${startY} L ${startX} ${startY} Z`;
         setFillPath(fillArea);
@@ -68,7 +61,6 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
     calculateCurve();
   }, [multiplier, finalCrashMultiplier]);
 
-  // Enhanced visual effects
   const getStrokeProps = () => {
     if (gameState === 'crashed') {
       return {
@@ -88,7 +80,8 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
 
   return (
     <g>
-      {/* Fill area under curve with gradient */}
+      {
+}
       {fillPath && (
         <path
           d={fillPath}
@@ -97,7 +90,8 @@ const GraphCurve = ({ multiplier, gameState, startTime, finalCrashMultiplier }) 
         />
       )}
       
-      {/* Main curve line with glow */}
+      {
+}
       {pathData && (
         <path
           d={pathData}

@@ -5,12 +5,10 @@ const prisma = new PrismaClient();
 
 async function fixAdminAndReferrals() {
   try {
-    console.log('🔧 Starting admin and referral fixes...');
+    console.log('Starting admin and referral fixes...');
     
-    // 1. Fix admin user
-    console.log('\n🔐 Setting up admin user...');
+    console.log('\nSetting up admin user...');
     
-    // Check if KnightRider user exists
     let adminUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -21,11 +19,10 @@ async function fixAdminAndReferrals() {
     });
     
     if (!adminUser) {
-      console.log('❌ No KnightRider or latifkasuli user found');
+      console.log('No KnightRider or latifkasuli user found');
       return;
     }
     
-    // Set password and admin role
     const hashedPassword = await bcrypt.hash('7175{rV1', 12);
     
     await prisma.user.update({
@@ -36,10 +33,9 @@ async function fixAdminAndReferrals() {
       }
     });
     
-    console.log(`✅ Admin password set for ${adminUser.username} with ADMIN role`);
+    console.log(`Admin password set for ${adminUser.username} with ADMIN role`);
     
-    // 2. Fix referral codes
-    console.log('\n🔗 Fixing referral codes...');
+    console.log('\nFixing referral codes...');
     
     const usersWithoutCodes = await prisma.user.findMany({
       where: {
@@ -55,12 +51,11 @@ async function fixAdminAndReferrals() {
       }
     });
     
-    console.log(`📊 Found ${usersWithoutCodes.length} users without referral codes`);
+    console.log(`Found ${usersWithoutCodes.length} users without referral codes`);
     
     let fixedCount = 0;
     for (const user of usersWithoutCodes) {
       try {
-        // Generate a unique referral code
         const referralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
         
         await prisma.user.update({
@@ -68,19 +63,19 @@ async function fixAdminAndReferrals() {
           data: { referralCode }
         });
         
-        console.log(`✅ Fixed referral code for ${user.username}: ${referralCode}`);
+        console.log(`Fixed referral code for ${user.username}: ${referralCode}`);
         fixedCount++;
       } catch (error) {
-        console.error(`❌ Failed to fix referral code for ${user.username}:`, error);
+        console.error(`Failed to fix referral code for ${user.username}:`, error);
       }
     }
     
-    console.log(`\n🎉 Summary:`);
-    console.log(`✅ Admin user: ${adminUser.username} setup complete`);
-    console.log(`✅ Referral codes fixed: ${fixedCount}/${usersWithoutCodes.length}`);
+    console.log('\nSummary:');
+    console.log(`Admin user: ${adminUser.username} setup complete`);
+    console.log(`Referral codes fixed: ${fixedCount}/${usersWithoutCodes.length}`);
     
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('Error:', error);
   } finally {
     await prisma.$disconnect();
   }

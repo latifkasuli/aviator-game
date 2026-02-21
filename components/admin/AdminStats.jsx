@@ -27,7 +27,6 @@ const AdminStats = () => {
 
   useEffect(() => {
     loadStats();
-    // Refresh every 30 seconds
     const interval = setInterval(loadStats, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -71,7 +70,7 @@ const AdminStats = () => {
             <p className="text-3xl font-bold text-white mt-1">{value}</p>
             {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
           </div>
-          <span className="text-3xl opacity-50">{icon}</span>
+          {icon && <span className="text-3xl opacity-50">{icon}</span>}
         </div>
       </div>
     );
@@ -79,7 +78,8 @@ const AdminStats = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {
+}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white">Dashboard Overview</h2>
         <button
@@ -91,12 +91,13 @@ const AdminStats = () => {
               : 'bg-blue-600 hover:bg-blue-700 text-white'
           }`}
         >
-          <span>🔄</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
           <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
         </button>
       </div>
 
-      {/* WebSocket Status */}
+      {
+}
       {stats?.websocket && (
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <h3 className="text-lg font-semibold mb-3">Live Game Status</h3>
@@ -125,99 +126,102 @@ const AdminStats = () => {
         </div>
       )}
 
-      {/* User Stats */}
+      {
+}
       <div>
         <h3 className="text-lg font-semibold mb-3">User Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <StatCard
             title="Total Users"
             value={stats?.users.total || 0}
-            icon="👥"
+            icon={null}
             color="blue"
           />
           <StatCard
             title="Active Today"
             value={stats?.users.activeToday || 0}
             subtitle={`${stats?.users.percentActiveToday || 0}% of total`}
-            icon="📈"
+            icon={null}
             color="green"
           />
           <StatCard
             title="Active This Week"
             value={stats?.users.activeThisWeek || 0}
-            icon="📊"
+            icon={null}
             color="yellow"
           />
           <StatCard
             title="New Today"
             value={stats?.referrals.newToday || 0}
             subtitle="Via referrals"
-            icon="🆕"
+            icon={null}
             color="purple"
           />
         </div>
       </div>
 
-      {/* Gameplay Stats */}
+      {
+}
       <div>
         <h3 className="text-lg font-semibold mb-3">Gameplay Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <StatCard
             title="Rounds Today"
             value={stats?.gameplay.roundsToday || 0}
-            icon="🎮"
+            icon={null}
             color="blue"
           />
           <StatCard
             title="Bets Today"
             value={stats?.gameplay.betsToday || 0}
             subtitle={`${stats?.gameplay.avgBetsPerPlayer || 0} per player`}
-            icon="🎲"
+            icon={null}
             color="green"
           />
           <StatCard
             title="Unique Players"
             value={stats?.gameplay.uniquePlayersToday || 0}
-            icon="🎯"
+            icon={null}
             color="yellow"
           />
           <StatCard
             title="Avg Crash"
             value={`${stats?.gameplay.avgCrashToday || 0}x`}
-            icon="💥"
+            icon={null}
             color="red"
           />
         </div>
       </div>
 
-      {/* Economy Stats */}
+      {
+}
       <div>
         <h3 className="text-lg font-semibold mb-3">Economy Statistics</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <StatCard
             title="Wagered Today"
             value={`${parseInt(stats?.economy.totalWageredToday || 0).toLocaleString()} pts`}
-            icon="💰"
+            icon={null}
             color="blue"
           />
           <StatCard
             title="Won Today"
             value={`${parseInt(stats?.economy.totalWonToday || 0).toLocaleString()} pts`}
-            icon="🏆"
+            icon={null}
             color="green"
           />
           <StatCard
             title="House Edge"
             value={`${parseInt(stats?.economy.houseEdgeToday || 0).toLocaleString()} pts`}
             subtitle={`${stats?.economy.houseEdgePercent || 0}%`}
-            icon="🏦"
+            icon={null}
             color="yellow"
           />
           <StatCard
             title="Referral Conv."
             value={`${stats?.referrals.conversionRate || 0}%`}
             subtitle={`${stats?.referrals.activatedToday || 0} activated`}
-            icon="📊"
+            icon={null}
             color="purple"
           />
         </div>
